@@ -21,7 +21,14 @@ class CreateAgentsTable extends Migration
             $table->string('telephone')->nullable();
             $table->string('address')->nullable();
             $table->string('period')->nullable();
+            $table->string('level')->default(1);
             $table->boolean('active')->default(1);
+            $table->string('sponser_id')->nullable();
+            $table->string('nationality')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('bank_no')->nullable();
+            $table->string('momo_name')->nullable();
+            $table->string('momo_no')->nullable();
             $table->timestamps();
         });
     }

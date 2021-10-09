@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Achivement;
+use App\Models\Agent;
+use App\Observers\AchivementObserver;
+use App\Observers\AgentObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +31,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        //Product::observe(ProductObserver::class);
+        Agent::observe(AgentObserver::class);
+        Achivement::observe(AchivementObserver::class);
     }
 }

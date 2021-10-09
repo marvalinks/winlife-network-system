@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\BonusController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,14 +27,18 @@ Route::post('register', [PagesController::class, 'postRegister'])->name('registe
 
 Route::prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('bonus/{id?}', [BonusController::class, 'calculateBonus'])->name('admin.calculate.bonus');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');
     Route::get('add', [AgentController::class, 'add'])->name('admin.agent.add');
     Route::post('add', [AgentController::class, 'post'])->name('admin.agent.add');
+    Route::get('edit/{id}', [AgentController::class, 'edit'])->name('admin.agent.edit');
+    Route::post('adjust-pvb/{id}', [AgentController::class, 'adjustPvb'])->name('admin.agent.adjust.pvb');
+    Route::get('make-payments/{id}', [AgentController::class, 'makePayment'])->name('admin.agent.payment');
 });
-Route::prefix('admin/products')->group(function () {
-    // Route::get('', [AgentController::class, 'index'])->name('admin.agents');
-    Route::get('add', [ProductController::class, 'add'])->name('admin.product.add');
-    // Route::post('add', [AgentController::class, 'post'])->name('admin.agent.add');
+Route::prefix('admin/users')->group(function () {
+    Route::get('', [UserController::class, 'index'])->name('admin.users');
+    Route::get('add', [UserController::class, 'add'])->name('admin.user.add');
+    Route::post('add', [UserController::class, 'post'])->name('admin.user.add');
 });

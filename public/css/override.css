@@ -3,10 +3,10 @@ body {
     /* background: #32C2CD url(../img/bg-default.jpg) !important; */
     background: #4e4e4e!important;
 }
-#sidebar > ul > li a {
+/* #sidebar > ul > li a {
     margin: 0 0 8px 0;
     padding: 14px;
-}
+} */
 .ml0{
     margin-left: 0px!important;
 }
@@ -19,4 +19,13 @@ body {
     overflow-x: auto!important;
     white-space: nowrap!important;
     width: 100%!important;
+}
+input[type=file]{
+    border: 1px solid #ccc;
+}
+
+@media (min-width: 980px) {
+    #sidebar ul {
+        margin-top: 0px;
+    }
 }

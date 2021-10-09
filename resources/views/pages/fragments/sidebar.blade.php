@@ -13,16 +13,30 @@
     <!-- BEGIN SIDEBAR MENU -->
     <ul class="sidebar-menu">
         <li>
-            <a class="" href="#">Dashboard</a>
+            <a class="" href="{{route('admin.dashboard')}}">
+                <span class="icon-box"><i class="icon-tasks"></i></span>
+                <span>Dashboard</span>
+            </a>
         </li>
         <li>
-            <a class="" href="#">Product Managment</a>
+            <a class="" href="#">
+                <span class="icon-box"><i class="icon-qrcode"></i></span>
+                <span>Product Managment</span>
+            </a>
         </li>
+        @if (auth()->user()->roleid == 1)
         <li>
-            <a class="" href="#">User Managment</a>
+            <a class="" href="{{route('admin.users')}}">
+                <span class="icon-box"><i class="icon-star"></i></span>
+                <span>User Managment</span>
+            </a>
         </li>
+        @endif
         <li>
-            <a class="" href="{{route('admin.agents')}}">Agent Managment</a>
+            <a class="" href="{{route('admin.agents')}}">
+                <span class="icon-box"><i class="icon-user"></i></span>
+                <span>Agent Managment</span>
+            </a>
         </li>
     </ul>
     <!-- END SIDEBAR MENU -->

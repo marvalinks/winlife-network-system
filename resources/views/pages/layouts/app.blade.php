@@ -23,6 +23,7 @@
         <link rel="stylesheet" type="text/css" href="/backend/assets/uniform/css/uniform.default.css" />
         <link href="/backend/assets/fullcalendar/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet" />
         <link href="/backend/assets/jqvmap/jqvmap/jqvmap.css" media="screen" rel="stylesheet" type="text/css" />
+        @livewireStyles
         @yield('links')
         <link rel="stylesheet" href="/css/override.css">
 
@@ -52,17 +53,6 @@
                     <!-- END  NOTIFICATION -->
                     <div class="top-nav">
                         <ul class="nav pull-right top-menu">
-                            <!-- BEGIN SUPPORT -->
-                            <li class="dropdown mtop5">
-                                <a class="dropdown-toggle element" data-placement="bottom" data-toggle="tooltip" href="index.html#" data-original-title="Chat">
-                                    <i class="icon-comments-alt"></i>
-                                </a>
-                            </li>
-                            <li class="dropdown mtop5">
-                                <a class="dropdown-toggle element" data-placement="bottom" data-toggle="tooltip" href="index.html#" data-original-title="Help">
-                                    <i class="icon-headphones"></i>
-                                </a>
-                            </li>
                             <!-- END SUPPORT -->
                             <!-- BEGIN USER LOGIN DROPDOWN -->
                             <li class="dropdown">
@@ -72,18 +62,9 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="index.html#"><i class="icon-user"></i> My Profile</a>
-                                    </li>
-                                    <li>
-                                        <a href="index.html#"><i class="icon-tasks"></i> My Tasks</a>
-                                    </li>
-                                    <li>
-                                        <a href="index.html#"><i class="icon-calendar"></i> Calendar</a>
-                                    </li>
                                     <li class="divider"></li>
                                     <li>
-                                        <a href="login.html"><i class="icon-key"></i> Log Out</a>
+                                        <a href="#"><i class="icon-key"></i> Log Out</a>
                                     </li>
                                 </ul>
                             </li>
@@ -104,6 +85,16 @@
             <!-- BEGIN PAGE -->
             <div id="main-content">
                 <!-- BEGIN PAGE CONTAINER-->
+
+                @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                    @if(Session::has('alert-' . $msg))
+                    <div class="alert alert-{{$msg}}">
+                        <button class="close" data-dismiss="alert">×</button>
+                        {{ Session::get('alert-' . $msg) }}
+                    </div>
+                    @endif
+                @endforeach
+
                 @yield('content')
                 <!-- END PAGE CONTAINER-->
             </div>
@@ -149,6 +140,7 @@
 
         <script src="/backend/js/jquery.peity.min.js"></script>
         <script type="text/javascript" src="/backend/assets/uniform/jquery.uniform.min.js"></script>
+        @livewireScripts
         @yield('scripts')
         <script src="/backend/js/scripts.js"></script>
         <script>

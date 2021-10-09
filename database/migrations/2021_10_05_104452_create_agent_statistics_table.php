@@ -17,7 +17,7 @@ class CreateAgentStatisticsTable extends Migration
             $table->id();
             $table->string('agent_id');
             $table->integer('layer')->default(0);
-            $table->integer('level')->default(0);
+            $table->integer('level')->default(1);
             $table->string('period')->nullable();
             $table->float('current_pbv')->default(0);
             $table->float('current_gbv')->default(0);
