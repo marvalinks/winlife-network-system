@@ -12,6 +12,7 @@ class BonusController extends Controller
 {
 
     public $combPeriodToday;
+    public $combPeriodPrevious;
     public $accgbv;
     public $loopcount;
 
@@ -19,6 +20,7 @@ class BonusController extends Controller
     {
         $this->middleware('auth');
         $this->combPeriodToday = date('Y').date('m');
+        $this->combPeriodPrevious = sprintf("%02d", (date('m') - 1));
         $this->accgbv = floatval(0);
         $this->loopcount = 0;
     }
@@ -29,7 +31,8 @@ class BonusController extends Controller
             $this->loopcount = 0;
             $user = Agent::where('member_id', $userid)->first();
             if($user && ($user->level > 2)){
-                $this->accgbv = $user->stats->acc_gbv;
+                // $this->accgbv = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
+                $this->accgbv = floatval($user->stats->current_pbv);
                 $this->doBonus($user, 0);
                 $this->loopcount++;
                 $this->reloop($user);
@@ -41,14 +44,14 @@ class BonusController extends Controller
             foreach ($users as $key => $user) {
                 $this->loopcount = 0;
                 if($user->level > 2){
-                    $this->accgbv = $user->stats->acc_gbv;
+                    $this->accgbv = floatval($user->stats->current_pbv);
                     $this->doBonus($user, 0);
                     $this->loopcount++;
                     $this->reloop($user);
                 }
             }
         }
-        $this->calculateSalary();
+        // $this->calculateSalary();
         $request->session()->flash('alert-success', 'Bonuses calculated for agents');
         return back();
     }
@@ -69,12 +72,8 @@ class BonusController extends Controller
     public function reloop($user)
     {
         if($user->sponser) {
-
             $usd = Agent::where('member_id', $user->sponser->member_id)->first();
             $this->pug = $usd;
-            // if($usd->member_id == '201266669989'){
-            //     ddd($this->accgbv, $this->loopcount);
-            // }
             $this->doBonus($usd, $this->loopcount);
             $this->loopcount++;
             $this->reloop($usd);
@@ -83,7 +82,6 @@ class BonusController extends Controller
 
     protected function doBonus($user, $key)
     {
-
         $accgbv = $this->accgbv;
         $firstsplit = floatval(0);
         $secondsplit = floatval(0);
@@ -163,15 +161,8 @@ class BonusController extends Controller
             }
         }
 
-        // ddd($key, $first_percent, $second_percent, $third_percent);
-        // ddd($user, $accgbv, $key, $amount);
 
-        if($user->member_id == "201266669991" && $key == 1) {
-            // ddd($key, $first_percent, $second_percent, $third_percent);
-            // ddd($accgbv);
-        }
-
-        $bonus = Bonus::where('member_id', $user->member_id)->first();
+        $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
 
         if(!$bonus){
             Bonus::create([
@@ -179,25 +170,18 @@ class BonusController extends Controller
                 'amount' => $amount
             ]);
         }else{
-            if($key == 0){
-                $bonus->period = $this->combPeriodToday;
-                $bonus->amount = $bonus->amount + $amount;
-                $bonus->save();
-            }else{
-                if($key > 11) {
-                    if($user->level > 2) {
-                        $bonus->period = $this->combPeriodToday;
-                        $bonus->amount = $bonus->amount + $amount;
-                        $bonus->save();
-                    }
-                }else{
+            $bonus2 = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodPrevious)->first();
+            if($key > 11) {
+                if($user->level > 2) {
                     $bonus->period = $this->combPeriodToday;
                     $bonus->amount = $bonus->amount + $amount;
                     $bonus->save();
                 }
+            }else{
+                $bonus->period = $this->combPeriodToday;
+                $bonus->amount = $bonus->amount + $amount;
+                $bonus->save();
             }
-
-
         }
     }
 }

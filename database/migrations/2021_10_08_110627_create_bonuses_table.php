@@ -18,6 +18,7 @@ class CreateBonusesTable extends Migration
             $table->string('member_id');
             $table->string('period')->nullable();
             $table->float('amount')->default(0);
+            $table->boolean('paid')->default(0);
             $table->timestamps();
         });
     }

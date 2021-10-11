@@ -1,7 +1,7 @@
 <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
     <td class="sorting_1">
         <div class="" id="uniform-undefined">
-            <span><input type="checkbox" class="checkboxes" /></span>
+            <span><input wire:model="selectedAgents" value="{{$child_sponser->member_id}}" type="checkbox" class="checkboxes" /></span>
         </div>
     </td>
     <td>{{$child_sponser->firstname.' '.$child_sponser->lastname}}</td>
@@ -14,7 +14,7 @@
     <td>{{number_format($child_sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
     <td>{{number_format($child_sponser->accgbv($combPeriod), 2)}}</td>
     <td>{{$child_sponser->sponser_id ?? '-'}}</td>
-    <td>{{number_format($child_sponser->salary->amount, 2)}}</td>
+    <td>{{number_format(($child_sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
     <td>
         <a href="{{route('admin.agent.edit', [$child_sponser->member_id])}}">Adjust</a>
     </td>

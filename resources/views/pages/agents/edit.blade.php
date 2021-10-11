@@ -22,6 +22,12 @@
 @endsection
 
 @section('content')
+    @php
+        $lv = 1;
+        $lvi = 1;
+        $lvf = 2;
+        $combPeriod = date('Y').date('m');
+    @endphp
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span12">
@@ -38,7 +44,7 @@
                 <div class="row-fluid">
                     <div class="clearfix">
                         <div class="btn-group" style="margin-left: 10px;">
-                            <h2>GHC {{number_format($sponser->salary->amount, 2)}}</h2>
+                            <h2>GHC {{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</h2>
                         </div>
                         @if (auth()->user()->roleid == 1)
                         <div class="btn-group pull-right" style="margin-right: 10px;">
@@ -216,12 +222,7 @@
                             </thead>
 
                             <tbody role="alert" aria-live="polite" aria-relevant="all">
-                                @php
-                                    $lv = 1;
-                                    $lvi = 1;
-                                    $lvf = 2;
-                                    $combPeriod = date('Y').date('m');
-                                @endphp
+
                                 <tr class="gradeX even}}">
                                     <td class="sorting_1">
                                         <div class="checker" id="uniform-undefined">
@@ -238,7 +239,7 @@
                                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
                                     <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                                     <td>{{$sponser->sponser_id ?? '-'}}</td>
-                                    <td>{{number_format($sponser->salary->amount, 2)}}</td>
+                                    <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -260,7 +261,7 @@
                                     <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
                                     <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
                                     <td>{{$spp->sponser_id ?? '-'}}</td>
-                                    <td>{{number_format($spp->salary->amount, 2)}}</td>
+                                    <td>{{number_format(($spp->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                                     <td>
                                         <a href="{{route('admin.agent.edit', [$spp->member_id])}}">Adjust</a>
                                     </td>

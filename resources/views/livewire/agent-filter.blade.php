@@ -157,7 +157,7 @@
                     <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                     <td>{{number_format($ACCGBV, 2)}}</td>
                     <td>{{$user->sponser_id ?? '-'}}</td>
-                    <td>{{number_format($user->salary->amount, 2)}}</td>
+                    <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                     <td>
                         <a href="{{route('admin.agent.edit', [$user->member_id])}}">Adjust</a>
                     </td>
@@ -181,7 +181,7 @@
                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
                     <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                     <td>{{$sponser->sponser_id ?? '-'}}</td>
-                    <td>{{number_format($sponser->salary->amount, 2)}}</td>
+                    <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                     <td>
                         <a href="{{route('admin.agent.edit', [$sponser->member_id])}}">Adjust</a>
                     </td>

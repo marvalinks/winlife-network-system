@@ -34,6 +34,14 @@ class Agent extends Model
     {
         return $this->hasMany(Agent::class, 'sponser_id', 'member_id');
     }
+    public function bonuses()
+    {
+        return $this->hasMany(Bonus::class, 'member_id', 'member_id');
+    }
+    public function currentbonus($date)
+    {
+        return $this->bonuses->where('period', $date)->first();
+    }
     public function childrenSponsers()
     {
         return $this->hasMany(Agent::class, 'sponser_id', 'member_id')->with('sponsers');
