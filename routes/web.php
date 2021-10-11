@@ -28,6 +28,7 @@ Route::post('register', [PagesController::class, 'postRegister'])->name('registe
 Route::prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('bonus/{id?}', [BonusController::class, 'calculateBonus'])->name('admin.calculate.bonus');
+    Route::get('pdf', [BonusController::class, 'printPDF'])->name('bonus.pdf');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');

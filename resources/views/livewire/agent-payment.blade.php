@@ -214,8 +214,14 @@
             </div>
         </div>
         @endfor
+        <form id="po" action="{{route('bonus.pdf')}}" method="get">
+            @csrf
+            <input type="hidden" name="sponser" value="{{json_encode($sponser)}}">
+            <input type="hidden" name="firstPreview" value="{{json_encode($firstPreview)}}">
+            <input type="hidden" name="secondPreview" value="{{json_encode($secondPreview)}}">
+        </form>
         <div class="row-fluid" style="padding: 20px;">
-            <button class="btn green">Print Receipt</button>
+            <button onclick="document.getElementById('po').submit();" class="btn green">Print Receipt</button>
             <button class="btn green">Pay Agents</button>
         </div>
     </div>

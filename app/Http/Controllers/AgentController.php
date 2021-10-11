@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Http\Request;
+use PDF;
 
 class AgentController extends Controller
 {
@@ -141,6 +144,8 @@ class AgentController extends Controller
     }
     public function makePayment(Request $request, $id)
     {
+        return SnappyPdf::loadFile('http://www.github.com')->inline('github.pdf');
+
         $sponser = Agent::where('member_id', $id)->first();
         $sponsers =  Agent::with(['childrenSponsers'])->where('sponser_id', $id)->get();
         $combPeriodToday = $this->combPeriodToday;

@@ -6,7 +6,9 @@ use App\Models\Agent;
 use App\Models\Bonus;
 use App\Models\Payment;
 use App\Models\Salary;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Http\Request;
+use Knp\Snappy\Pdf;
 
 class BonusController extends Controller
 {
@@ -23,6 +25,35 @@ class BonusController extends Controller
         $this->combPeriodPrevious = sprintf("%02d", (date('m') - 1));
         $this->accgbv = floatval(0);
         $this->loopcount = 0;
+    }
+
+    public function printPDF(Request $request)
+    {
+        // ddd($request->all());
+        $sponser = json_decode($request->sponser);
+        $first = collect(json_decode($request->firstPreview))->pluck('member_id')->toArray();
+        $second = collect(json_decode($request->secondPreview))->pluck('member_id')->toArray();
+        // ddd($first);
+        $firstPreview = Agent::whereIn('member_id', $first)->get();
+        $secondPreview = Agent::whereIn('member_id', $second)->get();
+        // ddd($firstPreview);
+        // $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
+        //     'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview
+        // ]);
+        return SnappyPdf::loadFile('http://www.github.com')->inline('github.pdf');
+        $html = '<h1>Bill</h1><p>You owe me money, dude.</p>';
+        $pdf = SnappyPdf::loadHTML($html);
+        $orientation = 'portrait';
+        $paper = 'A4';
+        $pdf->setOrientation($orientation)
+        ->setOption('page-size', $paper)
+        ->setOption('margin-bottom', '0mm')
+        ->setOption('margin-top', '8.7mm')
+        ->setOption('margin-right', '0mm')
+        ->setOption('margin-left', '0mm')
+        ->setTimeout(120);
+        return $pdf->inline();
+        // return view('pages.pdfs.payment', compact('sponser', 'firstPreview', 'secondPreview'));
     }
 
     public function calculateBonus(Request $request, $userid = null)
