@@ -41,22 +41,31 @@ class AgentController extends Controller
         $data = $request->validate([
             'member_id' => 'required|unique:agents',
             'firstname' => 'required', 'lastname' => 'required',
-            'telephone' => 'required', 'address' => 'required'
+            'telephone' => 'required', 'address' => 'required',
+            'period' => 'required'
         ]);
-        $data['period'] = date('Y').date('m').date('d');
+        // $data['period'] = date('Y').date('m').date('d');
         $data['sponser_id'] = $request->sponser_id ?? null;
         $agent = Agent::create($data);
-        // $stats = AgentStatistics::where('agent_id', $agent->member_id)->first();
-        // if($stats) {
-        //     $request->session()->flash('alert-warning', 'Agent statistics already exists!');
-        //     return back();
-        // }
-
         $request->session()->flash('alert-success', 'Agent successfully added!');
         return back();
 
     }
 
+    public function update(Request $request, $id)
+    {
+        
+        $agent = Agent::where('member_id', $id)->first();
+        $data = $request->validate([
+            'firstname' => 'required', 'lastname' => 'required',
+            'telephone' => 'required', 'address' => 'required',
+            'period' => 'required'
+        ]);
+        $data['sponser_id'] = $request->sponser_id ?? null;
+        $agent = $agent->update($data);
+        $request->session()->flash('alert-success', 'Agent successfully updated!');
+        return back();
+    }
     public function edit(Request $request, $id)
     {
         $sponser = Agent::where('member_id', $id)->first();

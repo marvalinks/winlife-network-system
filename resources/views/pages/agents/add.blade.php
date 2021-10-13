@@ -25,7 +25,7 @@
                 </div>
                 <div class="widget-body form">
                     <!-- BEGIN FORM-->
-                    <form method="POST" class="row-fluid" action="{{route('admin.agent.add')}}" class="form-horizontal">
+                    <form method="POST" class="row-fluid" action="{{route('admin.agent.edit')}}" class="form-horizontal">
                         @csrf
                         <div class="span4 ml0">
                             <div class="form-group">
@@ -55,6 +55,12 @@
                             <div class="form-group">
                                 <label class="control-label">Address</label>
                                 <input name="address" required type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="span4 ml0">
+                            <div class="form-group">
+                                <label class="control-label">Period</label>
+                                <input name="period" value="{{date('Y').date('m').date('d')}}" required type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">

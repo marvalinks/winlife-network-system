@@ -15,7 +15,7 @@ class AgentFilter extends Component
 
     public $sponsers;
     public $user;
-    public $memberid = "202109071234";
+    public $memberid = "";
     public $showtable = false;
     public $excelfile;
     public $excelLoading = false;
@@ -42,6 +42,8 @@ class AgentFilter extends Component
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
+        $this->memberid = Agent::first()->member_id ?? '';
+        $this->fixSponsers();
     }
 
     public $showReg = false;
@@ -75,6 +77,7 @@ class AgentFilter extends Component
         ]);
         try {
             Excel::import(new AgentImport(), $this->excelfile);
+            $this->fixSponsers();
         } catch (\Throwable $th) {
             return back()->withError('There was a problem with your excel file.');
         }
@@ -82,7 +85,7 @@ class AgentFilter extends Component
         $this->excelfile = null;
         $this->excelLoadingSuccess = true;
         $this->excelLoading = false;
-        // $this->fixSponsers();
+        $this->fixSponsers();
     }
     public function uploadAchievement()
     {
@@ -93,6 +96,7 @@ class AgentFilter extends Component
         ]);
         try {
             Excel::import(new ArchievementImport(), $this->achfile);
+            $this->fixSponsers();
         } catch (\Throwable $th) {
             return back()->withError('There was a problem with your excel file.');
         }
@@ -100,13 +104,14 @@ class AgentFilter extends Component
         $this->achfile = null;
         $this->excelLoadingSuccess = true;
         $this->excelLoading = false;
+        $this->fixSponsers();
 
     }
     public function fixSponsers()
     {
         $dels = Agent::where('member_id', '')->orWhereNull('member_id')->get();
         $stats = AgentStatistics::where('agent_id', '')->orWhereNull('agent_id')->get();
-
+        $us = Agent::first();
         foreach ($dels as $key => $del) {
             $del->delete();
         }
@@ -114,30 +119,27 @@ class AgentFilter extends Component
             $del->delete();
         }
         $agents = Agent::with(['sponsers'])->latest()->get();
-        // ddd($agents);
-        foreach ($agents as $key => $agent) {
-            if($agent->member_id != "202109071234") {
-                if(!$agent->sponser) {
-                    $agent->sponser_id = "202109071234";
-                    $agent->save();
-                    $agent->stats->sponser_id = "202109071234";
-                    $agent->stats->save();
+        if($us) {
+            foreach ($agents as $key => $agent) {
+                if($agent->member_id != $us->member_id) {
+                    if(!$agent->sponser) {
+                        $agent->sponser_id = $us->member_id;
+                        $agent->save();
+                        $agent->stats->sponser_id = $us->member_id;
+                        $agent->stats->save();
+                    }
                 }
             }
         }
+        
     }
     public function search()
     {
-        // $this->fixSponsers();
-        // ddd($this->combPeriod);
         $id = $this->memberid;
         $this->combPeriod = $this->selectedYear.''. $this->selectedMonth;
-        // ddd($this->combPeriod);
         $agents =  Agent::with(['childrenSponsers'])->where('sponser_id', $id)->get();
         $user =  Agent::with(['grandchildren','childrenSponsers', 'archievements', 'sponsers'])->where('member_id', $this->memberid)->first();
-        // ddd($this->memberid);
-        // ddd($user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0));
-
+        
         if($user) {
             $this->user = $user;
             $this->sponsers = $agents;

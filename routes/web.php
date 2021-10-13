@@ -38,6 +38,7 @@ Route::prefix('admin/agents')->group(function () {
     Route::get('add', [AgentController::class, 'add'])->name('admin.agent.add');
     Route::post('add', [AgentController::class, 'post'])->name('admin.agent.add');
     Route::get('edit/{id}', [AgentController::class, 'edit'])->name('admin.agent.edit');
+    Route::post('edit/{id}', [AgentController::class, 'update'])->name('admin.agent.edit');
     Route::post('adjust-pvb/{id}', [AgentController::class, 'adjustPvb'])->name('admin.agent.adjust.pvb');
     Route::get('make-payments/{id}', [AgentController::class, 'makePayment'])->name('admin.agent.payment');
 });

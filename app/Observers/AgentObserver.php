@@ -29,7 +29,9 @@ class AgentObserver
      */
     public function updated(Agent $agent)
     {
-        //
+        $agent->stats->agent_id = $agent->member_id;
+        $agent->stats->period = $agent->period;
+        $agent->stats->save();
     }
 
     /**

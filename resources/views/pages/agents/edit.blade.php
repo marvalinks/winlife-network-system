@@ -182,6 +182,12 @@
                         </div>
                         <div class="span4 ml0">
                             <div class="form-group">
+                                <label class="control-label">Period</label>
+                                <input name="period" value="{{$sponser->period}}" required type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="span4 ml0">
+                            <div class="form-group">
                                 <label class="control-label">Sponser</label>
                                 <input value="{{$sponser->sponser_id}}" disabled type="text" class="form-control">
 
