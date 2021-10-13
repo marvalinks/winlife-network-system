@@ -3,12 +3,21 @@
 <link rel="stylesheet" type="text/css" href="/backend/assets/chosen-bootstrap/chosen/chosen.css" />
 <style>
     .fm{
-        display: flex;
-        justify-content: space-evenly;
+        /* display: flex;
+        justify-content: space-evenly; */
+        padding-left: 21px;
     }
     .clearfix{
         padding-left: 15px;
         padding-top: 7px;
+    }
+    .rt56{
+        font-size: 13px;
+        text-decoration: underline;
+    }
+    .fm .control-group input,
+    .fm .control-group select{
+        width: 100%;
     }
 </style>
 @endsection

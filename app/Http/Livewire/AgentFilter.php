@@ -15,7 +15,7 @@ class AgentFilter extends Component
 
     public $sponsers;
     public $user;
-    public $memberid = "2021090712345";
+    public $memberid = "202109071234";
     public $showtable = false;
     public $excelfile;
     public $excelLoading = false;

@@ -25,7 +25,8 @@
     <div class="row-fluid">
         <div class="clearfix">
             <form action="" method="get">
-                <h4>Agent Registration</h4>
+                <h4>Agent Registration <span><a href="/formats/12R.xlsx" class="rt56">download format</a></span> </h4>
+
                 @if ($excelLoading)
                     <span style="display: block; color: green;" class="error">uploading excel, please wait...</span>
                 @endif
@@ -44,7 +45,7 @@
     <div class="row-fluid">
         <div class="clearfix">
             <form action="" method="get">
-                <h4>Agent Achivements</h4>
+                <h4>Agent Achivements  <span><a href="/formats/12A.xlsx" class="rt56">download format</a></span></h4>
                 @if ($excelLoading)
                     <span style="display: block; color: green;" class="error">uploading excel, please wait...</span>
                 @endif
@@ -61,13 +62,13 @@
     @endif
     <div class="row-fluid">
         <form wire:submit.prevent="search" class="fm" action="" method="get">
-            <div class="control-group">
+            <div class="control-group span3">
                 <label class="control-label">Member</label>
                 <div class="controls">
                     <input type="text" required wire:model="memberid">
                 </div>
             </div>
-            <div class="control-group">
+            <div class="control-group span3">
                 <label class="control-label">Year</label>
                 <div class="controls">
                     <select wire:model="selectedYear" required name="" id="">
@@ -77,7 +78,7 @@
                     </select>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="control-group span3">
                 <label class="control-label">Month</label>
                 <div class="controls">
                     <select wire:model="selectedMonth" required name="" id="">
@@ -88,22 +89,7 @@
                     </select>
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label">Dept</label>
-                <div class="controls">
-                    <input disabled type="number" min="5" value="5" max="100">
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Sort By</label>
-                <div class="controls">
-                    <select disabled name="" id="">
-                        <option selected value="">Layer</option>
-                        <option value="">Level</option>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
+            <div class="control-group span3">
                 <label class="control-label">.</label>
                 <button type="submit" class="btn">Search</button>
             </div>

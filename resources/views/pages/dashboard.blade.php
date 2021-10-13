@@ -6,20 +6,6 @@
     <!-- BEGIN PAGE HEADER-->
     <div class="row-fluid">
         <div class="span12">
-            <!-- BEGIN THEME CUSTOMIZER-->
-            <div id="theme-change" class="hidden-phone">
-                <i class="icon-cogs"></i>
-                <span class="settings">
-                    <span class="text">Theme:</span>
-                    <span class="colors">
-                        <span class="color-default" data-style="default"></span>
-                        <span class="color-gray" data-style="gray"></span>
-                        <span class="color-purple" data-style="purple"></span>
-                        <span class="color-navy-blue" data-style="navy-blue"></span>
-                    </span>
-                </span>
-            </div>
-            <!-- END THEME CUSTOMIZER-->
             <!-- BEGIN PAGE TITLE & BREADCRUMB-->
             <h3 class="page-title">
                 Dashboard
@@ -29,7 +15,7 @@
                 <li>
                     <a href="index.html#"><i class="icon-home"></i></a><span class="divider">&nbsp;</span>
                 </li>
-                <li><a href="index.html#">Admin Lab</a> <span class="divider">&nbsp;</span></li>
+                <li><a href="index.html#">{{env('APP_NAME')}}</a> <span class="divider">&nbsp;</span></li>
                 <li><a href="index.html#">Dashboard</a><span class="divider-last">&nbsp;</span></li>
                 <li class="pull-right search-wrap">
                     <form class="hidden-phone" action="search_result.html">
