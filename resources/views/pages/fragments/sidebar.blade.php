@@ -38,6 +38,14 @@
                 <span>Agent Managment</span>
             </a>
         </li>
+        @if (auth()->user()->roleid == 1)
+        <li>
+            <a class="" href="{{route('admin.awards')}}">
+                <span class="icon-box"><i class="icon-money"></i></span>
+                <span>Awards</span>
+            </a>
+        </li>
+        @endif
     </ul>
     <!-- END SIDEBAR MENU -->
 </div>

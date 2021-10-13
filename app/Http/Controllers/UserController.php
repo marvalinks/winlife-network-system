@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -34,5 +35,14 @@ class UserController extends Controller
         User::create($data);
         $request->session()->flash('alert-success', 'User successfully added!');
         return back();
+    }
+    public function logout(Request $request)
+    {
+        // Auth::guard('web')->logout();
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login');
     }
 }

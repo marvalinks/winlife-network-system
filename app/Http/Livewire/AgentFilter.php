@@ -73,7 +73,12 @@ class AgentFilter extends Component
         $this->validate([
             'excelfile' => 'required|mimes:xlsx,csv,xls',
         ]);
-        Excel::import(new AgentImport(), $this->excelfile);
+        try {
+            Excel::import(new AgentImport(), $this->excelfile);
+        } catch (\Throwable $th) {
+            return back()->withError('There was a problem with your excel file.');
+        }
+
         $this->excelfile = null;
         $this->excelLoadingSuccess = true;
         $this->excelLoading = false;
@@ -86,7 +91,12 @@ class AgentFilter extends Component
         $this->validate([
             'achfile' => 'required|mimes:xlsx,csv,xls',
         ]);
-        Excel::import(new ArchievementImport(), $this->achfile);
+        try {
+            Excel::import(new ArchievementImport(), $this->achfile);
+        } catch (\Throwable $th) {
+            return back()->withError('There was a problem with your excel file.');
+        }
+
         $this->achfile = null;
         $this->excelLoadingSuccess = true;
         $this->excelLoading = false;
@@ -106,11 +116,11 @@ class AgentFilter extends Component
         $agents = Agent::with(['sponsers'])->latest()->get();
         // ddd($agents);
         foreach ($agents as $key => $agent) {
-            if($agent->member_id != "2021090712345") {
+            if($agent->member_id != "202109071234") {
                 if(!$agent->sponser) {
-                    $agent->sponser_id = "2021090712345";
+                    $agent->sponser_id = "202109071234";
                     $agent->save();
-                    $agent->stats->sponser_id = "2021090712345";
+                    $agent->stats->sponser_id = "202109071234";
                     $agent->stats->save();
                 }
             }

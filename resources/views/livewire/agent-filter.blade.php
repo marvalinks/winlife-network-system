@@ -11,7 +11,7 @@
                 <a href="{{route('admin.calculate.bonus')}}" class="btn green">Calculate Bonus <i class="icon-plus"></i></a>
                 <button class="btn dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i></button>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="#">Print</a></li>
+                    <li><a href="" wire:click.prevent="fixSponsers()">Fix Sponsers</a></li>
                     <li><a href="#">Save as PDF</a></li>
                     <li><a href="#">Export to Excel</a></li>
                 </ul>
@@ -129,6 +129,9 @@
                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCGBV</th>
                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
+                    @if (auth()->user()->roleid == 1)
+                        <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
+                    @endif
                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                 </tr>
@@ -140,6 +143,7 @@
                     $lv = 1;
                     $lvi = 1;
                     $lvf = 2;
+                    $dsd = 1;
                 @endphp
                 <tr class="gradeX even">
                     <td class="sorting_1">
@@ -158,6 +162,11 @@
                     <td>{{number_format($ACCGBV, 2)}}</td>
                     <td>{{$user->sponser_id ?? '-'}}</td>
                     <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                    @if (auth()->user()->roleid == 1)
+                        <td>
+                            <input type="checkbox" disabled {{($user->currentbonus($combPeriod) && $user->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                        </td>
+                    @endif
                     <td>
                         <a href="{{route('admin.agent.edit', [$user->member_id])}}">Adjust</a>
                     </td>
@@ -182,6 +191,11 @@
                     <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                     <td>{{$sponser->sponser_id ?? '-'}}</td>
                     <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                    @if (auth()->user()->roleid == 1)
+                        <td>
+                            <input type="checkbox" disabled {{($sponser->currentbonus($combPeriod) && $sponser->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                        </td>
+                    @endif
                     <td>
                         <a href="{{route('admin.agent.edit', [$sponser->member_id])}}">Adjust</a>
                     </td>

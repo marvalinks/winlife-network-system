@@ -42,6 +42,10 @@ class Agent extends Model
     {
         return $this->bonuses->where('period', $date)->first();
     }
+    public function currentach($date)
+    {
+        return $this->archievements->where('period', $date);
+    }
     public function childrenSponsers()
     {
         return $this->hasMany(Agent::class, 'sponser_id', 'member_id')->with('sponsers');

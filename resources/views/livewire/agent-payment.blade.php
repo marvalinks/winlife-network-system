@@ -19,7 +19,7 @@
                     <button wire:click.prevent="preview"
                         onclick="confirm('Are you sure ?') || event.stopImmediatePropagation()"
                         class="btn green">
-                        Pay Agents <i class="icon-plus"></i>
+                        Preview Receipt <i class="icon-plus"></i>
                     </button>
                     @endif
                 </div>
@@ -51,6 +51,9 @@
                             <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCGBV</th>
                             <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
                             <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
+                            @if (auth()->user()->roleid == 1)
+                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
+                            @endif
                             <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                             <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                         </tr>
@@ -80,8 +83,14 @@
                             <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                             <td>{{$sponser->sponser_id ?? '-'}}</td>
                             <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                            @if (auth()->user()->roleid == 1)
+                                <td>
+                                    <input type="checkbox" disabled {{($sponser->currentbonus($combPeriod) && $sponser->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                                </td>
+                            @endif
                             <td></td>
                             <td></td>
+
                         </tr>
 
                         @foreach ($sponsers as $key => $spp)
@@ -102,6 +111,11 @@
                             <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
                             <td>{{$spp->sponser_id ?? '-'}}</td>
                             <td>{{number_format(($spp->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                            @if (auth()->user()->roleid == 1)
+                                <td>
+                                    <input type="checkbox" disabled {{($spp->currentbonus($combPeriod) && $spp->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                                </td>
+                            @endif
                             <td>
                                 <a href="{{route('admin.agent.edit', [$spp->member_id])}}">Adjust</a>
                             </td>
@@ -124,6 +138,11 @@
 
             </div>
         </div>
+        @if ($showData)
+        @php
+            $sumMoney = 0.0;
+            $sumbv = 0.0;
+        @endphp
         @for ($i=1; $i < 3; $i++)
         <hr>
         <div class="row-fluid w94 u90">
@@ -185,6 +204,12 @@
                                 <td>{{$user->member_id}}</td>
                                 <td>{{$user->fistname.' '.$user->lastname}}</td>
                                 <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                                @php
+                                    if($i < 2) {
+                                        $sumMoney += $user->currentbonus($combPeriod)->amount;
+                                        $sumbv += $user->currentach($combPeriod)->sum('total_pv');
+                                    }
+                                @endphp
                             </tr>
                             @endforeach
 
@@ -206,10 +231,25 @@
                                 <td>{{$user->member_id}}</td>
                                 <td>{{$user->fistname.' '.$user->lastname}}</td>
                                 <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                                @php
+                                    if($i < 2) {
+                                        $sumMoney += $user->currentbonus($combPeriod)->amount;
+                                        $sumbv += $user->currentach($combPeriod)->sum('total_pv');
+                                    }
+                                @endphp
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"></div>
+                <div class="span4">
+                    <h6>Total BV: <span>{{number_format(floatval($sumbv), 1)}}</span></h6>
+                </div>
+                <div class="span4">
+                    <h6>In GHC: <span>{{number_format(floatval($sumMoney), 2)}}</span></h6>
                 </div>
             </div>
         </div>
@@ -220,9 +260,16 @@
             <input type="hidden" name="firstPreview" value="{{json_encode($firstPreview)}}">
             <input type="hidden" name="secondPreview" value="{{json_encode($secondPreview)}}">
         </form>
+        <form id="po2" action="{{route('bonus.mark.payment')}}" method="post">
+            @csrf
+            <input type="hidden" name="sponser" value="{{json_encode($sponser)}}">
+            <input type="hidden" name="firstPreview" value="{{json_encode($firstPreview)}}">
+            <input type="hidden" name="secondPreview" value="{{json_encode($secondPreview)}}">
+        </form>
         <div class="row-fluid" style="padding: 20px;">
             <button onclick="document.getElementById('po').submit();" class="btn green">Print Receipt</button>
-            <button class="btn green">Pay Agents</button>
+            <button onclick="confirm('Are you sure ?') || event.stopImmediatePropagation();document.getElementById('po2').submit();" class="btn green">Mark Payment</button>
         </div>
+        @endif
     </div>
 </div>

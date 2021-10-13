@@ -14,6 +14,7 @@ class AgentPayment extends Component
     public $bulkDisabled = true;
     public $firstPreview;
     public $secondPreview;
+    public $showData = false;
 
     public function mount($sponser, $sponsers)
     {
@@ -53,6 +54,7 @@ class AgentPayment extends Component
         }
         $this->firstPreview = Agent::whereIn('member_id', $fs)->get();
         $this->secondPreview = Agent::whereIn('member_id', $ss)->get();
+        $this->showData = true;
         // ddd($this->firstPreview, $this->secondPreview);
     }
     public function render()
