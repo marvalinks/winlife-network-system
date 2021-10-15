@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Agent;
 use App\Models\Bonus;
+use App\Models\Salary;
 
 class BonusService
 {
@@ -23,7 +24,8 @@ class BonusService
     public function calculateBonus($period)
     {
         $users = Agent::latest()->get();
-
+        Bonus::where('period', $period)->truncate();
+        Salary::where('period', $period)->truncate();
         foreach ($users as $key => $user) {
             $this->loopcount = 0;
             if($user->level > 2){
@@ -51,6 +53,8 @@ class BonusService
 
     protected function doBonus($user, $key)
     {
+
+
         $accgbv = $this->accgbv;
         $firstsplit = floatval(0);
         $secondsplit = floatval(0);
@@ -116,9 +120,6 @@ class BonusService
             $third_percent = 0;
         }
 
-
-
-
         if(floatval($accgbv) >= floatval(150)){
             $firstsplit = floatval(150);
             $amount += ($first_percent * 150);
@@ -134,44 +135,60 @@ class BonusService
             }
         }
 
-        // if($key == 1) {
-        //     ddd($accgbv, $user, $amount);
-        // }
+        // $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
+        $salary = Salary::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
 
-
-
-
-
-        $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
-        if($key == 0) {
-            if($bonus){
-                $bonus->delete();
-            }
-            $bn = Bonus::create([
+        if(!$salary){
+            $bn = Salary::create([
                 'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
-                'amount' => $amount
+                'amount' => $amount, 'level' => $key
             ]);
         }else{
-            if(!$bonus){
-                $bn = Bonus::create([
-                    'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
-                    'amount' => $amount
-                ]);
-            }else{
-                if($key > 11) {
-                    if($user->level > 2) {
-                        $bonus->period = $this->combPeriodToday;
-                        $bonus->amount = $bonus->amount + $amount;
-                        $bonus->save();
-                    }
-                }else{
-                    $bonus->period = $this->combPeriodToday;
-                    $bonus->amount = $bonus->amount + $amount;
-                    $bonus->save();
+            if($key > 11) {
+                if($user->level > 2) {
+                    $salary->period = $this->combPeriodToday;
+                    $salary->amount = $salary->amount + $amount;
+                    $salary->save();
                 }
+            }else{
+                $salary->period = $this->combPeriodToday;
+                $salary->amount = $salary->amount + $amount;
+                $salary->save();
             }
-
         }
+
+        // if($key == 0) {
+        //     if($bonus){
+        //         // $bonus->delete();
+        //         $bonus->period = $this->combPeriodToday;
+        //             $bonus->amount = $bonus->amount + $amount;
+        //             $bonus->save();
+        //     }
+        //     $bn = Bonus::create([
+        //         'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
+        //         'amount' => $amount
+        //     ]);
+        // }else{
+        //     if(!$bonus){
+        //         $bn = Bonus::create([
+        //             'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
+        //             'amount' => $amount
+        //         ]);
+        //     }else{
+        //         if($key > 11) {
+        //             if($user->level > 2) {
+        //                 $bonus->period = $this->combPeriodToday;
+        //                 $bonus->amount = $bonus->amount + $amount;
+        //                 $bonus->save();
+        //             }
+        //         }else{
+        //             $bonus->period = $this->combPeriodToday;
+        //             $bonus->amount = $bonus->amount + $amount;
+        //             $bonus->save();
+        //         }
+        //     }
+
+        // }
         // if(!$bonus){
         //     $bn = Bonus::create([
         //         'member_id' => $user->member_id, 'period' => $this->combPeriodToday,

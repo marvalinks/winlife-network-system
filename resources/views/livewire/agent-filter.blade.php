@@ -259,10 +259,10 @@
                     <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td>
                     <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
                     <td>{{$user->sponser_id ?? '-'}}</td>
-                    <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                    <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                     @if (auth()->user()->roleid == 1)
                         <td>
-                            <input type="checkbox" disabled {{($user->currentbonus($combPeriod) && $user->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                            <input type="checkbox" disabled {{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
                         </td>
                     @endif
                     <td>
@@ -289,10 +289,10 @@
                     <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td>
                     <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                     <td>{{$sponser->sponser_id ?? '-'}}</td>
-                    <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                    <td>{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                     @if (auth()->user()->roleid == 1)
                         <td>
-                            <input type="checkbox" disabled {{($sponser->currentbonus($combPeriod) && $sponser->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                            <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
                         </td>
                     @endif
                     <td>

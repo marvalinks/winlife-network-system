@@ -24,8 +24,8 @@ class AchivementObserver
         $lvs = new LevelService($achivement->period);
         $lvs->ABP();
 
-        $bns = new BonusService();
-        $bns->calculateBonus($achivement->period);
+        // $bns = new BonusService();
+        // $bns->calculateBonus($achivement->period);
         // ddd();
 
     }

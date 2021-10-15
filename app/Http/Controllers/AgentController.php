@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\BonusService;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
@@ -24,6 +25,18 @@ class AgentController extends Controller
         $this->currentGBV = floatval(0);
         $this->ACCGBV = floatval(0);
         $this->ABP();
+        $this->start();
+    }
+
+    protected function start()
+    {
+        $acs = Achivement::distinct('period')->pluck('period');
+        $bns = new BonusService();
+        if(count($acs) > 0) {
+            foreach ($acs as $key => $ac) {
+                $bns->calculateBonus($ac);
+            }
+        }
     }
 
     public function index(Request $request)

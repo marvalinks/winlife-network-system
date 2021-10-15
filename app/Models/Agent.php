@@ -42,6 +42,14 @@ class Agent extends Model
     {
         return $this->bonuses->where('period', $date)->first();
     }
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class, 'member_id', 'member_id');
+    }
+    public function currentsalary($date)
+    {
+        return $this->salaries->where('period', $date)->first();
+    }
     public function currentach($date)
     {
         return $this->archievements->where('period', $date);
