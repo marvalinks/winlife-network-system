@@ -62,6 +62,8 @@ class BonusService
         $second_percent = 0;
         $third_percent = 0;
 
+
+
         if($key > 6 || $key < 11) {
             $first_percent = 0;
             $second_percent = 0.02;
@@ -115,6 +117,8 @@ class BonusService
         }
 
 
+
+
         if(floatval($accgbv) >= floatval(150)){
             $firstsplit = floatval(150);
             $amount += ($first_percent * 150);
@@ -130,27 +134,62 @@ class BonusService
             }
         }
 
+        // if($key == 1) {
+        //     ddd($accgbv, $user, $amount);
+        // }
+
+
+
+
 
         $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
-
-        if(!$bonus){
-            Bonus::create([
+        if($key == 0) {
+            if($bonus){
+                $bonus->delete();
+            }
+            $bn = Bonus::create([
                 'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
                 'amount' => $amount
             ]);
         }else{
-            if($key > 11) {
-                if($user->level > 2) {
+            if(!$bonus){
+                $bn = Bonus::create([
+                    'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
+                    'amount' => $amount
+                ]);
+            }else{
+                if($key > 11) {
+                    if($user->level > 2) {
+                        $bonus->period = $this->combPeriodToday;
+                        $bonus->amount = $bonus->amount + $amount;
+                        $bonus->save();
+                    }
+                }else{
                     $bonus->period = $this->combPeriodToday;
                     $bonus->amount = $bonus->amount + $amount;
                     $bonus->save();
                 }
-            }else{
-                $bonus->period = $this->combPeriodToday;
-                $bonus->amount = $bonus->amount + $amount;
-                $bonus->save();
             }
+
         }
+        // if(!$bonus){
+        //     $bn = Bonus::create([
+        //         'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
+        //         'amount' => $amount
+        //     ]);
+        // }else{
+        //     if($key > 11) {
+        //         if($user->level > 2) {
+        //             $bonus->period = $this->combPeriodToday;
+        //             $bonus->amount = $bonus->amount + $amount;
+        //             $bonus->save();
+        //         }
+        //     }else{
+        //         $bonus->period = $this->combPeriodToday;
+        //         $bonus->amount = $bonus->amount + $amount;
+        //         $bonus->save();
+        //     }
+        // }
     }
 
 

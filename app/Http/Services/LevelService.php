@@ -76,6 +76,7 @@ class LevelService
         $this->ACCGBV = floatval(0);
         $users = Agent::latest()->get();
         foreach ($users as $key => $user) {
+
             $stats = AgentStatistics::where('agent_id', $user->member_id)->first();
             $achTotal = floatval($user->currentach($this->combPeriodToday)->sum('total_pv'));
             $achTotal2 = $user->archievements->sum('total_pv');
