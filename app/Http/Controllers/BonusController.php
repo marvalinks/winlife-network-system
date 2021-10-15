@@ -96,12 +96,12 @@ class BonusController extends Controller
             }
         }else{
             $users = Agent::latest()->get();
-            Bonus::truncate();
+            // Bonus::truncate();
 
             foreach ($users as $key => $user) {
                 $this->loopcount = 0;
                 if($user->level > 2){
-                    $this->accgbv = floatval($user->stats->current_pbv);
+                    $this->accgbv = floatval($user->stats->acc_pvb);
                     $this->doBonus($user, 0);
                     $this->loopcount++;
                     $this->reloop($user);
@@ -218,9 +218,11 @@ class BonusController extends Controller
             }
         }
 
+        // if($user->member_id == "202110141234") {
+        //     ddd($user);
+        // }
 
         $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
-
         if(!$bonus){
             Bonus::create([
                 'member_id' => $user->member_id, 'period' => $this->combPeriodToday,

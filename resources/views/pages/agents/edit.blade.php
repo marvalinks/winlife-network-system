@@ -78,6 +78,9 @@
                                 <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCGBV</th>
                                 <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
                                 <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
+                                @if (auth()->user()->roleid == 1)
+                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
+                                @endif
                                 <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                 <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                             </tr>
@@ -102,6 +105,11 @@
                                 <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                                 <td>{{$sponser->sponser_id ?? '-'}}</td>
                                 <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                                @if (auth()->user()->roleid == 1)
+                                    <td>
+                                        <input type="checkbox" disabled {{($sponser->currentbonus($combPeriod) && $sponser->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                                    </td>
+                                @endif
                                 <td></td>
                                 <td></td>
                             </tr>
@@ -124,6 +132,11 @@
                                 <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
                                 <td>{{$spp->sponser_id ?? '-'}}</td>
                                 <td>{{number_format(($spp->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                                @if (auth()->user()->roleid == 1)
+                                    <td>
+                                        <input type="checkbox" disabled {{($spp->currentbonus($combPeriod) && $spp->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                                    </td>
+                                @endif
                                 <td>
                                     <a href="{{route('admin.agent.edit', [$spp->member_id])}}">Adjust</a>
                                 </td>

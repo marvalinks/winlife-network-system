@@ -25,7 +25,7 @@
                 </div>
                 <div class="widget-body form">
                     <!-- BEGIN FORM-->
-                    <form method="POST" class="row-fluid" action="{{route('admin.agent.edit')}}" class="form-horizontal">
+                    <form method="POST" class="row-fluid" action="{{route('admin.agent.add')}}" class="form-horizontal">
                         @csrf
                         <div class="span4 ml0">
                             <div class="form-group">

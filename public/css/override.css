@@ -31,6 +31,12 @@ input[type=file]{
     width: 94%;
     margin: auto;
 }
+.tred{
+    color: red!important;
+}
+.tyellow{
+    color: #cfae0c!important;
+}
 @media (min-width: 980px) {
     #sidebar ul {
         margin-top: 0px;

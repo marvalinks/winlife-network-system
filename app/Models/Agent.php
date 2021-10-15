@@ -58,6 +58,10 @@ class Agent extends Model
     {
         return $this->childrenSponsers->count();
     }
+    public function getNameAttribute($value)
+    {
+        return $this->firstname.' '. $this->lastname;
+    }
 
     public $combPeriod;
     public $currentGBV = 0.0;
@@ -67,47 +71,45 @@ class Agent extends Model
     {
         $this->currentGBV = 0.0;
         $this->ACCGBV = 0.0;
-        // ddd($this->ACCGBV);
+        // ddd($combPeriod);
         $id = $this->member_id;
         $this->combPeriod = $combPeriod;
-        $agents =  Agent::with(['childrenSponsers'])->where('sponser_id', $id)->get();
-        $user =  Agent::with(['grandchildren','childrenSponsers', 'archievements', 'sponsers'])->where('member_id', $id)->first();
+        $agents =  Agent::where('sponser_id', $id)->get();
+        $user =  Agent::where('member_id', $id)->first();
 
         $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
         $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
         foreach ($agents as $key => $sponser) {
 
-            //level 1
             $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
             $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
             foreach ($sponser->childrenSponsers as $k => $child_sponser) {
-                //level2
                 $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
                 $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
                 $this->reloop($child_sponser);
             }
         }
-        // ddd($this->ACCGBV);
         return $this->currentGBV;
 
     }
     public function accgbv($combPeriod)
     {
+        $this->currentGBV = 0.0;
+        $this->ACCGBV = 0.0;
+
         $id = $this->member_id;
         $this->combPeriod = $combPeriod;
-        $agents =  Agent::with(['childrenSponsers'])->where('sponser_id', $id)->get();
-        $user =  Agent::with(['grandchildren','childrenSponsers', 'archievements', 'sponsers'])->where('member_id', $id)->first();
+        $agents =  Agent::where('sponser_id', $id)->get();
+        $user =  Agent::where('member_id', $id)->first();
         $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
         $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
         foreach ($agents as $key => $sponser) {
 
-            //level 1
             $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
             $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
             foreach ($sponser->childrenSponsers as $k => $child_sponser) {
-                //level2
                 $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
                 $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
                 $this->reloop($child_sponser);

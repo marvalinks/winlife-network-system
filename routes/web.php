@@ -4,9 +4,11 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Models\Agent;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +34,7 @@ Route::prefix('admin')->group(function () {
     Route::get('bonus/{id?}', [BonusController::class, 'calculateBonus'])->name('admin.calculate.bonus');
     Route::get('pdf', [BonusController::class, 'printPDF'])->name('bonus.pdf');
     Route::post('mark-payment', [BonusController::class, 'markPayment'])->name('bonus.mark.payment');
+    // Route::get('ABP', [Agent::class, 'ABP'])->name('ABP');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');
@@ -41,6 +44,10 @@ Route::prefix('admin/agents')->group(function () {
     Route::post('edit/{id}', [AgentController::class, 'update'])->name('admin.agent.edit');
     Route::post('adjust-pvb/{id}', [AgentController::class, 'adjustPvb'])->name('admin.agent.adjust.pvb');
     Route::get('make-payments/{id}', [AgentController::class, 'makePayment'])->name('admin.agent.payment');
+    Route::get('export-r', [ExportController::class, 'exportAR'])->name('admin.agent.export.ar');
+    Route::get('export-a', [ExportController::class, 'exportAA'])->name('admin.agent.export.aa');
+    Route::post('upload-export-r', [ExportController::class, 'uploadExportR'])->name('admin.agent.upload.export.r');
+    Route::post('upload-export-a', [ExportController::class, 'uploadExportA'])->name('admin.agent.upload.export.a');
 });
 Route::prefix('admin/users')->group(function () {
     Route::get('', [UserController::class, 'index'])->name('admin.users');
