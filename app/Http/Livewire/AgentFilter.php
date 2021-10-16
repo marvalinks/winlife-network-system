@@ -82,13 +82,15 @@ class AgentFilter extends Component
     }
     public function uploadExcel()
     {
+        // ddd('PP');
         TemporalAgent::truncate();
         $this->showagent56 = false;
         $this->excelLoadingSuccess = false;
         $this->showTemporalTable = false;
         $this->excelLoading = true;
         $this->validate([
-            'excelfile' => 'required|mimes:xlsx,csv,xls',
+            'excelfile' => 'required',
+            // 'excelfile' => 'requiredz|mimes:xlsx,csv,xls',
         ]);
         try {
             Excel::import(new AgentTempImport(), $this->excelfile);

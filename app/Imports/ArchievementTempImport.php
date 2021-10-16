@@ -15,8 +15,9 @@ class ArchievementTempImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
+        // ddd($row);
         return new TemporalAchivement([
-            'member_id' => strval($row['member_id']),
+            'member_id' => strval($row['distributor_no']),
             'name' => $row['names'] ?? null,
             'period' => $row['period'],
             'total_pv' => $row['total_pv'] ?? floatval(0),

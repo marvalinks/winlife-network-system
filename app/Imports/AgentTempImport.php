@@ -17,18 +17,18 @@ class AgentTempImport implements ToModel, WithHeadingRow
     {
         // ddd($row);
         return new TemporalAgent([
-            'member_id' => strval($row['memberid']),
+            'member_id' => strval($row['distribution_no']),
             'firstname' => $row['firstname'],
             'lastname' => $row['lastname'],
             'telephone' => $row['phone'],
             'address' => $row['address'],
-            'period' => strval($row['period']),
-            'sponser_id' => strval($row['sponsorid']),
+            'period' => strval($row['join_date']),
+            'sponser_id' => strval($row['sponsor_no']),
             'nationality' => $row['nationality'],
-            'bank_name' => $row['bankname'] ?? 'null',
-            'bank_no' => strval($row['bankno']) ?? null,
-            'momo_name' => $row['momoname'] ?? null,
-            'momo_no' => strval($row['momono']) ?? null,
+            'bank_name' => $row['bank_name'] ?? 'null',
+            'bank_no' => strval($row['bank_account']) ?? null,
+            // 'momo_name' => $row['momoname'] ?? null,
+            // 'momo_no' => strval($row['momono']) ?? null,
         ]);
     }
 }

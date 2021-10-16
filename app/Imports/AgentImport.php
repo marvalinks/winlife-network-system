@@ -16,6 +16,7 @@ class AgentImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
+
         // $user = $this->users->where('member_id', strval($row['memberid']))->first();
         return new Agent([
             'member_id' => strval($row['memberid']),
