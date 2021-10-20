@@ -82,10 +82,10 @@
                             <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
                             <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                             <td>{{$sponser->sponser_id ?? '-'}}</td>
-                            <td>{{number_format(($sponser->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                            <td>{{number_format(($sponser->currentsalary($combPeriodToday)->amount ?? 0), 2)}}</td>
                             @if (auth()->user()->roleid == 1)
                                 <td>
-                                    <input type="checkbox" disabled {{($sponser->currentbonus($combPeriod) && $sponser->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                                    <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
                                 </td>
                             @endif
                             <td></td>
@@ -110,10 +110,10 @@
                             <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
                             <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
                             <td>{{$spp->sponser_id ?? '-'}}</td>
-                            <td>{{number_format(($spp->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                            <td>{{number_format(($spp->currentsalary($combPeriodToday)->amount ?? 0), 2)}}</td>
                             @if (auth()->user()->roleid == 1)
                                 <td>
-                                    <input type="checkbox" disabled {{($spp->currentbonus($combPeriod) && $spp->currentbonus($combPeriod)->paid) ? 'checked' : ''}}>
+                                    <input type="checkbox" disabled {{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
                                 </td>
                             @endif
                             <td>
@@ -142,6 +142,7 @@
         @php
             $sumMoney = 0.0;
             $sumbv = 0.0;
+            $conf = \App\Models\BvRate::first();
         @endphp
         @for ($i=1; $i < 3; $i++)
         <hr>
@@ -203,10 +204,10 @@
                             <tr>
                                 <td>{{$user->member_id}}</td>
                                 <td>{{$user->fistname.' '.$user->lastname}}</td>
-                                <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                                <td>{{number_format(($user->currentsalary($combPeriodToday)->amount ?? 0), 2)}}</td>
                                 @php
                                     if($i < 2) {
-                                        $sumMoney += $user->currentbonus($combPeriod)->amount;
+                                        $sumMoney += $user->currentsalary($combPeriodToday)->amount ?? 0;
                                         $sumbv += $user->currentach($combPeriod)->sum('total_pv');
                                     }
                                 @endphp
@@ -233,7 +234,7 @@
                                 <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                                 @php
                                     if($i < 2) {
-                                        $sumMoney += $user->currentbonus($combPeriod)->amount;
+                                        $sumMoney += $user->currentsalary($combPeriodToday)->amount ?? 0;
                                         $sumbv += $user->currentach($combPeriod)->sum('total_pv');
                                     }
                                 @endphp
@@ -246,10 +247,10 @@
             <div class="row-fluid">
                 <div class="span4"></div>
                 <div class="span4">
-                    <h6>Total BV: <span>{{number_format(floatval($sumbv), 1)}}</span></h6>
+                    <h6>Total BV: <span>{{number_format(floatval($sumMoney), 2)}}</span></h6>
                 </div>
                 <div class="span4">
-                    <h6>In GHC: <span>{{number_format(floatval($sumMoney), 2)}}</span></h6>
+                    <h6>In GHC: <span>{{number_format(floatval($sumMoney * ($conf->rate ?? float(0))), 2)}}</span></h6>
                 </div>
             </div>
         </div>

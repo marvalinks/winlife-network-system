@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BvRate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,5 +44,23 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('login');
+    }
+    public function configuration(Request $request)
+    {
+        $conf = BvRate::first();
+        return view('pages.users.configuration', compact('conf'));
+    }
+    public function postConfiguration(Request $request)
+    {
+        $data = $request->validate(['rate' => 'required']);
+        $conf = BvRate::first();
+        if($conf) {
+            $conf->rate = $data['rate'];
+            $conf->save();
+        }else{
+            BvRate::create($data);
+        }
+        $request->session()->flash('alert-success', 'BV Rate successfully modified!');
+        return back();
     }
 }

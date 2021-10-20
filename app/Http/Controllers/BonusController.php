@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\BonusService;
+use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\Bonus;
 use App\Models\Payment;
@@ -84,30 +86,37 @@ class BonusController extends Controller
 
     public function calculateBonus(Request $request, $userid = null)
     {
-        if($userid) {
-            $this->loopcount = 0;
-            $user = Agent::where('member_id', $userid)->first();
-            if($user && ($user->level > 2)){
-                // $this->accgbv = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                $this->accgbv = floatval($user->stats->current_pbv);
-                $this->doBonus($user, 0);
-                $this->loopcount++;
-                $this->reloop($user);
-            }
-        }else{
-            $users = Agent::latest()->get();
-            // Bonus::truncate();
-
-            foreach ($users as $key => $user) {
-                $this->loopcount = 0;
-                if($user->level > 2){
-                    $this->accgbv = floatval($user->stats->acc_pvb);
-                    $this->doBonus($user, 0);
-                    $this->loopcount++;
-                    $this->reloop($user);
-                }
+        $acs = Achivement::distinct('period')->pluck('period');
+        $bns = new BonusService();
+        if(count($acs) > 0) {
+            foreach ($acs as $key => $ac) {
+                $bns->calculateBonus($ac);
             }
         }
+        // if($userid) {
+        //     $this->loopcount = 0;
+        //     $user = Agent::where('member_id', $userid)->first();
+        //     if($user && ($user->level > 2)){
+        //         // $this->accgbv = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
+        //         $this->accgbv = floatval($user->stats->current_pbv);
+        //         $this->doBonus($user, 0);
+        //         $this->loopcount++;
+        //         $this->reloop($user);
+        //     }
+        // }else{
+        //     $users = Agent::latest()->get();
+        //     // Bonus::truncate();
+
+        //     foreach ($users as $key => $user) {
+        //         $this->loopcount = 0;
+        //         if($user->level > 2){
+        //             $this->accgbv = floatval($user->stats->acc_pvb);
+        //             $this->doBonus($user, 0);
+        //             $this->loopcount++;
+        //             $this->reloop($user);
+        //         }
+        //     }
+        // }
         // $this->calculateSalary();
         $request->session()->flash('alert-success', 'Bonuses calculated for agents');
         return back();

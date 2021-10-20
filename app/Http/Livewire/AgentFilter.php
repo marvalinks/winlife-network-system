@@ -174,7 +174,7 @@ class AgentFilter extends Component
     {
         $id = $this->memberid;
         $this->combPeriod = $this->selectedYear.''. $this->selectedMonth;
-        $agents =  Agent::where('sponser_id', $id)->take(10)->get();
+        $agents =  Agent::where('sponser_id', $id)->get();
         $user =  Agent::where('member_id', $this->memberid)->first();
 
         if($user) {

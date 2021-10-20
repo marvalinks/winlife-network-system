@@ -37,6 +37,9 @@ input[type=file]{
 .tyellow{
     color: #cfae0c!important;
 }
+.tgreen{
+    color: #2d970d!important;
+}
 @media (min-width: 980px) {
     #sidebar ul {
         margin-top: 0px;

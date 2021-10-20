@@ -34,7 +34,8 @@ Route::prefix('admin')->group(function () {
     Route::get('bonus/{id?}', [BonusController::class, 'calculateBonus'])->name('admin.calculate.bonus');
     Route::get('pdf', [BonusController::class, 'printPDF'])->name('bonus.pdf');
     Route::post('mark-payment', [BonusController::class, 'markPayment'])->name('bonus.mark.payment');
-    // Route::get('ABP', [Agent::class, 'ABP'])->name('ABP');
+    Route::get('delete-dbs', [AdminController::class, 'deleteDBS'])->name('delete.dbs');
+    Route::post('delete-dbs', [AdminController::class, 'postdeleteDBS'])->name('delete.dbs');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');
@@ -53,6 +54,8 @@ Route::prefix('admin/users')->group(function () {
     Route::get('', [UserController::class, 'index'])->name('admin.users');
     Route::get('add', [UserController::class, 'add'])->name('admin.user.add');
     Route::post('add', [UserController::class, 'post'])->name('admin.user.add');
+    Route::get('configuration', [UserController::class, 'configuration'])->name('admin.user.configuration');
+    Route::post('configuration', [UserController::class, 'postConfiguration'])->name('admin.user.configuration');
 });
 Route::prefix('admin/awards')->group(function () {
     Route::get('', [AwardController::class, 'index'])->name('admin.awards');

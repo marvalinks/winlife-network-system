@@ -15,6 +15,7 @@ class AgentPayment extends Component
     public $firstPreview;
     public $secondPreview;
     public $showData = false;
+    public $combPeriodToday;
 
     public function mount($sponser, $sponsers)
     {
@@ -23,6 +24,7 @@ class AgentPayment extends Component
         $this->selectedAgents = collect();
         $this->firstPreview = collect();
         $this->secondPreview = collect();
+        $this->combPeriodToday = date('Y').date('m');
     }
     public function paySelected()
     {

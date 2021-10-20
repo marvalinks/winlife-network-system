@@ -7,15 +7,17 @@
                 <button wire:click="switchView('r')" class="btn green">Upload Registration</button>
                 <button wire:click="switchView('a')" class="btn green">Upload Achivements</button>
             </div>
+            @if(auth()->user()->roleid === 1)
             <div class="btn-group pull-right" style="margin-right: 10px;">
                 <a href="{{route('admin.calculate.bonus')}}" class="btn green">Calculate Bonus <i class="icon-plus"></i></a>
                 <button class="btn dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i></button>
                 <ul class="dropdown-menu pull-right">
                     <li><a href="" wire:click.prevent="fixSponsers()">Fix Sponsers</a></li>
-                    <li><a href="#">Save as PDF</a></li>
+                    <li><a href="{{route('delete.dbs')}}">Delete DBS</a></li>
                     <li><a href="#">Export to Excel</a></li>
                 </ul>
             </div>
+            @endif
         </div>
 
     </div>
@@ -80,7 +82,7 @@
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                         @foreach ($aexports as $export)
                         <tr class="gradeX even">
-                            <td class="sorting_1"><input type="text" name="member_id[]" class="m-wrap small {{isset($export->agent) ? '' : 'tred'}}" value="{{$export->member_id}}" /></td>
+                            <td class="sorting_1"><input type="text" name="member_id[]" class="m-wrap small {{isset($export->agent) ? 'tgreen' : 'tred'}}" value="{{$export->member_id}}" /></td>
                             <td class=" "><input type="text" name="name[]" class="m-wrap small" value="{{$export->agent->name ?? '-'}}" /></td>
                             <td class=" "><input type="text" name="period[]" class="m-wrap small" value="{{$export->period}}" /></td>
                             <td class=" "><input type="text" name="total_pv[]" class="m-wrap small" value="{{number_format($export->total_pv, 2)}}" /></td>
@@ -130,17 +132,17 @@
                         @foreach ($exports as $key => $export)
                         @php
                             $msponser = '';
-                            if(!isset($export->sponser)){
-                                $msponser = 'tred';
-                            }
                             if(isset($export->msponser)){
                                 $msponser = 'tyellow';
+                            }
+                            if(isset($export->sponser)){
+                                $msponser = 'tgreen';
                             }
 
                         @endphp
                         <tr class="gradeX even">
                             <td>{{$key+1}}</td>
-                            <td class="sorting_1"><input type="text" class="m-wrap small {{isset($export->agent) ? 'tred' : ''}}" value="{{$export->member_id}}" /></td>
+                            <td class="sorting_1"><input type="text" class="m-wrap small {{isset($export->agent) ? 'tgreen' : 'tred'}}" value="{{$export->member_id}}" /></td>
                             <td class="center"><input type="text" class="m-wrap small {{$msponser}}" value="{{$export->sponser_id}}" /></td>
                             <td class=" "><input type="text" class="m-wrap small" value="{{$export->firstname}}" /></td>
                             <td class=" "><input type="text"class="m-wrap small" value="{{$export->lastname}}" /></td>

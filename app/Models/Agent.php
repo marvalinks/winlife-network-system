@@ -30,6 +30,10 @@ class Agent extends Model
     {
         return $this->belongsTo(Agent::class, 'sponser_id', 'member_id');
     }
+    public function group()
+    {
+        return $this->belongsTo(GroupAmt::class, 'member_id', 'member_id');
+    }
     public function sponsers()
     {
         return $this->hasMany(Agent::class, 'sponser_id', 'member_id');

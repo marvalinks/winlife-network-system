@@ -65,6 +65,7 @@
                 <div class="row-fluid">
                     <div class="clearfix">
                         <div class="btn-group pull-right" style="margin-right: 10px;">
+                            <a href="{{route('admin.user.configuration')}}" class="btn green">Configuration <i class="icon-plus"></i></a>
                             <a href="{{route('admin.user.add')}}" class="btn green">Add new user <i class="icon-plus"></i></a>
                         </div>
                     </div>

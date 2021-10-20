@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Services\BonusService;
+use App\Http\Services\GroupService;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
@@ -30,8 +31,11 @@ class AgentController extends Controller
 
     protected function start()
     {
+        $grp = new GroupService();
+        $grp->GRP();
         $acs = Achivement::distinct('period')->pluck('period');
         $bns = new BonusService();
+        // $bns->calculateBonus('202110');
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $bns->calculateBonus($ac);
@@ -228,6 +232,7 @@ class AgentController extends Controller
         $sponser = Agent::where('member_id', $id)->first();
         $sponsers =  Agent::with(['childrenSponsers'])->where('sponser_id', $id)->get();
         $combPeriodToday = $this->combPeriodToday;
+        // ddd($combPeriodToday);
         return view('pages.agents.payment', compact('sponsers', 'sponser', 'combPeriodToday'));
     }
 }

@@ -29,22 +29,35 @@ class ExportController extends Controller
         $dd = TemporalAgent::all();
         $bset = [];
         foreach ($dd as $key => $export) {
-            if(!isset($export->sponser)){
-                array_push($bset, $export->member_id);
+            // if(!$export->sponser){
+            //     array_push($bset, $export->member_id);
+            // }
+            // if($export->msponser && !$export->sponser){
+            if(!$export->msponser){
+                if(!$export->sponser){
+                    array_push($bset, $export->member_id);
+                }
             }
-            if(isset($export->msponser) && !isset($export->sponser)){
-                array_push($bset, $export->member_id);
-            }
+            // if($export->member_id === '201188893046') {
+            //     ddd($bset);
+            // }
         }
         $agg = TemporalAgent::whereNotIn('member_id', $bset)->get();
+        // 201266669994
+        // ddd($dd);
+        // ddd($agg->pluck('member_id'));
+        // ddd($bset);
         foreach ($agg as $key => $ag) {
-            Agent::create([
-                'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
-                'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
-                'telephone' => $ag->telephone, 'address' => $ag->address,
-                'period' => $ag->period, 'nationality' => $ag->nationality,
-                'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
-            ]);
+            // ddd($ag->agent);
+            if(!$ag->agent) {
+                Agent::create([
+                    'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
+                    'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
+                    'telephone' => $ag->telephone, 'address' => $ag->address,
+                    'period' => $ag->period, 'nationality' => $ag->nationality,
+                    'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
+                ]);
+            }
         }
         $request->session()->flash('alert-success', 'Agent registration successfully uploaded!');
         return back();
