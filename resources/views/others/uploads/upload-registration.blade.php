@@ -1,6 +1,13 @@
 @extends('pages.layouts.app')
 @section('links')
 <link rel="stylesheet" type="text/css" href="/backend/assets/chosen-bootstrap/chosen/chosen.css" />
+<style>
+    .m-wrap.small {
+        width: 135px !important;
+        font-size: 10px!important;
+        padding: 0px;
+    }
+</style>
 @endsection
 
 @section('scripts')
@@ -21,7 +28,33 @@
                 <button id="sample_editable_1_new" type="submit" class="btn green">Upload Excel <i class="icon-plus"></i></button>
             </form>
         </div>
+        <div class="btn-group pull-right" style="margin-right: 10px;">
+            <a href="{{route('upload.achivement')}}" class="btn green">Upload Achivements</a>
+        </div>
     </div>
+    <div class="widget-body form">
+        <div class="row">
+            <h4>Color codes</h4>
+            <ul>
+                <li><span class="tred">Red color for agent</span> : <br>
+                    <span>Agent sponser ID not in the system</span>
+                </li>
+                <li><span class="tbrown">Brown color for agent</span> : <br>
+                    <span> - Agent member ID already in the system</span>
+                </li>
+                <li><span class="tblue">Blue color for agent</span> : <br>
+                    <span> - Agent member ID not in the system</span>
+                </li>
+                <li><span class="tgreen">Green color for agent</span> : <br>
+                    <span> - Agent sponser ID available in the system</span>
+                </li>
+                <li><span class="tyellow">Yellow color for agent</span> : <br>
+                    <span> - Agent sponser ID not in the system but in excel form.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <hr>
     @if (isset($exports))
     <div class="widget-body form">
@@ -47,27 +80,33 @@
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                     @foreach ($exports as $key => $export)
                     @php
-                        $msponser = '';
+                        $msponser = 'tred';
+                        $dd = 'tgreen';
                         if(isset($export->msponser)){
                             $msponser = 'tyellow';
                         }
                         if(isset($export->sponser)){
                             $msponser = 'tgreen';
                         }
+                        if(isset($export->agent)){
+                            $dd = 'tbrown';
+                        }else{
+                            $dd = 'tblue';
+                        }
 
                     @endphp
                     <tr class="gradeX even">
                         <td>{{$key+1}}</td>
-                        <td class="sorting_1"><input type="text" class="m-wrap small {{isset($export->agent) ? 'tgreen' : 'tred'}}" value="{{$export->member_id}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small {{$msponser}}" value="{{$export->sponser_id}}" /></td>
-                        <td class=" "><input type="text" class="m-wrap small" value="{{$export->firstname}}" /></td>
-                        <td class=" "><input type="text"class="m-wrap small" value="{{$export->lastname}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small" value="{{$export->telephone}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small" value="{{$export->address}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small" value="{{$export->period}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small" value="{{$export->nationality}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small" value="{{$export->bank_name}}" /></td>
-                        <td class="center"><input type="text" class="m-wrap small" value="{{$export->bank_no}}" /></td>
+                        <td class="sorting_1"><input type="text" disabled class="m-wrap small {{$dd}}" value="{{$export->member_id}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small {{$msponser}}" value="{{$export->sponser_id}}" /></td>
+                        <td class=" "><input type="text" disabled class="m-wrap small" value="{{$export->firstname}}" /></td>
+                        <td class=" "><input type="text" disabled class="m-wrap small" value="{{$export->lastname}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small" value="{{$export->telephone}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small" value="{{$export->address}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small" value="{{$export->period}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small" value="{{$export->nationality}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small" value="{{$export->bank_name}}" /></td>
+                        <td class="center"><input type="text" disabled class="m-wrap small" value="{{$export->bank_no}}" /></td>
                     </tr>
                     @endforeach
 

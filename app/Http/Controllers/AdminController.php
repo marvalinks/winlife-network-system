@@ -8,6 +8,7 @@ use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
+use App\Models\UploadedData;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -39,6 +40,10 @@ class AdminController extends Controller
                $ac->delete();
             }
         }
+        $ups = UploadedData::where('period', $data['period'])->where('data', 'a')->first();
+        if($ups) {
+            $ups->delete();
+        }
         $request->session()->flash('alert-success', 'Data successfully deleted!');
         return back();
     }
@@ -53,6 +58,7 @@ class AdminController extends Controller
     }
     public function postuploadRegistration(Request $request)
     {
+        TemporalAgent::truncate();
         $data = $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);
@@ -67,6 +73,7 @@ class AdminController extends Controller
     }
     public function postuploadAchivement(Request $request)
     {
+        TemporalAchivement::truncate();
         $data = $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);

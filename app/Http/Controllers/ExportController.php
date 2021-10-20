@@ -6,7 +6,9 @@ use App\Exports\AgentTempExport;
 use App\Exports\ArchievementTempExport;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
+use App\Models\UploadedData;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -29,26 +31,19 @@ class ExportController extends Controller
         $dd = TemporalAgent::all();
         $bset = [];
         foreach ($dd as $key => $export) {
-            // if(!$export->sponser){
-            //     array_push($bset, $export->member_id);
-            // }
-            // if($export->msponser && !$export->sponser){
             if(!$export->msponser){
                 if(!$export->sponser){
                     array_push($bset, $export->member_id);
                 }
             }
-            // if($export->member_id === '201188893046') {
-            //     ddd($bset);
-            // }
         }
         $agg = TemporalAgent::whereNotIn('member_id', $bset)->get();
-        // 201266669994
-        // ddd($dd);
-        // ddd($agg->pluck('member_id'));
-        // ddd($bset);
+        $ups = UploadedData::where('period', $agg[0]->period ?? $agg[1]->period)->where('data', 'r')->first();
+        if($ups) {
+            $request->session()->flash('alert-danger', 'Registration form already uploaded for '.$agg[0]->period ?? $agg[1]->period);
+            return back();
+        }
         foreach ($agg as $key => $ag) {
-            // ddd($ag->agent);
             if(!$ag->agent) {
                 Agent::create([
                     'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
@@ -59,22 +54,34 @@ class ExportController extends Controller
                 ]);
             }
         }
+        UploadedData::create([
+            'data' => 'r', 'period' => $agg[0]->period ?? $agg[1]->period
+        ]);
         $request->session()->flash('alert-success', 'Agent registration successfully uploaded!');
         return back();
     }
     public function uploadExportA(Request $request)
     {
-        // ddd($request->all());
-        foreach ($request->member_id as $key => $member_id) {
-            $agent = Agent::where('member_id', $member_id)->first();
+        $agg = TemporalAchivement::all();
+        $ups = UploadedData::where('period', $agg[0]->period ?? $agg[1]->period)->where('data', 'a')->first();
+        if($ups) {
+            $request->session()->flash('alert-danger', 'Achivement form already uploaded for '.$agg[0]->period ?? $agg[1]->period);
+            return back();
+        }
+        foreach ($agg as $key => $ag) {
+            $agent = Agent::where('member_id', $ag->member_id)->first();
             if($agent) {
                 Achivement::create([
-                    'member_id' => $member_id, 'name' => $agent->name,
-                    'period' => $request->period[$key], 'total_pv' => $request->total_pv[$key],
-                    'country' => $request->country[$key],
+                    'member_id' => $ag->member_id, 'name' => $agent->name,
+                    'period' => $ag->period, 'total_pv' => $ag->total_pv,
+                    'country' => $ag->country,
                 ]);
             }
         }
+
+        UploadedData::create([
+            'data' => 'a', 'period' => $agg[0]->period ?? $agg[1]->period
+        ]);
         $request->session()->flash('alert-success', 'Agent achivement successfully uploaded!');
         return back();
     }

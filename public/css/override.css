@@ -40,6 +40,12 @@ input[type=file]{
 .tgreen{
     color: #2d970d!important;
 }
+.tblue{
+    color: #0d4497!important;
+}
+.tbrown{
+    color: chocolate!important;
+}
 @media (min-width: 980px) {
     #sidebar ul {
         margin-top: 0px;
