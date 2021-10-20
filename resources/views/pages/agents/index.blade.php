@@ -29,15 +29,11 @@
 <script type="text/javascript" src="/backend/assets/data-tables/DT_bootstrap.js"></script>
 <script>
     $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
-    // $(document).ready(function() {
-    //     $('.dtable').DataTable( {
-    //         "order": [[ 3, "desc" ]]
-    //     } );
-    // } );
     window.addEventListener('reopenDatatable', event => {
-        $('.dtable').DataTable({
-            "iDisplayLength": 50
+        oTable = $('.dtable').DataTable({
+            "iDisplayLength": -1
         });
+        oTable.fnSort( [ [4,'asc'] ] );
     })
 </script>
 
