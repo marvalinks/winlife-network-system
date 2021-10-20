@@ -24,7 +24,7 @@ input[type=file]{
     border: 1px solid #ccc;
 }
 .table th, .table td{
-    padding: 3px;
+    padding: 3px!important;
     font-size: 11px;
 }
 .w94{

@@ -80,72 +80,7 @@ class AgentFilter extends Component
     {
         $this->showTemporalTable = false;
     }
-    public function uploadExcel()
-    {
-        // ddd('PP');
-        TemporalAgent::truncate();
-        $this->showagent56 = false;
-        $this->excelLoadingSuccess = false;
-        $this->showTemporalTable = false;
-        $this->excelLoading = true;
-        ddd($this->excelfile);
-        $this->validate([
-            'excelfile' => 'required',
-            // 'excelfile' => 'requiredz|mimes:xlsx,csv,xls',
-        ]);
 
-        try {
-            Excel::import(new AgentTempImport(), $this->excelfile);
-        } catch (\Throwable $th) {
-            return back()->withError('There was a problem with your excel file.');
-        }
-        $this->fixTemp();
-        $this->exports = TemporalAgent::latest()->get();
-
-        $this->excelfile = null;
-        $this->excelLoadingSuccess = true;
-        $this->excelLoading = false;
-        $this->showTemporalTable = true;
-    }
-    public function uploadAchievement()
-    {
-        TemporalAchivement::truncate();
-        $this->excelLoadingSuccess = false;
-        $this->showTemporalTable = false;
-        $this->showagent56 = false;
-        $this->excelLoading = true;
-        $this->validate([
-            'achfile' => 'required|mimes:xlsx,csv,xls',
-        ]);
-        try {
-            Excel::import(new ArchievementTempImport(), $this->achfile);
-        } catch (\Throwable $th) {
-            return back()->withError('There was a problem with your excel file.');
-        }
-        $this->fixTemp();
-        $this->aexports = TemporalAchivement::latest()->get();
-
-
-        $this->achfile = null;
-        $this->excelLoadingSuccess = true;
-        $this->excelLoading = false;
-        $this->showTemporalTable = true;
-        $this->showagent56 = true;
-        $this->fixSponsers();
-
-    }
-    public function fixTemp()
-    {
-        $dels = TemporalAgent::where('member_id', '')->orWhereNull('member_id')->get();
-        $ass = TemporalAchivement::where('member_id', '')->orWhereNull('member_id')->get();
-        foreach ($dels as $key => $del) {
-            $del->delete();
-        }
-        foreach ($ass as $key => $del) {
-            $del->delete();
-        }
-
-    }
     public function fixSponsers()
     {
         $dels = Agent::where('member_id', '')->orWhereNull('member_id')->get();
@@ -186,21 +121,8 @@ class AgentFilter extends Component
         }else{
             $this->showtable = false;
         }
-        // ddd($user->archievements->min('period'));
 
-        // $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-        // $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
-
-        // foreach ($agents as $key => $sponser) {
-        //     $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-        //     $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
-        //     foreach ($sponser->childrenSponsers as $k => $child_sponser) {
-        //         $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-        //         $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
-        //         $this->reloop($child_sponser);
-        //     }
-        // }
-        // $this->dispatchBrowserEvent('reopenDatatable');
+        $this->dispatchBrowserEvent('reopenDatatable');
     }
     public function reloop($child_sponser)
     {

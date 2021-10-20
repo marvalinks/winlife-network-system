@@ -1,6 +1,7 @@
 @extends('pages.layouts.app')
 @section('links')
 <link rel="stylesheet" type="text/css" href="/backend/assets/chosen-bootstrap/chosen/chosen.css" />
+<link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
 <style>
     .fm{
         /* display: flex;
@@ -28,14 +29,16 @@
 <script type="text/javascript" src="/backend/assets/data-tables/DT_bootstrap.js"></script>
 <script>
     $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
-    $(document).ready(function() {
-        $('#dtable').DataTable( {
-            "order": [[ 3, "desc" ]]
-        } );
-    } );
-    // window.addEventListener('reopenDatatable', event => {
-    //     $('#dtable').DataTable({});
-    // })
+    // $(document).ready(function() {
+    //     $('.dtable').DataTable( {
+    //         "order": [[ 3, "desc" ]]
+    //     } );
+    // } );
+    window.addEventListener('reopenDatatable', event => {
+        $('.dtable').DataTable({
+            "iDisplayLength": 50
+        });
+    })
 </script>
 
 @endsection

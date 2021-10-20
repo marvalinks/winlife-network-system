@@ -25,7 +25,6 @@ class BonusService
 
     public function calculateBonus($period)
     {
-        // ddd($period);
         $users = Agent::latest()->get();
         $bns = Bonus::where('period', $period)->truncate();
         $sls = Salary::where('period', $period)->get();
@@ -35,28 +34,20 @@ class BonusService
         foreach ($sls as $key => $trn) {
             $trn->delete();
         }
-        // ddd($users);
         foreach ($users as $key => $user) {
             $this->loopcount = 0;
             $this->pugcount = 0;
-            if($user->level > 0){
-                $this->combPeriodToday = $period;
-                $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
-                // $this->accgbv = floatval($user->archievements()->sum('total_pv'));
-                // $fn1 = floatval($user->currentach($period)->sum('total_pv'));
-                // $fn2 = floatval($user->archievements()->sum('total_pv'));
-
-
-                // $this->accgbv = $fn2 - $fn1;
-
+            $this->combPeriodToday = $period;
+            $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
+            if($user->level > 2){
                 $this->doBonus($user, $this->loopcount++);
-                $this->loopcount++;
-                $this->reloop($user);
-
             }
+            $this->loopcount++;
+            $this->reloop($user);
         }
         return true;
     }
+
 
 
     public function reloop($user)
@@ -65,7 +56,9 @@ class BonusService
         if($user->sponser) {
             $usd = Agent::where('member_id', $user->sponser->member_id)->first();
             $this->pugcount++;
-            $this->doBonusSponser($user, $usd, $this->pugcount);
+            if ($usd->level > 2) {
+                $this->doBonusSponser($user, $usd, $this->pugcount);
+            }
             $this->loopcount++;
             $this->reloop($usd);
         }
@@ -140,21 +133,6 @@ class BonusService
             $second_percent = 0;
             $third_percent = 0;
         }
-
-        // if ($this->combPeriodToday == "202110") {
-        //     ddd($user, $sponser, $key);
-        //     if($user->member_id === "201266669989"){
-        //         // ddd($user);
-        //         // ddd(floatval($user->archievements()->sum('total_pv')));
-        //         // ddd($accgbv);
-        //         ddd($user, $sponser, $amount, $key);
-        //         ddd($user->group->group3);
-        //         ddd($amount, $accgbv, floatval($user->archievements()->sum('total_pv')));
-        //         ddd($accgbv - floatval($user->currentach($this->combPeriodToday)->sum('total_pv')));
-        //         // ddd( - floatval($user->currentach($this->combPeriodToday)->sum('total_pv')))
-        //     }
-        // }
-
 
 
 
