@@ -36,6 +36,8 @@ Route::prefix('admin')->group(function () {
     Route::post('mark-payment', [BonusController::class, 'markPayment'])->name('bonus.mark.payment');
     Route::get('delete-dbs', [AdminController::class, 'deleteDBS'])->name('delete.dbs');
     Route::post('delete-dbs', [AdminController::class, 'postdeleteDBS'])->name('delete.dbs');
+    Route::get('upload-registration', [AdminController::class, 'uploadRegistration'])->name('upload.registration');
+    Route::post('upload-registration', [AdminController::class, 'postuploadRegistration'])->name('upload.registration');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');

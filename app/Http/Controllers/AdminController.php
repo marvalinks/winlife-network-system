@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\AgentTempImport;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\TemporalAgent;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -36,6 +39,25 @@ class AdminController extends Controller
         }
         $request->session()->flash('alert-success', 'Data successfully deleted!');
         return back();
+    }
+
+    public function uploadRegistration(Request $request)
+    {
+        return view('others.uploads.upload-registration');
+    }
+    public function postuploadRegistration(Request $request)
+    {
+
+        $data = $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls',
+        ]);
+        try {
+            Excel::import(new AgentTempImport(), $data['file']);
+        } catch (\Throwable $th) {
+            return back()->withError('There was a problem with your excel file.');
+        }
+        $exports = TemporalAgent::latest()->get();
+        return view('others.uploads.upload-registration', compact('exports'));
     }
 
 

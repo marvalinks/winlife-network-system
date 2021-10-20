@@ -4,7 +4,7 @@
         <div class="clearfix">
             <div class="btn-group">
                 <a href="{{route('admin.agent.add')}}" class="btn green">Add New <i class="icon-plus"></i></a>
-                <button wire:click="switchView('r')" class="btn green">Upload Registration</button>
+                <a href="{{route('upload.registration')}}" class="btn green">Upload Registration</a>
                 <button wire:click="switchView('a')" class="btn green">Upload Achivements</button>
             </div>
             @if(auth()->user()->roleid === 1)

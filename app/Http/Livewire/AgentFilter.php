@@ -88,10 +88,12 @@ class AgentFilter extends Component
         $this->excelLoadingSuccess = false;
         $this->showTemporalTable = false;
         $this->excelLoading = true;
+        ddd($this->excelfile);
         $this->validate([
             'excelfile' => 'required',
             // 'excelfile' => 'requiredz|mimes:xlsx,csv,xls',
         ]);
+
         try {
             Excel::import(new AgentTempImport(), $this->excelfile);
         } catch (\Throwable $th) {
