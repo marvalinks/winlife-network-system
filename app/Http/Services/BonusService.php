@@ -134,6 +134,10 @@ class BonusService
             $third_percent = 0;
         }
 
+        // 201266669897
+
+
+
 
 
         if(floatval($accgbvTT) > floatval(200)){
@@ -151,12 +155,19 @@ class BonusService
 
             }else{
                 $firstsplit = floatval(150);
+                $secondsplit = floatval(50);
                 $thirdsplit = floatval($accgbv) - 200;
                 $amount += ($first_percent * $firstsplit) + ($second_percent * $secondsplit) + ($third_percent * $thirdsplit);
                 $user->group->cl2 = 3;
                 $user->group->bl2 = 0;
                 $user->group->save();
             }
+
+            // if ($this->combPeriodToday == "201309") {
+            //     if($user->member_id === "201266669988"){
+            //         ddd($amount);
+            //     }
+            // }
 
         }elseif((floatval($accgbvTT) > floatval(150)) && (floatval($accgbvTT) <= floatval(200))) {
 
@@ -387,6 +398,7 @@ class BonusService
 
             }else{
                 $firstsplit = floatval(150);
+                $secondsplit = floatval(50);
                 $thirdsplit = floatval($accgbv) - 200;
                 $amount += ($first_percent * $firstsplit) + ($second_percent * $secondsplit) + ($third_percent * $thirdsplit);
                 $user->group->cl = 3;
