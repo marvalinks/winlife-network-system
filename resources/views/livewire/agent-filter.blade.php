@@ -109,7 +109,7 @@
                     <td>{{$user->stats->level}}</td>
                     <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                     <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
-                    <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                    <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                     <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
                     <td>{{$user->sponser_id ?? '-'}}</td>
                     <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
