@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAwardsTable extends Migration
+class CreateActiveStateBvsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateAwardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('awards', function (Blueprint $table) {
+        Schema::create('active_state_bvs', function (Blueprint $table) {
             $table->id();
-            $table->string('award_id');
-            $table->string('name');
-            $table->integer('period')->nullable();
-            $table->integer('min_level')->nullable();
-            $table->float('min_bv')->nullable();
+            $table->string('member_id');
+            $table->string('period')->nullable();
+            $table->float('amount')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateAwardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('awards');
+        Schema::dropIfExists('active_state_bvs');
     }
 }

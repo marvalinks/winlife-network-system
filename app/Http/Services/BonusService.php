@@ -69,7 +69,9 @@ class BonusService
 
 
         $accgbv = $this->accgbv;
-        $accgbvTT = floatval($user->archievements()->sum('total_pv'));
+
+        // $accgbvTT = floatval($user->archievements()->sum('total_pv'));
+        $accgbvTT = floatval($user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriodToday])->sum('total_pv')) ?? floatval(0);
         $firstsplit = floatval(0);
         $secondsplit = floatval(0);
         $thirdsplit = floatval(0);
@@ -221,49 +223,6 @@ class BonusService
 
 
 
-        // if(floatval($accgbv) > floatval(200)){
-
-        //     $firstsplit = floatval(150);
-        //     $secondsplit = floatval(50);
-        //     $thirdsplit = floatval($accgbv) - $firstsplit - $secondsplit;
-        //     $amount = ($first_percent * $firstsplit) + ($second_percent * $secondsplit) + ($third_percent * $thirdsplit);
-
-        // }elseif(floatval($accgbv) > floatval(150) && floatval($accgbv) <= floatval(200)) {
-
-        //     $firstsplit = floatval(150);
-        //     $secondsplit = floatval($accgbv) - $firstsplit;
-        //     $amount = ($first_percent * $firstsplit) + ($second_percent * $secondsplit);
-
-        // }else{
-        //     $firstsplit = floatval(150);
-        //     $amount = ($first_percent * floatval($accgbv));
-
-        // }
-
-        // if ($this->combPeriodToday == "201309") {
-        //     // ddd($user, $sponser, $key);
-        //     if($user->member_id === "201266669994"){
-        //         // ddd($first_percent, $firstsplit);
-        //         // ddd(floatval($user->archievements()->sum('total_pv')));
-        //         // ddd($accgbv);
-        //         ddd($accgbv, $user, $sponser, $amount, $key);
-        //         ddd($user->group->group3);
-        //         ddd($amount, $accgbv, floatval($user->archievements()->sum('total_pv')));
-        //         ddd($accgbv - floatval($user->currentach($this->combPeriodToday)->sum('total_pv')));
-        //         // ddd( - floatval($user->currentach($this->combPeriodToday)->sum('total_pv')))
-        //     }
-        // }
-
-
-
-        // if ($this->combPeriodToday == "202110") {
-        //     if($user->member_id === "201266669989"){
-        //         ddd($amount, $bn);
-        //     }
-        // }
-
-
-
         // $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
         $salary = Salary::where('member_id', $sponser->member_id)->where('period', $this->combPeriodToday)->first();
 
@@ -296,6 +255,7 @@ class BonusService
 
 
         $accgbv = $this->accgbv;
+        $accgbvTT = floatval($user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriodToday])->sum('total_pv')) ?? floatval(0);
         $firstsplit = floatval(0);
         $secondsplit = floatval(0);
         $thirdsplit = floatval(0);
@@ -372,7 +332,7 @@ class BonusService
         //     $amount = ($third_percent *  floatval($accgbv));
         // }
 
-        $accgbvTT = floatval($user->archievements()->sum('total_pv'));
+        // $accgbvTT = floatval($user->archievements()->sum('total_pv'));
 
         if(floatval($accgbvTT) > floatval(200)){
 
@@ -406,8 +366,8 @@ class BonusService
                 $user->group->save();
             }
 
-            // if ($this->combPeriodToday == "202110"  && $key == 0) {
-            //     if($user->member_id === "201266669991"){
+            // if ($this->combPeriodToday == "202110") {
+            //     if($user->member_id === "201188893110"){
             //         ddd($user->group->bl, $accgbvTT, $accgbv, $amount, $third_percent);
             //     }
             // }
@@ -457,6 +417,7 @@ class BonusService
             }
 
         }
+
 
 
 

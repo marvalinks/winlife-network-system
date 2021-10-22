@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAwardsTable extends Migration
+class CreateAwardQualifiersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateAwardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('awards', function (Blueprint $table) {
+        Schema::create('award_qualifiers', function (Blueprint $table) {
             $table->id();
             $table->string('award_id');
-            $table->string('name');
-            $table->integer('period')->nullable();
-            $table->integer('min_level')->nullable();
-            $table->float('min_bv')->nullable();
+            $table->string('member_id');
+            $table->boolean('collected')->default(0);
+            $table->float('used_bv')->default(0);
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ class CreateAwardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('awards');
+        Schema::dropIfExists('award_qualifiers');
     }
 }

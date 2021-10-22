@@ -9,6 +9,7 @@ use App\Http\Services\LevelService;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\Salary;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Http\Request;
@@ -34,17 +35,19 @@ class AgentController extends Controller
     {
         $lv = new LevelService($this->combPeriodToday);
         $lv->ABP();
-        $awd = new AwardService($this->combPeriodToday);
-        // $awd->ABP();
         $grp = new GroupService();
         $grp->GRP();
-        $acs = Achivement::distinct('period')->pluck('period');
+        $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        // ddd($acs);
+        Salary::truncate();
         $bns = new BonusService();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $bns->calculateBonus($ac);
             }
         }
+        $awd = new AwardService($this->combPeriodToday);
+        // $awd->ABP();
     }
 
     public function index(Request $request)

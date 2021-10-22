@@ -2,15 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\AwardService;
 use App\Models\Award;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AwardController extends Controller
 {
 
+
+    public $combPeriodToday;
+
+
     public function __construct()
     {
         $this->middleware('auth');
+        $this->combPeriodToday = date('Y').date('m');
+        $this->start();
+    }
+
+    protected function start()
+    {
+        $awd = new AwardService($this->combPeriodToday);
+        $awd->ABP();
     }
 
     public function index(Request $request)
@@ -25,9 +39,9 @@ class AwardController extends Controller
     public function post(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required', 'period' => 'required',
-            'min_level' => 'required', 'min_bv' => 'required'
+            'name' => 'required'
         ]);
+        $data['award_id'] = explode('-', strtoupper((string) Str::uuid()))[mt_rand(0,2)];
         Award::create($data);
         $request->session()->flash('alert-success', 'Award successfully added!');
         return back();

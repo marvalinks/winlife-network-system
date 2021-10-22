@@ -33,40 +33,6 @@
                                 <input name="name" required type="text" class="form-control">
                             </div>
                         </div>
-                        <div class="span4 ml0">
-                            @php
-                                $periods = [1, 2, 3];
-                            @endphp
-                            <div class="form-group">
-                                <label class="control-label">Period</label>
-                                <select required class="form-control chosen-select" name="period" id="">
-                                    <option value="">-choose-</option>
-                                    @foreach ($periods as $key => $period)
-                                        <option value="{{$period}}">{{$period}} months</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="span4 ml0">
-                            @php
-                                $levels = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-                            @endphp
-                            <div class="form-group">
-                                <label class="control-label">Minimum level</label>
-                                <select required class="form-control chosen-select" name="min_level" id="">
-                                    <option value="">-choose-</option>
-                                    @foreach ($levels as $key => $level)
-                                        <option value="{{$level}}">Level {{$level}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="span4 ml0">
-                            <div class="form-group">
-                                <label class="control-label">Minimun BV</label>
-                                <input name="min_bv" required type="number" min1 class="form-control">
-                            </div>
-                        </div>
                         <div class="span12">
                             <div class="form-actions">
                               <button type="submit" class="btn btn-success">save</button>
