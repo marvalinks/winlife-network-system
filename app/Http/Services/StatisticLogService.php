@@ -2,69 +2,66 @@
 
 namespace App\Http\Services;
 
-use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\StatisticLog;
 
-class LevelService
+class StatisticLogService
 {
 
     public $currentGBV = 0.0;
     public $ACCGBV = 0.0;
     public $combPeriodToday;
 
-    public function __construct($period)
+    public function __construct()
     {
-        $this->combPeriodToday = $period;
+
         $this->currentGBV = floatval(0);
         $this->ACCGBV = floatval(0);
 
     }
 
-    public function ABP()
+    public function ABP($period)
     {
+        $this->combPeriodToday = $period;
         $this->adjustBulkPvb();
         $agents = Agent::latest()->get();
         foreach ($agents as $key => $agent) {
+            $log = StatisticLog::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->first();
+            // if($this->combPeriodToday === '201310' && $agent->member_id == '202110141234') {
+            //     $log2 = StatisticLog::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->get();
+            //     ddd($log2);
+            // }
+            if($log) {
+                if (floatval($log->acc_pvb) < floatval(50)) {
+                    $log->level = 1;
+                }
+                if (floatval($log->acc_pvb) >= floatval(50) && floatval($log->acc_pvb) < floatval(200)) {
+                    $log->level = 2;
 
-            if (floatval($agent->stats->acc_pvb) < floatval(50)) {
-                    $agent->stats->level = 1;
-                    $agent->level = 1;
+                }
+                if (floatval($log->acc_pvb) >= floatval(200)) {
+                    $log->level = 3;
+                }
+                if (floatval($log->acc_gbv) >= floatval(800)) {
+                    $log->level = 4;
+                }
+                if (floatval($log->acc_gbv) >= floatval(5000)) {
+                    $log->level = 5;
 
-            }
-            if (floatval($agent->stats->acc_pvb) >= floatval(50) && floatval($agent->stats->acc_pvb) < floatval(200)) {
-                $agent->stats->level = 2;
-                $agent->level = 2;
-
-            }
-            if (floatval($agent->stats->acc_pvb) >= floatval(200)) {
-                $agent->stats->level = 3;
-                $agent->level = 3;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(800)) {
-                $agent->stats->level = 4;
-                $agent->level = 4;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(5000)) {
-                $agent->stats->level = 5;
-                $agent->level = 5;
-
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(20000)) {
-                $agent->stats->level = 6;
-                $agent->level = 6;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(80000)) {
-                $agent->stats->level = 7;
-                $agent->level = 7;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(320000)) {
-                $agent->stats->level = 8;
-                $agent->level = 8;
+                }
+                if (floatval($log->acc_gbv) >= floatval(20000)) {
+                    $log->level = 6;
+                }
+                if (floatval($log->acc_gbv) >= floatval(80000)) {
+                    $log->level = 7;
+                }
+                if (floatval($log->acc_gbv) >= floatval(320000)) {
+                    $log->level = 8;
+                }
+                $log->save();
             }
 
-            $agent->stats->save();
-            $agent->save();
         }
 
     }
@@ -77,7 +74,7 @@ class LevelService
         $users = Agent::latest()->get();
         foreach ($users as $key => $user) {
 
-            $stats = AgentStatistics::where('agent_id', $user->member_id)->first();
+            // $stats = AgentStatistics::where('agent_id', $user->member_id)->first();
             $achTotal = floatval($user->currentach($this->combPeriodToday)->sum('total_pv'));
             $achTotal2 = $user->archievements->sum('total_pv');
             $this->currentGBV = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
@@ -94,6 +91,12 @@ class LevelService
             // if($user->member_id == '201266664521') {
             //     ddd($achTotal2);
             // }
+            // if($this->combPeriodToday === '201310' && $user->member_id == '202110141234') {
+            //     ddd($this->ACCGBV);
+            // }
+            $stats = new StatisticLog();
+            $stats->member_id = $user->member_id;
+            $stats->period = $this->combPeriodToday;
             $stats->current_pbv = $achTotal;
             $stats->acc_pvb = $achTotal2;
             $stats->current_gbv = $this->currentGBV;

@@ -6,10 +6,12 @@ use App\Http\Services\AwardService;
 use App\Http\Services\BonusService;
 use App\Http\Services\GroupService;
 use App\Http\Services\LevelService;
+use App\Http\Services\StatisticLogService;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
 use App\Models\Salary;
+use App\Models\StatisticLog;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Http\Request;
@@ -33,12 +35,13 @@ class AgentController extends Controller
 
     protected function start()
     {
+
         $lv = new LevelService($this->combPeriodToday);
         $lv->ABP();
         $grp = new GroupService();
         $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        // ddd($acs);
+        // ddd($acs);xs
         Salary::truncate();
         $bns = new BonusService();
         if(count($acs) > 0) {

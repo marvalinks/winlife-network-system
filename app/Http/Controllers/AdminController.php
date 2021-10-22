@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\StatisticLogService;
 use App\Imports\AgentTempImport;
 use App\Imports\ArchievementTempImport;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\StatisticLog;
 use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
 use App\Models\UploadedData;
@@ -18,6 +20,21 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->start();
+    }
+
+    protected function start()
+    {
+
+        $st = new StatisticLogService();
+        StatisticLog::truncate();
+        $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        if(count($acs) > 0) {
+            foreach ($acs as $key => $ac) {
+                $st->ABP($ac);
+            }
+        }
+        // $awd->ABP();
     }
 
     public function dashboard(Request $request)

@@ -106,10 +106,14 @@
                     <td>{{$user->period}}</td>
                     <td>{{$user->member_id}}</td>
                     <td>0</td>
-                    <td>{{$user->stats->level}}</td>
+                    <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? $user->stats->level}}</td>
                     <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                     <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
+                    @if (intval($combPeriod) >= intval($user->archievements->min('period')))
                     <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                    @else
+                    <td>{{number_format(floatval(0), 2)}}</td>
+                    @endif
                     <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
                     <td>{{$user->sponser_id ?? '-'}}</td>
                     <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
@@ -125,6 +129,7 @@
                 </tr>
 
                 @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
+                @if (intval($sponser->period) <= intval($combPeriod))
                 <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
                     <td class="sorting_1">
                         <div class="checker" id="uniform-undefined">
@@ -135,11 +140,16 @@
                     <td>{{$sponser->period}}</td>
                     <td>{{$sponser->member_id}}</td>
                     <td>{{$lv}}</td>
-                    <td>{{$sponser->stats->level}}</td>
+                    <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                     <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
                     <!-- <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td> -->
-                    <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                    @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
+                    <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                    @else
+                    <td>{{number_format(floatval(0), 2)}}</td>
+                    @endif
+                    <!-- <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td> -->
                     <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                     <td>{{$sponser->sponser_id ?? '-'}}</td>
                     <td>{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
@@ -153,8 +163,9 @@
                     </td>
                     <td></td>
                 </tr>
+                @endif
 
-                @foreach ($sponser->childrenSponsers as $k => $childrenSponser)
+                @foreach ($sponser->childrenSponsers->where('period', '<=', $combPeriod) as $k => $childrenSponser)
                     @php
                         if($sponser->member_id === $childrenSponser->sponser_id){
                             $lvi++;

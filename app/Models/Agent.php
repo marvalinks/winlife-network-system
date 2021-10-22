@@ -14,6 +14,10 @@ class Agent extends Model
     {
         return $this->hasOne(AgentStatistics::class, 'agent_id', 'member_id');
     }
+    public function statlogs()
+    {
+        return $this->hasMany(StatisticLog::class, 'member_id', 'member_id');
+    }
     public function salary()
     {
         return $this->hasOne(Salary::class, 'member_id', 'member_id');
