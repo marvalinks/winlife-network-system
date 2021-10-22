@@ -124,7 +124,7 @@
                     <td></td>
                 </tr>
 
-                @foreach ($sponsers as $key => $sponser)
+                @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
                 <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
                     <td class="sorting_1">
                         <div class="checker" id="uniform-undefined">
