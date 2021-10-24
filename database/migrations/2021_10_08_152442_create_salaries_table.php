@@ -20,6 +20,7 @@ class CreateSalariesTable extends Migration
             $table->float('amount')->default(0);
             $table->integer('level')->nullable();
             $table->boolean('paid')->default(0);
+            $table->boolean('active')->default(1);
             $table->timestamps();
         });
     }

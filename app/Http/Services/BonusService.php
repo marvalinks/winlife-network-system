@@ -34,11 +34,15 @@ class BonusService
         foreach ($sls as $key => $trn) {
             $trn->delete();
         }
+        // if ($this->combPeriodToday == "202110") {
+        //     ddd($sls);
+        // }
         foreach ($users as $key => $user) {
             $this->loopcount = 0;
             $this->pugcount = 0;
             $this->combPeriodToday = $period;
             $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
+
             if($user->level > 2){
                 $this->doBonus($user, $this->loopcount++);
             }
@@ -138,11 +142,15 @@ class BonusService
 
         // 201266669897
 
+        // if ($this->combPeriodToday == "202110") {
+        //     if($sponser->member_id === "202110141234"){
+        //         ddd($accgbv, $accgbvTT, $key, $user);
+        //     }
+        // }
 
 
 
-
-        if(floatval($accgbvTT) > floatval(200)){
+        if(floatval($accgbv) > floatval(0) && floatval($accgbvTT) > floatval(200)){
 
             if($user->group->cl2 == 3) {
                 $amount = $accgbv * $third_percent;
@@ -165,13 +173,10 @@ class BonusService
                 $user->group->save();
             }
 
-            // if ($this->combPeriodToday == "201309") {
-            //     if($user->member_id === "201266669988"){
-            //         ddd($amount);
-            //     }
-            // }
 
-        }elseif((floatval($accgbvTT) > floatval(150)) && (floatval($accgbvTT) <= floatval(200))) {
+
+        }
+        if(floatval($accgbv) > floatval(0) && ((floatval($accgbvTT) > floatval(150)) && (floatval($accgbvTT) <= floatval(200)))) {
 
             if($user->group->cl2 == 2) {
                 $amount = $accgbv * $second_percent;
@@ -195,7 +200,8 @@ class BonusService
             }
 
 
-        }else{
+        }
+        if(floatval($accgbv) > floatval(0) && floatval($accgbvTT) <= floatval(200)){
             if($user->group->cl2 == 1) {
                 $amount = $accgbv * $first_percent;
                 $nw = $user->group->bl2 - floatval($accgbv);
@@ -226,6 +232,7 @@ class BonusService
         // $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
         $salary = Salary::where('member_id', $sponser->member_id)->where('period', $this->combPeriodToday)->first();
 
+
         if(!$salary){
             $bn = Salary::create([
                 'member_id' => $sponser->member_id, 'period' => $this->combPeriodToday,
@@ -252,7 +259,6 @@ class BonusService
     }
     protected function doBonus($user, $key)
     {
-
 
         $accgbv = $this->accgbv;
         $accgbvTT = floatval($user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriodToday])->sum('total_pv')) ?? floatval(0);
@@ -320,6 +326,8 @@ class BonusService
             $third_percent = 0;
         }
 
+
+
         // ddd($user->group);
 
         // if($user->group->group1) {
@@ -334,7 +342,7 @@ class BonusService
 
         // $accgbvTT = floatval($user->archievements()->sum('total_pv'));
 
-        if(floatval($accgbvTT) > floatval(200)){
+        if(floatval($accgbv) > floatval(0) && floatval($accgbvTT) > floatval(200)){
 
             // $firstsplit = floatval(150);
             // $secondsplit = floatval(50);
@@ -366,13 +374,20 @@ class BonusService
                 $user->group->save();
             }
 
+            if ($this->combPeriodToday == "202110") {
+                if($user->member_id === "202110141234"){
+                    ddd($amount);
+                }
+            }
+
             // if ($this->combPeriodToday == "202110") {
             //     if($user->member_id === "201188893110"){
             //         ddd($user->group->bl, $accgbvTT, $accgbv, $amount, $third_percent);
             //     }
             // }
 
-        }elseif((floatval($accgbvTT) > floatval(150)) && (floatval($accgbvTT) <= floatval(200))) {
+        }
+        if(floatval($accgbv) > floatval(0) && ((floatval($accgbvTT) > floatval(150)) && (floatval($accgbvTT) <= floatval(200)))) {
 
             if($user->group->cl == 2) {
                 $amount = $accgbv * $second_percent;
@@ -395,7 +410,8 @@ class BonusService
                 $user->group->save();
             }
 
-        }else{
+        }
+        if(floatval($accgbv) > floatval(0) && floatval($accgbvTT) <= floatval(200)){
             if($user->group->cl == 1) {
                 $amount = $accgbv * $first_percent;
                 $nw = $user->group->bl - floatval($accgbv);
@@ -417,6 +433,7 @@ class BonusService
             }
 
         }
+
 
 
 

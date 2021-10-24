@@ -38,17 +38,16 @@ class AgentController extends Controller
 
         $lv = new LevelService($this->combPeriodToday);
         $lv->ABP();
-        $grp = new GroupService();
-        $grp->GRP();
-        $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        // ddd($acs);xs
-        Salary::truncate();
-        $bns = new BonusService();
-        if(count($acs) > 0) {
-            foreach ($acs as $key => $ac) {
-                $bns->calculateBonus($ac);
-            }
-        }
+        // $grp = new GroupService();
+        // $grp->GRP();
+        // $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        // Salary::truncate();
+        // $bns = new BonusService();
+        // if(count($acs) > 0) {
+        //     foreach ($acs as $key => $ac) {
+        //         $bns->calculateBonus($ac);
+        //     }
+        // }
         $awd = new AwardService($this->combPeriodToday);
         // $awd->ABP();
     }

@@ -116,7 +116,7 @@
                     @endif
                     <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
                     <td>{{$user->sponser_id ?? '-'}}</td>
-                    <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+                    <td class="{{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                     @if (auth()->user()->roleid == 1)
                         <td>
                             <input type="checkbox" disabled {{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
@@ -152,7 +152,7 @@
                     <!-- <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td> -->
                     <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                     <td>{{$sponser->sponser_id ?? '-'}}</td>
-                    <td>{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+                    <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                     @if (auth()->user()->roleid == 1)
                         <td>
                             <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>

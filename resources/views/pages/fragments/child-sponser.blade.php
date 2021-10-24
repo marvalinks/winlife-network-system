@@ -20,7 +20,7 @@
     <!-- <td>{{number_format($child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td> -->
     <td>{{number_format($child_sponser->accgbv($combPeriod), 2)}}</td>
     <td>{{$child_sponser->sponser_id ?? '-'}}</td>
-    <td>{{number_format(($child_sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+    <td class="{{($child_sponser->currentsalary($combPeriod) && $child_sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($child_sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
     @if (auth()->user()->roleid == 1)
         <td>
             <input type="checkbox" disabled {{($child_sponser->currentsalary($combPeriod) && $child_sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>

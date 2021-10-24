@@ -43,6 +43,7 @@ class ExportController extends Controller
             $request->session()->flash('alert-danger', 'Registration form already uploaded for '.$agg[0]->period ?? $agg[1]->period);
             return back();
         }
+        // ddd($agg->where('sponser_id', '202110141234'));
         foreach ($agg as $key => $ag) {
             if(!$ag->agent) {
                 Agent::create([

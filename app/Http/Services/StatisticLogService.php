@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\Salary;
 use App\Models\StatisticLog;
 
 class StatisticLogService
@@ -15,10 +16,8 @@ class StatisticLogService
 
     public function __construct()
     {
-
         $this->currentGBV = floatval(0);
         $this->ACCGBV = floatval(0);
-
     }
 
     public function ABP($period)
@@ -28,10 +27,9 @@ class StatisticLogService
         $agents = Agent::latest()->get();
         foreach ($agents as $key => $agent) {
             $log = StatisticLog::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->first();
-            // if($this->combPeriodToday === '201310' && $agent->member_id == '202110141234') {
-            //     $log2 = StatisticLog::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->get();
-            //     ddd($log2);
-            // }
+            $salary = Salary::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->first();
+            $logs = StatisticLog::distinct('period')->where('member_id', $agent->member_id)
+                    ->where('owe_bl', '>', 0)->get();
             if($log) {
                 if (floatval($log->acc_pvb) < floatval(50)) {
                     $log->level = 1;
@@ -60,6 +58,125 @@ class StatisticLogService
                     $log->level = 8;
                 }
                 $log->save();
+            }
+
+            if($log->level === 5) {
+
+                $cpv = $log->current_pbv;
+                foreach ($logs as $key => $lg) {
+                    $a = floatval($lg->owe_bl) - floatval($lg->paid_bl);
+                    if(floatval($cpv) >= $a) {
+                        $b = $cpv - $a;
+                        $cpv = $b;
+                        $lg->paid_bl = $a;
+                        $lg->save();
+                        if(floatval($lg->owe_bl) === floatval($lg->paid_bl)) {
+                            $sl = Salary::where('period', $lg->period)->where('member_id', $agent->member_id)->first();
+                            if($sl) {
+                                $sl->active = 1;
+                                $sl->save();
+                            }
+                        }
+
+                    }
+
+                }
+
+                if(floatval($cpv) < floatval(15)) {
+                    $log->owe_bl = floatval(15) - floatval($cpv);
+                    $log->save();
+                    if($salary) {
+                        $salary->active = 0;
+                        $salary->save();
+                    }
+                }
+            }
+            if($log->level === 6) {
+                $cpv = $log->current_pbv;
+                foreach ($logs as $key => $lg) {
+                    $a = floatval($lg->owe_bl) - floatval($lg->paid_bl);
+                    if(floatval($cpv) >= $a) {
+                        $b = $cpv - $a;
+                        $cpv = $b;
+                        $lg->paid_bl = $a;
+                        $lg->save();
+                        if(floatval($lg->owe_bl) === floatval($lg->paid_bl)) {
+                            $sl = Salary::where('period', $lg->period)->where('member_id', $agent->member_id)->first();
+                            if($sl) {
+                                $sl->active = 1;
+                                $sl->save();
+                            }
+                        }
+
+                    }
+
+                }
+                if(floatval($cpv) < floatval(20)) {
+                    $log->owe_bl = floatval(20) - floatval($cpv);
+                    $log->save();
+                    if($salary) {
+                        $salary->active = 0;
+                        $salary->save();
+                    }
+                }
+            }
+            if($log->level === 7) {
+                $cpv = $log->current_pbv;
+                foreach ($logs as $key => $lg) {
+                    $a = floatval($lg->owe_bl) - floatval($lg->paid_bl);
+                    if(floatval($cpv) >= $a) {
+                        $b = $cpv - $a;
+                        $cpv = $b;
+                        $lg->paid_bl = $a;
+                        $lg->save();
+                        if(floatval($lg->owe_bl) === floatval($lg->paid_bl)) {
+                            $sl = Salary::where('period', $lg->period)->where('member_id', $agent->member_id)->first();
+                            if($sl) {
+                                $sl->active = 1;
+                                $sl->save();
+                            }
+                        }
+
+                    }
+
+                }
+                if(floatval($cpv) < floatval(25)) {
+                    $log->owe_bl = floatval(25) - floatval($cpv);
+                    $log->save();
+                    if($salary) {
+                        $salary->active = 0;
+                        $salary->save();
+                    }
+                }
+            }
+            if($log->level === 8) {
+                $cpv = $log->current_pbv;
+                foreach ($logs as $key => $lg) {
+                    $a = floatval($lg->owe_bl) - floatval($lg->paid_bl);
+                    if(floatval($cpv) >= $a) {
+                        $b = $cpv - $a;
+                        $cpv = $b;
+                        $lg->paid_bl = $a;
+                        $lg->save();
+                        if(floatval($lg->owe_bl) === floatval($lg->paid_bl)) {
+                            $sl = Salary::where('period', $lg->period)->where('member_id', $agent->member_id)->first();
+                            if($sl) {
+                                $sl->active = 1;
+                                $sl->save();
+                            }
+                        }
+
+                    }
+
+                }
+                if(floatval($cpv) < floatval(40)) {
+                    $log->owe_bl = floatval(40) - floatval($cpv);
+                    $log->save();
+                    if($salary) {
+                        $salary->active = 0;
+                        $salary->save();
+                    }
+                }
             }
 
         }

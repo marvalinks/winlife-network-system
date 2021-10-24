@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\BonusService;
+use App\Http\Services\GroupService;
 use App\Http\Services\StatisticLogService;
 use App\Imports\AgentTempImport;
 use App\Imports\ArchievementTempImport;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\Salary;
 use App\Models\StatisticLog;
 use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
@@ -28,9 +31,16 @@ class AdminController extends Controller
 
         $st = new StatisticLogService();
         StatisticLog::truncate();
+        Salary::truncate();
+        $grp = new GroupService();
+        $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        // ddd($acs);
+        Salary::truncate();
+        $bns = new BonusService();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
+                $bns->calculateBonus($ac);
                 $st->ABP($ac);
             }
         }
