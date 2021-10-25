@@ -21,8 +21,8 @@ class AchivementObserver
     public function created(Achivement $achivement)
     {
 
-        $lvs = new LevelService($achivement->period);
-        $lvs->ABP();
+        // $lvs = new LevelService($achivement->period);
+        // $lvs->ABP();
 
         // $bns = new BonusService();
         // $bns->calculateBonus($achivement->period);

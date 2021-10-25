@@ -51,7 +51,7 @@ class AgentFilter extends Component
             'November' => '11','December' => '12'
         ];
         $this->memberid = Agent::first()->member_id ?? '';
-        $this->fixSponsers();
+        // $this->fixSponsers();
     }
 
     public $showReg = false;
