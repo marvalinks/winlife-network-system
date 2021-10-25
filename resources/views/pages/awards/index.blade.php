@@ -72,40 +72,37 @@
                 </div>
                 <hr>
                 <div class="widget-body form">
-                        <table class="table table-striped table-bordered dataTable" id="dtable" aria-describedby="sample_1_info">
+                        <table class="table table-striped table-bordered dataTable" id="" aria-describedby="sample_1_info">
                             <thead>
                                 <tr role="row">
-                                    <th style="width: 24px;" class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" aria-label="">
-                                        <div class="checker" id="uniform-undefined">
-                                            <span><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" style="opacity: 0;" /></span>
-                                        </div>
-                                    </th>
-                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Points: activate to sort column ascending" style="width: 122px;">Name</th>
-                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending" style="width: 125px;">Duration</th>
-                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Min level</th>
-                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Min BV</th>
+                                    <th aria-label="Points: activate to sort column ascending" style="width: 122px;">Member ID</th>
+                                    <th aria-label="Email: activate to sort column ascending" style="width: 155px;">Name</th>
+                                    <th aria-label="Joined: activate to sort column ascending" style="width: 50px;"></th>
+                                    @foreach ($awards as $award)
+                                    <th aria-label="Joined: activate to sort column ascending" style="width: 183px;">{{$award->name}}</th>
+                                    @endforeach
                                 </tr>
                             </thead>
 
                             <tbody role="alert" aria-live="polite" aria-relevant="all">
-
-                                @foreach ($awards as $award)
-                                <tr class="gradeX even">
-                                    <td class="sorting_1">
-                                        <div class="checker" id="uniform-undefined">
-                                            <span><input type="checkbox" class="checkboxes" value="1" style="opacity: 0;" /></span>
-                                        </div>
+                                @foreach ($agents as $agent)
+                                <tr>
+                                    <td>{{$agent->member_id}}</td>
+                                    <td>{{$agent->name}}</td>
+                                    <td></td>
+                                    @foreach ($awards as $award)
+                                    <td>
+                                        <input disabled type="checkbox" {{($agent->awards->where('award_id', $award->award_id)->first() && $agent->awards->where('award_id', $award->award_id)->first()->collected) ? 'checked' : ''}} name="" id="">
+                                        @if ($agent->awards->where('award_id', $award->award_id)->first())
+                                        <a href="#" disabled>Asign award</a>
+                                        @endif
                                     </td>
-                                    <td>{{$award->name}}</td>
-                                    <td>{{$award->period}} Months</td>
-                                    <td>Level {{$award->min_level}}</td>
-                                    <td>{{number_format($award->min_bv, 1)}}</td>
+                                    @endforeach
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
-
-                    </div>
+                </div>
             </div>
             <!-- END SAMPLE FORM widget-->
         </div>

@@ -7,6 +7,8 @@ use App\Http\Services\GroupService;
 use App\Http\Services\StatisticLogService;
 use App\Imports\AgentTempImport;
 use App\Imports\ArchievementTempImport;
+use App\Jobs\CalculateBonus;
+use App\Jobs\StatisticLogJob;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\Salary;
@@ -40,8 +42,10 @@ class AdminController extends Controller
         $bns = new BonusService();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
-                $bns->calculateBonus($ac);
-                $st->ABP($ac);
+                $this->dispatch(new CalculateBonus($ac));
+                $this->dispatch(new StatisticLogJob($ac));
+                // $bns->calculateBonus($ac);
+                // $st->ABP($ac);
             }
         }
         // $awd->ABP();

@@ -69,7 +69,7 @@
                         <tr class="gradeX even">
                             <td class="sorting_1">
                                 <div class="" id="">
-                                    <span><input wire:model="selectedAgents" value="{{$sponser->member_id}}" type="checkbox" class="" /></span>
+                                    <span><input {{floatval($sponser->currentsalary($combPeriodToday)->amount ?? 0) > 0 ? '' : 'disabled'}} wire:model="selectedAgents" value="{{$sponser->member_id}}" type="checkbox" class="" /></span>
                                 </div>
                             </td>
                             <td>{{$sponser->firstname.' '.$sponser->lastname}}</td>
@@ -97,7 +97,7 @@
                         <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
                             <td class="sorting_1">
                                 <div class="" id="uniform-undefined">
-                                    <span><input wire:model="selectedAgents" value="{{$spp->member_id}}" type="checkbox" class="" /></span>
+                                    <span><input {{floatval($spp->currentsalary($combPeriodToday)->amount ?? 0) > 0 ? '' : 'disabled'}} wire:model="selectedAgents" value="{{$spp->member_id}}" type="checkbox" class="" /></span>
                                 </div>
                             </td>
                             <td>{{$spp->firstname.' '.$spp->lastname}}</td>

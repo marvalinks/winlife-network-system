@@ -30,6 +30,10 @@ class Agent extends Model
     {
         return $this->hasMany(Achivement::class, 'member_id', 'member_id');
     }
+    public function awards()
+    {
+        return $this->hasMany(AwardQualifier::class, 'member_id', 'member_id');
+    }
     public function sponser()
     {
         return $this->belongsTo(Agent::class, 'sponser_id', 'member_id');

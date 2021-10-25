@@ -51,6 +51,7 @@
     $combPeriod = date('Y').date('m');
     $sumMoney = 0.0;
     $sumbv = 0.0;
+    $conf = \App\Models\BvRate::first();
 @endphp
     @for ($i=1; $i < 3; $i++)
     @if ($i == 2)
@@ -118,11 +119,11 @@
                         @foreach ($firstPreview as $user)
                         <tr>
                             <td>{{$user->member_id}}</td>
-                            <td>{{$user->fistname.' '.$user->lastname}}</td>
+                            <td>{{$user->firstname.' '.$user->lastname}}</td>
                             <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                             @php
                                 if($i < 2) {
-                                    $sumMoney += $user->currentbonus($combPeriod)->amount;
+                                    $sumMoney += $user->currentsalary($combPeriod)->amount ?? 0;
                                     $sumbv += $user->currentach($combPeriod)->sum('total_pv');
                                 }
                             @endphp
@@ -145,11 +146,11 @@
                         @foreach ($secondPreview as $user)
                         <tr class="gradeX even">
                             <td>{{$user->member_id}}</td>
-                            <td>{{$user->fistname.' '.$user->lastname}}</td>
+                            <td>{{$user->firstname.' '.$user->lastname}}</td>
                             <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                             @php
                                 if($i < 2) {
-                                    $sumMoney += $user->currentbonus($combPeriod)->amount;
+                                    $sumMoney += $user->currentsalary($combPeriod)->amount ?? 0;
                                     $sumbv += $user->currentach($combPeriod)->sum('total_pv');
                                 }
                             @endphp
@@ -162,10 +163,10 @@
         <div class="row p56">
             <div class="row"></div>
             <div class="row">
-                <h6><b>Total BV:</b> <span>{{number_format(floatval($sumbv), 1)}}</span></h6>
+                <h6><b>Total BV:</b> <span>{{number_format(floatval($sumMoney), 2)}}</span></h6>
             </div>
             <div class="row">
-                <h6><b>In GHC:</b> <span>{{number_format(floatval($sumMoney), 2)}}</span></h6>
+                <h6><b>In GHC:</b> <span>{{number_format(floatval($sumMoney * ($conf->rate ?? float(0))), 2)}}</span></h6>
             </div>
         </div>
         <div class="row" style="margin-top: 20px; margin-bottom: 50px;">

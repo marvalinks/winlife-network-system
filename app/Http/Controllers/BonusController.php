@@ -6,6 +6,8 @@ use App\Http\Services\BonusService;
 use App\Http\Services\GroupService;
 use App\Http\Services\LevelService;
 use App\Http\Services\StatisticLogService;
+use App\Jobs\CalculateBonus;
+use App\Jobs\StatisticLogJob;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\Bonus;
@@ -44,6 +46,12 @@ class BonusController extends Controller
         $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
             'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview
         ]);
+        // ddd($first, $second, $this->combPeriodToday);
+        $salaries = Salary::whereIn('member_id', array_merge_recursive($first, $second))->where('period', $this->combPeriodToday)->get();
+        foreach ($salaries as $key => $salary) {
+            $salary->paid = 1;
+            $salary->save();
+        }
         $orientation = 'portrait';
         $paper = 'A4';
         $pdf->setOrientation($orientation)
@@ -57,8 +65,10 @@ class BonusController extends Controller
         ->setOption('enable-smart-shrinking', true)
         ->setOption('javascript-delay', 1000)
         ->setTimeout(120);
-        return $pdf->inline();
-        return view('pages.pdfs.payment', compact('sponser', 'firstPreview', 'secondPreview'));
+        // return $pdf->inline();
+        $name = $this->combPeriodToday.'-'.$firstPreview[0]->member_id.'.pdf';
+        // ddd($name);
+        return $pdf->download($name);
     }
 
     public function markPayment(Request $request)
@@ -103,8 +113,10 @@ class BonusController extends Controller
         $bns = new BonusService();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
-                $bns->calculateBonus($ac);
-                $st->ABP($ac);
+                $this->dispatch(new CalculateBonus($ac));
+                $this->dispatch(new StatisticLogJob($ac));
+                // $bns->calculateBonus($ac);
+                // $st->ABP($ac);
             }
         }
         $request->session()->flash('alert-success', 'Bonuses calculated for agents');

@@ -20,6 +20,7 @@ class CreateAwardsTable extends Migration
             $table->integer('period')->nullable();
             $table->integer('min_level')->nullable();
             $table->float('min_bv')->nullable();
+            $table->integer('order')->nullable();
             $table->timestamps();
         });
     }

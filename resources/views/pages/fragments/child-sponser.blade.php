@@ -1,7 +1,7 @@
 <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
     <td class="sorting_1">
         <div class="" id="uniform-undefined">
-            <span><input {{isset($dsd) && $dsd == 1 ? 'disabled': ''}} wire:model="selectedAgents" value="{{$child_sponser->member_id}}" type="checkbox" class="checkboxes" /></span>
+            <span><input {{floatval($child_sponser->currentsalary($combPeriod)->amount ?? 0) > 0 ? '' : 'disabled'}} {{isset($dsd) && $dsd == 1 ? 'disabled': ''}} wire:model="selectedAgents" value="{{$child_sponser->member_id}}" type="checkbox" class="checkboxes" /></span>
             <input type="hidden" value="{{$child_sponser->member_id}}" name="agents[]">
         </div>
     </td>

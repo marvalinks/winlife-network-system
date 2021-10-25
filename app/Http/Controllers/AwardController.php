@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Services\AwardService;
+use App\Models\Agent;
 use App\Models\Award;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -29,8 +30,9 @@ class AwardController extends Controller
 
     public function index(Request $request)
     {
-        $awards = Award::latest()->get();
-        return view('pages.awards.index', compact('awards'));
+        $awards = Award::orderBy('order', 'asc')->get();
+        $agents = Agent::orderBy('created_at', 'asc')->paginate(200);
+        return view('pages.awards.index', compact('awards', 'agents'));
     }
     public function add(Request $request)
     {

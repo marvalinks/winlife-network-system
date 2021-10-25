@@ -7,6 +7,8 @@ use App\Http\Services\BonusService;
 use App\Http\Services\GroupService;
 use App\Http\Services\LevelService;
 use App\Http\Services\StatisticLogService;
+use App\Jobs\AwardServiceJob;
+use App\Jobs\LevelServiceJob;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
@@ -36,8 +38,8 @@ class AgentController extends Controller
     protected function start()
     {
 
-        $lv = new LevelService($this->combPeriodToday);
-        $lv->ABP();
+        // $lv = new LevelService($this->combPeriodToday);
+        // $lv->ABP();
         // $grp = new GroupService();
         // $grp->GRP();
         // $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
@@ -48,8 +50,9 @@ class AgentController extends Controller
         //         $bns->calculateBonus($ac);
         //     }
         // }
-        $awd = new AwardService($this->combPeriodToday);
-        // $awd->ABP();
+        $this->dispatch(new LevelServiceJob($this->combPeriodToday));
+        $this->dispatch(new AwardServiceJob($this->combPeriodToday));
+
     }
 
     public function index(Request $request)
@@ -188,8 +191,8 @@ class AgentController extends Controller
         $pdf = SnappyPdf::loadView('pages.pdfs.agent-report', [
             'sponsers' => $sponsers, 'sponser' => $sponser, 'combPeriod' => $combPeriod
         ]);
-        $orientation = 'portrait';
-        $paper = 'A4';
+        $orientation = 'landscape';
+        $paper = 'A5';
         $pdf->setOrientation($orientation)
         ->setOption('page-size', $paper)
         ->setOption('margin-bottom', '0mm')
