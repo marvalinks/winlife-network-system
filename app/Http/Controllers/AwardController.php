@@ -30,16 +30,19 @@ class AwardController extends Controller
 
     public function index(Request $request)
     {
-        // ddd($request->all());
+        $month = date('m');
+        $year = date('Y');
+        $combPeriodToday = $this->combPeriodToday;
         $awards = Award::orderBy('order', 'asc')->get();
         $agents = Agent::query();
         if ($request->member_id) {
             $agents = $agents->where('member_id', $request->member_id)->paginate(1);
         } else {
-            $agents = $agents->orderBy('created_at', 'asc')->paginate(200);
+            $callback = function($query) use ($combPeriodToday) {
+                $query->where('period', $combPeriodToday);
+            };
+            $agents = $agents->whereHas('awards', $callback)->with(['awards' => $callback])->orderBy('created_at', 'asc')->paginate(200);
         }
-
-        // ddd($agents);
 
         $months = [
             'January' => '01','February' => '02','March' => '03',
@@ -47,7 +50,7 @@ class AwardController extends Controller
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
-        return view('pages.awards.index', compact('awards', 'agents', 'months'));
+        return view('pages.awards.index', compact('awards', 'agents', 'months', 'month', 'year'));
     }
     public function add(Request $request)
     {

@@ -19,6 +19,7 @@ class CreateAwardQualifiersTable extends Migration
             $table->string('member_id');
             $table->boolean('collected')->default(0);
             $table->float('used_bv')->default(0);
+            $table->string('period')->nullable();
             $table->timestamps();
         });
     }

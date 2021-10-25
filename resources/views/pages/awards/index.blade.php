@@ -70,7 +70,7 @@
                                 <div class="control-group span3">
                                     <label class="control-label">Member</label>
                                     <div class="controls">
-                                        <input type="text" name="member_id" value="{{$agents[0]->member_id}}">
+                                        <input type="text" name="member_id" value="{{$agents[0]->member_id ?? ''}}">
                                     </div>
                                 </div>
                                 <div class="control-group span3">
@@ -78,7 +78,7 @@
                                     <div class="controls">
                                         <select name="selectedYear" name="" id="">
                                             @for ($i=date('Y'); $i>2010; $i--)
-                                            <option value="{{$i}}">{{$i}}</option>
+                                            <option value="{{$i}}" {{$i===$year ? 'selected' : ''}}>{{$i}}</option>
                                             @endfor
                                         </select>
                                     </div>
@@ -87,9 +87,8 @@
                                     <label class="control-label">Month</label>
                                     <div class="controls">
                                         <select name="selectedMonth" name="" id="">
-                                            <option selected value="">-choose-</option>
-                                            @foreach ($months as $month)
-                                            <option value="{{$month}}">{{$month}}</option>
+                                            @foreach ($months as $mth)
+                                            <option {{$month===$mth ? 'selected' : ''}} value="{{$mth}}">{{$mth}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -121,21 +120,27 @@
                             </thead>
 
                             <tbody role="alert" aria-live="polite" aria-relevant="all">
-                                @foreach ($agents as $agent)
-                                <tr>
-                                    <td>{{$agent->member_id}}</td>
-                                    <td>{{$agent->name}}</td>
-                                    <td></td>
-                                    @foreach ($awards as $award)
-                                    <td>
-                                        <input disabled type="checkbox" {{($agent->awards->where('award_id', $award->award_id)->first() && $agent->awards->where('award_id', $award->award_id)->first()->collected) ? 'checked' : ''}} name="" id="">
-                                        @if ($agent->awards->where('award_id', $award->award_id)->first())
-                                        <a href="#" disabled>Asign award</a>
-                                        @endif
-                                    </td>
+                                @if (count($agents) > 0)
+                                    @foreach ($agents as $agent)
+                                    <tr>
+                                        <td>{{$agent->member_id}}</td>
+                                        <td>{{$agent->name}}</td>
+                                        <td></td>
+                                        @foreach ($awards as $award)
+                                        <td>
+                                            <input disabled type="checkbox"  {{($agent->awards->where('award_id', $award->award_id)->first() && $agent->awards->where('award_id', $award->award_id)->first()->collected) ? 'checked' : ''}} name="" id="">
+                                            @if ($agent->awards->where('award_id', $award->award_id)->first())
+                                            <a href="#" disabled>Asign award</a>
+                                            @endif
+                                        </td>
+                                        @endforeach
+                                    </tr>
                                     @endforeach
-                                </tr>
-                                @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="9">No awards data found!</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                 </div>
