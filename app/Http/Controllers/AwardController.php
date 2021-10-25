@@ -30,9 +30,24 @@ class AwardController extends Controller
 
     public function index(Request $request)
     {
+        // ddd($request->all());
         $awards = Award::orderBy('order', 'asc')->get();
-        $agents = Agent::orderBy('created_at', 'asc')->paginate(200);
-        return view('pages.awards.index', compact('awards', 'agents'));
+        $agents = Agent::query();
+        if ($request->member_id) {
+            $agents = $agents->where('member_id', $request->member_id)->paginate(1);
+        } else {
+            $agents = $agents->orderBy('created_at', 'asc')->paginate(200);
+        }
+
+        // ddd($agents);
+
+        $months = [
+            'January' => '01','February' => '02','March' => '03',
+            'April' => '04','May' => '05','June' => '06','July' => '07',
+            'August' => '08','September' => '09','October' => '10',
+            'November' => '11','December' => '12'
+        ];
+        return view('pages.awards.index', compact('awards', 'agents', 'months'));
     }
     public function add(Request $request)
     {

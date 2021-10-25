@@ -64,6 +64,42 @@
                 </div>
                 <div class="row-fluid">
                     <div class="clearfix">
+                        <div class="btn-group pull-left" style="margin-right: 10px;">
+                            <form class="fm" action="" method="get">
+                                @csrf
+                                <div class="control-group span3">
+                                    <label class="control-label">Member</label>
+                                    <div class="controls">
+                                        <input type="text" name="member_id" value="{{$agents[0]->member_id}}">
+                                    </div>
+                                </div>
+                                <div class="control-group span3">
+                                    <label class="control-label">Year</label>
+                                    <div class="controls">
+                                        <select name="selectedYear" name="" id="">
+                                            @for ($i=date('Y'); $i>2010; $i--)
+                                            <option value="{{$i}}">{{$i}}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control-group span3">
+                                    <label class="control-label">Month</label>
+                                    <div class="controls">
+                                        <select name="selectedMonth" name="" id="">
+                                            <option selected value="">-choose-</option>
+                                            @foreach ($months as $month)
+                                            <option value="{{$month}}">{{$month}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control-group span3">
+                                    <label class="control-label">.</label>
+                                    <button type="submit" class="btn">Search</button>
+                                </div>
+                            </form>
+                        </div>
                         <div class="btn-group pull-right" style="margin-right: 10px;">
                             <a href="{{route('admin.awards.add')}}" class="btn green">Add new award <i class="icon-plus"></i></a>
                         </div>
