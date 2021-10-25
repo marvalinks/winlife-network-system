@@ -204,7 +204,8 @@ class AgentController extends Controller
         ->setOption('enable-smart-shrinking', true)
         ->setOption('javascript-delay', 1000)
         ->setTimeout(120);
-        return $pdf->inline();
-        return view('pages.pdfs.agent-report', compact('sponser', 'sponsers', 'combPeriod'));
+        $name = $this->combPeriodToday.'-'.$sponser->member_id.'.pdf';
+        return $pdf->download($name);
+        // return view('pages.pdfs.agent-report', compact('sponser', 'sponsers', 'combPeriod'));
     }
 }
