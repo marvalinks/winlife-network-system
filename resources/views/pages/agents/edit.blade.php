@@ -26,7 +26,6 @@
         $lv = 1;
         $lvi = 1;
         $lvf = 2;
-        $combPeriod = date('Y').date('m');
     @endphp
 <div class="container-fluid">
     <div class="row-fluid">
@@ -50,13 +49,46 @@
                         <div class="btn-group pull-right" style="margin-right: 10px;">
                             <a href="{{route('admin.calculate.bonus')}}" class="btn green">Calculate Bonus <i class="icon-plus"></i></a>
                             <a href="{{route('admin.agent.payment',[$sponser->member_id])}}" class="btn green">Make Payment <i class="icon-plus"></i></a>
+                            <button type="button" onclick="document.getElementById('gm-t').submit();"  class="btn green">Print Out <i class="icon-plus"></i></button>
                         </div>
                         @endif
                     </div>
 
                 </div>
                 <hr>
-                <h2 style="padding-left: 30px;">Downlines</h2>
+                <div class="row-fluid">
+                    <h2 style="padding-left: 30px;">Downlines - {{$combPeriod}}</h2>
+                    <div class="btn-group pull-right" style="margin-right: 10px;">
+                        <form action="#" method="get">
+                            @csrf
+                            <div class="control-group span3">
+                                <label class="control-label">Year</label>
+                                <div class="controls">
+                                    <select required name="year" id="">
+                                        @for ($i=date('Y'); $i>2010; $i--)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group span3">
+                                <label class="control-label">Month</label>
+                                <div class="controls">
+                                    <select style="width: auto;" required name="month" id="">
+                                        <option selected value="">-choose-</option>
+                                        @foreach ($months as $month)
+                                        <option value="{{$month}}">{{$month}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group span3">
+                                <label class="control-label">.</label>
+                                <button type="submit" class="btn">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <hr>
                 <div class="widget-body form">
                     <table class="table table-striped table-bordered dataTable mx-table" id="dtable2" aria-describedby="sample_1_info">
@@ -86,77 +118,95 @@
                             </tr>
                         </thead>
 
-                        <tbody role="alert" aria-live="polite" aria-relevant="all">
-
-                            <tr class="gradeX even}}">
-                                <td class="sorting_1">
-                                    <div class="checker" id="uniform-undefined">
-                                        <span><input type="checkbox" class="checkboxes" value="1" style="opacity: 0;" /></span>
-                                    </div>
-                                </td>
-                                <td>{{$sponser->firstname.' '.$sponser->lastname}}</td>
-                                <td>{{$sponser->period}}</td>
-                                <td>{{$sponser->member_id}}</td>
-                                <td>0</td>
-                                <td>{{$sponser->stats->level}}</td>
-                                <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
-                                <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
-                                <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
-                                <td>{{$sponser->sponser_id ?? '-'}}</td>
-                                <td>{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
-                                @if (auth()->user()->roleid == 1)
-                                    <td>
-                                        <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                        <form id="gm-t" action="{{route('admin.agent.print.report')}}" method="get">
+                            <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                @csrf
+                                <input type="hidden" name="combPeriod" value="{{$combPeriod}}">
+                                <tr class="gradeX even}}">
+                                    <td class="sorting_1">
+                                        <div class="checker" id="uniform-undefined">
+                                            <span><input value="{{$sponser->member_id}}" name="agents[]" type="checkbox" class="checkboxes" style="opacity: 0;" /></span>
+                                            <input type="hidden" value="{{$sponser->member_id}}" name="agents[]">
+                                        </div>
                                     </td>
-                                @endif
-                                <td></td>
-                                <td></td>
-                            </tr>
+                                    <td>{{$sponser->firstname.' '.$sponser->lastname}}</td>
+                                    <td>{{$sponser->period}}</td>
+                                    <td>{{$sponser->member_id}}</td>
+                                    <td>0</td>
+                                    <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
+                                    <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
+                                    <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
+                                    @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
+                                    <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                                    @else
+                                    <td>{{number_format(floatval(0), 2)}}</td>
+                                    @endif
+                                    <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
+                                    <td>{{$sponser->sponser_id ?? '-'}}</td>
+                                    <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+                                    @if (auth()->user()->roleid == 1)
+                                        <td>
+                                            <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                        </td>
+                                    @endif
+                                    <td></td>
+                                    <td></td>
+                                </tr>
 
-                            @foreach ($sponsers as $key => $spp)
-                            <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
-                                <td class="sorting_1">
-                                    <div class="checker" id="uniform-undefined">
-                                        <span><input type="checkbox" class="checkboxes" value="1" style="opacity: 0;" /></span>
-                                    </div>
-                                </td>
-                                <td>{{$spp->firstname.' '.$spp->lastname}}</td>
-                                <td>{{$spp->period}}</td>
-                                <td>{{$spp->member_id}}</td>
-                                <td>{{$lv}}</td>
-                                <td>{{$spp->stats->level}}</td>
-                                <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                <td>{{number_format($spp->currentgbv($combPeriod), 2)}}</td>
-                                <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td>
-                                <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
-                                <td>{{$spp->sponser_id ?? '-'}}</td>
-                                <td>{{number_format(($spp->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
-                                @if (auth()->user()->roleid == 1)
-                                    <td>
-                                        <input type="checkbox" disabled {{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $spp)
+                                <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
+                                    <td class="sorting_1">
+                                        <div class="checker" id="uniform-undefined">
+                                            <span><input type="checkbox" class="checkboxes" value="1" style="opacity: 0;" /></span>
+                                            <input type="hidden" value="{{$spp->member_id}}" name="agents[]">
+                                        </div>
                                     </td>
-                                @endif
-                                <td>
-                                    <a href="{{route('admin.agent.edit', [$spp->member_id])}}">Adjust</a>
-                                </td>
-                                <td></td>
-                            </tr>
+                                    <td>{{$spp->firstname.' '.$spp->lastname}}</td>
+                                    <td>{{$spp->period}}</td>
+                                    <td>{{$spp->member_id}}</td>
+                                    <td>{{$lv}}</td>
+                                    <td>{{$spp->stats->level}}</td>
+                                    <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
+                                    <td>{{number_format($spp->currentgbv($combPeriod), 2)}}</td>
+                                    @if (intval($combPeriod) >= intval($spp->archievements->min('period')))
+                                    <td>{{number_format($spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                                    @else
+                                    <td>{{number_format(floatval(0), 2)}}</td>
+                                    @endif                                <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
+                                    <td>{{$spp->sponser_id ?? '-'}}</td>
+                                    <td class="{{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($spp->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+                                    @if (auth()->user()->roleid == 1)
+                                        <td>
+                                            <input type="checkbox" disabled {{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                        </td>
+                                    @endif
+                                    <td>
+                                        <a href="{{route('admin.agent.edit', [$spp->member_id])}}">Adjust</a>
+                                    </td>
+                                    <td></td>
+                                </tr>
 
-                            @foreach ($spp->childrenSponsers as $k => $childrenSponser)
-                                @php
-                                    if($spp->member_id === $childrenSponser->sponser_id){
-                                        $lvi++;
-                                    }
+                                @foreach ($spp->childrenSponsers as $k => $childrenSponser)
+                                    @php
+                                        if($spp->member_id === $childrenSponser->sponser_id){
+                                            $lvi++;
+                                        }
 
-                                @endphp
-                                @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
-                            @endforeach
-                            @endforeach
+                                    @endphp
+                                    @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
+                                @endforeach
+                                @endforeach
 
-                        </tbody>
+                            </tbody>
+                        </form>
                     </table>
 
+                </div>
+                <hr>
+                <div class="row-fluid">
+                    <div class="btn-group pull-right" style="margin-right: 10px;">
+                        <button type="button" onclick="document.getElementById('gm-t').submit();"  class="btn green">Print Out <i class="icon-plus"></i></button>
+                    </div>
                 </div>
                 <hr>
                 <div class="widget-body form">

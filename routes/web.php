@@ -53,6 +53,7 @@ Route::prefix('admin/agents')->group(function () {
     Route::get('export-a', [ExportController::class, 'exportAA'])->name('admin.agent.export.aa');
     Route::post('upload-export-r', [ExportController::class, 'uploadExportR'])->name('admin.agent.upload.export.r');
     Route::post('upload-export-a', [ExportController::class, 'uploadExportA'])->name('admin.agent.upload.export.a');
+    Route::get('print-agent-report', [AgentController::class, 'printReport'])->name('admin.agent.print.report');
 });
 Route::prefix('admin/users')->group(function () {
     Route::get('', [UserController::class, 'index'])->name('admin.users');

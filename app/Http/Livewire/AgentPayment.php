@@ -35,7 +35,9 @@ class AgentPayment extends Component
     }
     public function updatedSelectAll($value)
     {
+
         if($value) {
+            // ddd($this->sponsers);
             $this->selectedAgents = $this->sponsers->pluck('member_id');
             $this->selectedAgents->push($this->sponser->member_id);
         }else{

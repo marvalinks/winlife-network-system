@@ -100,8 +100,12 @@ class AgentController extends Controller
         // ini_set('memory_limit', '-1');
         // ini_set('max_execution_time', 0);
         $sponser = Agent::where('member_id', $id)->first();
-        $sponsers =  Agent::where('sponser_id', $id)->take(15)->get();
-
+        $sponsers =  Agent::where('sponser_id', $id)->get();
+        // ddd($request->all());
+        $combPeriod = $this->combPeriodToday;
+        if($request->year && $request->month) {
+            $combPeriod = $request->year.''. $request->month;
+        }
         $this->currentGBV = $sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
         $this->ACCGBV = $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
 
@@ -122,8 +126,16 @@ class AgentController extends Controller
         $currentGBV = $this->currentGBV;
         $ACCGBV = $this->ACCGBV;
         $combPeriodToday = $this->combPeriodToday;
+
         $archievements = Achivement::where('member_id', $id)->latest()->paginate(150);
-        return view('pages.agents.edit', compact('sponser', 'sponsers', 'archievements', 'ACCGBV', 'currentGBV', 'combPeriodToday'));
+        $months = [
+            'January' => '01','February' => '02','March' => '03',
+            'April' => '04','May' => '05','June' => '06','July' => '07',
+            'August' => '08','September' => '09','October' => '10',
+            'November' => '11','December' => '12'
+        ];
+        // ddd($combPeriod);
+        return view('pages.agents.edit', compact('sponser', 'sponsers', 'combPeriod', 'archievements', 'ACCGBV', 'currentGBV', 'combPeriodToday', 'months'));
     }
 
     public function adjustPvb(Request $request, $id)
@@ -161,5 +173,35 @@ class AgentController extends Controller
         $combPeriodToday = $this->combPeriodToday;
         // ddd($combPeriodToday);
         return view('pages.agents.payment', compact('sponsers', 'sponser', 'combPeriodToday'));
+    }
+    public function printReport(Request $request)
+    {
+        // ddd($request->all());
+        if(count($request->agents) < 1) {
+            $request->session()->flash('alert-error', 'No agents selected or found!');
+            return back();
+        }
+        // $agents = Agent::whereIn('member_id', $request->agents)->get();
+        $sponser = Agent::where('member_id', $request->agents[0])->first();
+        $sponsers =  Agent::where('sponser_id', $sponser->member_id)->get();
+        $combPeriod = $request->combPeriod;
+        $pdf = SnappyPdf::loadView('pages.pdfs.agent-report', [
+            'sponsers' => $sponsers, 'sponser' => $sponser, 'combPeriod' => $combPeriod
+        ]);
+        $orientation = 'portrait';
+        $paper = 'A4';
+        $pdf->setOrientation($orientation)
+        ->setOption('page-size', $paper)
+        ->setOption('margin-bottom', '0mm')
+        ->setOption('margin-top', '8.7mm')
+        ->setOption('margin-right', '0mm')
+        ->setOption('margin-left', '0mm')
+        ->setOption('enable-javascript', true)
+        ->setOption('no-stop-slow-scripts', true)
+        ->setOption('enable-smart-shrinking', true)
+        ->setOption('javascript-delay', 1000)
+        ->setTimeout(120);
+        return $pdf->inline();
+        return view('pages.pdfs.agent-report', compact('sponser', 'sponsers', 'combPeriod'));
     }
 }

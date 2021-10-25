@@ -203,7 +203,7 @@
                             @foreach ($firstPreview as $user)
                             <tr>
                                 <td>{{$user->member_id}}</td>
-                                <td>{{$user->fistname.' '.$user->lastname}}</td>
+                                <td>{{$user->firstname.' '.$user->lastname}}</td>
                                 <td>{{number_format(($user->currentsalary($combPeriodToday)->amount ?? 0), 2)}}</td>
                                 @php
                                     if($i < 2) {
@@ -230,7 +230,7 @@
                             @foreach ($secondPreview as $user)
                             <tr class="gradeX even">
                                 <td>{{$user->member_id}}</td>
-                                <td>{{$user->fistname.' '.$user->lastname}}</td>
+                                <td>{{$user->firstname.' '.$user->lastname}}</td>
                                 <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
                                 @php
                                     if($i < 2) {
