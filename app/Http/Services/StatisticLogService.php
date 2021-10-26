@@ -211,14 +211,17 @@ class StatisticLogService
             // if($this->combPeriodToday === '201310' && $user->member_id == '202110141234') {
             //     ddd($this->ACCGBV);
             // }
-            $stats = new StatisticLog();
-            $stats->member_id = $user->member_id;
-            $stats->period = $this->combPeriodToday;
-            $stats->current_pbv = $achTotal;
-            $stats->acc_pvb = $achTotal2;
-            $stats->current_gbv = $this->currentGBV;
-            $stats->acc_gbv = $this->ACCGBV;
-            $stats->save();
+            if (intval($user->period) >= intval($this->combPeriodToday)) {
+                $stats = new StatisticLog();
+                $stats->member_id = $user->member_id;
+                $stats->period = $this->combPeriodToday;
+                $stats->current_pbv = $achTotal;
+                $stats->acc_pvb = $achTotal2;
+                $stats->current_gbv = $this->currentGBV;
+                $stats->acc_gbv = $this->ACCGBV;
+                $stats->save();
+            }
+
         }
     }
 
