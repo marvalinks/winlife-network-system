@@ -29,6 +29,7 @@ class CalculateBonus implements ShouldQueue
      */
     public function handle()
     {
+        
         $bns = new BonusService();
         $bns->calculateBonus($this->period);
     }

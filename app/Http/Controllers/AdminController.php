@@ -38,6 +38,8 @@ class AdminController extends Controller
         Salary::truncate();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
+                // $st = new StatisticLogService();
+                // $st->ABP($ac);
                 $this->dispatch(new CalculateBonus($ac));
                 $this->dispatch(new StatisticLogJob($ac));
             }

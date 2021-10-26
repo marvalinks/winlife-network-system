@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Models\Agent;
 use App\Models\Bonus;
 use App\Models\Salary;
+use App\Models\CheckRunBill;
 
 class BonusService
 {
@@ -25,31 +26,36 @@ class BonusService
 
     public function calculateBonus($period)
     {
-        $users = Agent::latest()->get();
-        $bns = Bonus::where('period', $period)->truncate();
-        $sls = Salary::where('period', $period)->get();
-        foreach ($bns as $key => $trn) {
-            $trn->delete();
-        }
-        foreach ($sls as $key => $trn) {
-            $trn->delete();
-        }
-        // if ($this->combPeriodToday == "202110") {
-        //     ddd($sls);
-        // }
-        foreach ($users as $key => $user) {
-            $this->loopcount = 0;
-            $this->pugcount = 0;
-            $this->combPeriodToday = $period;
-            $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
+        $pd = CheckRunBill::where('type', 'bonus')->where('period', $period)->first(); 
 
-            if($user->level > 2){
-                $this->doBonus($user, $this->loopcount++);
+        if(!$pd):
+            $users = Agent::latest()->get();
+            $bns = Bonus::where('period', $period)->truncate();
+            $sls = Salary::where('period', $period)->get();
+            foreach ($bns as $key => $trn) {
+                $trn->delete();
             }
-            $this->loopcount++;
-            $this->reloop($user);
-        }
-        return true;
+            foreach ($sls as $key => $trn) {
+                $trn->delete();
+            }
+            foreach ($users as $key => $user) {
+                $this->loopcount = 0;
+                $this->pugcount = 0;
+                $this->combPeriodToday = $period;
+                $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
+
+                if($user->level > 2){
+                    $this->doBonus($user, $this->loopcount++);
+                }
+                $this->loopcount++;
+                $this->reloop($user);
+            }
+            CheckRunBill::create([
+                'period' => $period, 'type' => 'bonus'
+            ]);
+            return true;
+        endif;
+        
     }
 
 
