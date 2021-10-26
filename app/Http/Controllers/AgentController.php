@@ -63,7 +63,9 @@ class AgentController extends Controller
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
-        // ddd($request->all());
+        $mth = $request->selectedMonth ?? date('m');
+        $mth = $request->selectedMonth ?? date('m');
+        $yr = intval($request->selectedYear ?? date('Y'));
         if($request->memberid) {
             $memberid = $request->memberid;
             $combPeriod = $request->selectedYear.''. $request->selectedMonth;
@@ -73,20 +75,20 @@ class AgentController extends Controller
             $agents =  Agent::where('sponser_id', $memberid)->get();
             $user =  Agent::where('member_id', $memberid)->first();
             if($user) {
-                if(intval($user->period) < intval($combPeriod)) {
+                if(intval($user->period) > intval($combPeriod)) {
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
-                    return back();
+                    return redirect()->route('admin.agents');
                 }
                 $user = $user;
                 $sponsers = $agents;
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
             }else{
                 $request->session()->flash('alert-danger', 'Member ID not found in system!');
-                return back();
+                return redirect()->route('admin.agents');
             }
         }
 
-        return view('pages.agents.index', compact('months'));
+        return view('pages.agents.index', compact('months', 'yr', 'mth'));
     }
     public function add(Request $request)
     {

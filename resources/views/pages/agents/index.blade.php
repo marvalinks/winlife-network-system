@@ -29,12 +29,10 @@
 <script type="text/javascript" src="/backend/assets/data-tables/DT_bootstrap.js"></script>
 <script>
     $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
-    window.addEventListener('reopenDatatable', event => {
-        oTable = $('.dtable').DataTable({
+    oTable = $('.dtable').DataTable({
             "iDisplayLength": -1
         });
         oTable.fnSort( [ [4,'asc'] ] );
-    })
 </script>
 
 @endsection
@@ -201,7 +199,7 @@
                             </tr>
 
                             @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
-                            @if (intval($sponser->period) < intval($combPeriod))
+                            @if (intval($sponser->period) <= intval($combPeriod))
                             <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
                                 <td class="sorting_1">
                                     <div class="checker" id="uniform-undefined">
@@ -215,13 +213,11 @@
                                 <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
                                 <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                 <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
-                                <!-- <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td> -->
                                 @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
                                 <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                 @else
                                 <td>{{number_format(floatval(0), 2)}}</td>
                                 @endif
-                                <!-- <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}</td> -->
                                 <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                                 <td>{{$sponser->sponser_id ?? '-'}}</td>
                                 <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
