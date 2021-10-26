@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\CheckRunBill;
 
 class LevelService
 {
@@ -23,48 +24,52 @@ class LevelService
 
     public function ABP()
     {
-        $this->adjustBulkPvb();
-        $agents = Agent::latest()->get();
-        foreach ($agents as $key => $agent) {
+        $pd = CheckRunBill::where('type', 'bonus')->where('period', $this->combPeriodToday)->first(); 
 
-            if (floatval($agent->stats->acc_pvb) < floatval(50)) {
-                    $agent->stats->level = 1;
-                    $agent->level = 1;
+        if(!$pd){
+            $this->adjustBulkPvb();
+            $agents = Agent::latest()->get();
+            foreach ($agents as $key => $agent) {
 
-            }
-            if (floatval($agent->stats->acc_pvb) >= floatval(50) && floatval($agent->stats->acc_pvb) < floatval(200)) {
-                $agent->stats->level = 2;
-                $agent->level = 2;
+                if (floatval($agent->stats->acc_pvb) < floatval(50)) {
+                        $agent->stats->level = 1;
+                        $agent->level = 1;
 
-            }
-            if (floatval($agent->stats->acc_pvb) >= floatval(200)) {
-                $agent->stats->level = 3;
-                $agent->level = 3;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(800)) {
-                $agent->stats->level = 4;
-                $agent->level = 4;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(3000)) {
-                $agent->stats->level = 5;
-                $agent->level = 5;
+                }
+                if (floatval($agent->stats->acc_pvb) >= floatval(50) && floatval($agent->stats->acc_pvb) < floatval(200)) {
+                    $agent->stats->level = 2;
+                    $agent->level = 2;
 
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(20000)) {
-                $agent->stats->level = 6;
-                $agent->level = 6;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(80000)) {
-                $agent->stats->level = 7;
-                $agent->level = 7;
-            }
-            if (floatval($agent->stats->acc_gbv) >= floatval(320000)) {
-                $agent->stats->level = 8;
-                $agent->level = 8;
-            }
+                }
+                if (floatval($agent->stats->acc_pvb) >= floatval(200)) {
+                    $agent->stats->level = 3;
+                    $agent->level = 3;
+                }
+                if (floatval($agent->stats->acc_gbv) >= floatval(800)) {
+                    $agent->stats->level = 4;
+                    $agent->level = 4;
+                }
+                if (floatval($agent->stats->acc_gbv) >= floatval(3000)) {
+                    $agent->stats->level = 5;
+                    $agent->level = 5;
 
-            $agent->stats->save();
-            $agent->save();
+                }
+                if (floatval($agent->stats->acc_gbv) >= floatval(20000)) {
+                    $agent->stats->level = 6;
+                    $agent->level = 6;
+                }
+                if (floatval($agent->stats->acc_gbv) >= floatval(80000)) {
+                    $agent->stats->level = 7;
+                    $agent->level = 7;
+                }
+                if (floatval($agent->stats->acc_gbv) >= floatval(320000)) {
+                    $agent->stats->level = 8;
+                    $agent->level = 8;
+                }
+
+                $agent->stats->save();
+                $agent->save();
+            }
         }
 
     }

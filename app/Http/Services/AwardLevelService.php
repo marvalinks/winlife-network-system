@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\CheckRunBill;
 
 class AwardLevelService
 {
@@ -22,37 +23,41 @@ class AwardLevelService
 
     public function ABP()
     {
-        $this->adjustBulkPvb();
-        $agents = Agent::latest()->get();
-        foreach ($agents as $key => $agent) {
-            if (floatval($agent->stats->acc_pvb) >= floatval(50) && floatval($agent->stats->acc_pvb) < floatval(200)) {
-                $agent->stats->level = 2;
-                $agent->level = 2;
+        $pd = CheckRunBill::where('type', 'bonus')->where('period', $this->combPeriodToday)->first(); 
 
-            }elseif (floatval($agent->stats->acc_pvb) >= floatval(200)) {
-                $agent->stats->level = 3;
-                $agent->level = 3;
-            }elseif (floatval($agent->stats->acc_gbv) >= floatval(800)) {
-                $agent->stats->level = 4;
-                $agent->level = 4;
-            }elseif ($agent->sponsers->where('level', 4)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(5000)) {
-                $agent->stats->level = 5;
-                $agent->level = 5;
-            }elseif ($agent->sponsers->where('level', 5)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(20000)) {
-                $agent->stats->level = 6;
-                $agent->level = 6;
-            }elseif ($agent->sponsers->where('level', 6)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(80000)) {
-                $agent->stats->level = 7;
-                $agent->level = 7;
-            }elseif ($agent->sponsers->where('level', 7)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(320000)) {
-                $agent->stats->level = 8;
-                $agent->level = 8;
-            }else {
-                $agent->stats->level = 1;
-                $agent->level = 1;
+        if(!$pd){
+            $this->adjustBulkPvb();
+            $agents = Agent::latest()->get();
+            foreach ($agents as $key => $agent) {
+                if (floatval($agent->stats->acc_pvb) >= floatval(50) && floatval($agent->stats->acc_pvb) < floatval(200)) {
+                    $agent->stats->level = 2;
+                    $agent->level = 2;
+
+                }elseif (floatval($agent->stats->acc_pvb) >= floatval(200)) {
+                    $agent->stats->level = 3;
+                    $agent->level = 3;
+                }elseif (floatval($agent->stats->acc_gbv) >= floatval(800)) {
+                    $agent->stats->level = 4;
+                    $agent->level = 4;
+                }elseif ($agent->sponsers->where('level', 4)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(5000)) {
+                    $agent->stats->level = 5;
+                    $agent->level = 5;
+                }elseif ($agent->sponsers->where('level', 5)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(20000)) {
+                    $agent->stats->level = 6;
+                    $agent->level = 6;
+                }elseif ($agent->sponsers->where('level', 6)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(80000)) {
+                    $agent->stats->level = 7;
+                    $agent->level = 7;
+                }elseif ($agent->sponsers->where('level', 7)->count() >= 4 && floatval($agent->stats->acc_gbv) >= floatval(320000)) {
+                    $agent->stats->level = 8;
+                    $agent->level = 8;
+                }else {
+                    $agent->stats->level = 1;
+                    $agent->level = 1;
+                }
+                $agent->stats->save();
+                $agent->save();
             }
-            $agent->stats->save();
-            $agent->save();
         }
 
     }
