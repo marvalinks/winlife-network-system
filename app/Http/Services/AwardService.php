@@ -39,7 +39,7 @@ class AwardService
             if($sponsers->count() >= 4) {
                 $cnt = 0;
                 foreach ($sponsers as $key => $sponser) {
-                    if(floatval($sponser->acc_gbv) >= floatval(18000)) {
+                    if(floatval($sponser->acc_gbv) >= floatval(20000)) {
                         $cnt++;
                     }
                 }
