@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Exports\AgentTempExport;
 use App\Exports\ArchievementTempExport;
+use App\Http\Services\GroupService;
+use App\Jobs\CalculateBonus;
+use App\Jobs\LevelServiceJob;
+use App\Jobs\StatisticLogJob;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\Salary;
+use App\Models\StatisticLog;
 use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
 use App\Models\UploadedData;
@@ -15,9 +21,29 @@ use Maatwebsite\Excel\Facades\Excel;
 class ExportController extends Controller
 {
 
+    public $combPeriodToday;
+
     public function __construct()
     {
         $this->middleware('auth');
+        $this->combPeriodToday = date('Y').date('m');
+    }
+
+    protected function start()
+    {
+        $this->dispatch(new LevelServiceJob($this->combPeriodToday));
+        StatisticLog::truncate();
+        Salary::truncate();
+        $grp = new GroupService();
+        $grp->GRP();
+        $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        Salary::truncate();
+        if(count($acs) > 0) {
+            foreach ($acs as $key => $ac) {
+                $this->dispatch(new CalculateBonus($ac));
+                $this->dispatch(new StatisticLogJob($ac));
+            }
+        }
     }
 
     public function exportAR()
@@ -88,6 +114,7 @@ class ExportController extends Controller
         UploadedData::create([
             'data' => 'a', 'period' => $agg[0]->period ?? $agg[1]->period
         ]);
+        $this->start();
         $request->session()->flash('alert-success', 'Agent achivement successfully uploaded!');
         return back();
     }

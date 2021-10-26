@@ -201,7 +201,7 @@
                             </tr>
 
                             @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
-                            @if (intval($sponser->period) <= intval($combPeriod))
+                            @if (intval($sponser->period) < intval($combPeriod))
                             <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
                                 <td class="sorting_1">
                                     <div class="checker" id="uniform-undefined">

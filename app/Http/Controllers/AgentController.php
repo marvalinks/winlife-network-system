@@ -73,6 +73,10 @@ class AgentController extends Controller
             $agents =  Agent::where('sponser_id', $memberid)->get();
             $user =  Agent::where('member_id', $memberid)->first();
             if($user) {
+                if(intval($user->period) < intval($combPeriod)) {
+                    $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
+                    return back();
+                }
                 $user = $user;
                 $sponsers = $agents;
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
