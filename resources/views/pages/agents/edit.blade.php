@@ -48,7 +48,7 @@
                         @if (auth()->user()->roleid == 1)
                         <div class="btn-group pull-right" style="margin-right: 10px;">
                             <a href="{{route('admin.calculate.bonus')}}" class="btn green">Calculate Bonus <i class="icon-plus"></i></a>
-                            <a href="{{route('admin.agent.payment',[$sponser->member_id])}}" class="btn green">Make Payment <i class="icon-plus"></i></a>
+                            <!-- <a href="{{route('admin.agent.payment',[$sponser->member_id])}}" class="btn green">Make Payment <i class="icon-plus"></i></a> -->
                             <button type="button" onclick="document.getElementById('gm-t').submit();"  class="btn green">Print Out <i class="icon-plus"></i></button>
                         </div>
                         @endif

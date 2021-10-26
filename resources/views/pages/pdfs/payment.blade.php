@@ -14,8 +14,13 @@
         font-size: 12px;
     }
     .u90 h6{
-        font-size: 15px;
-        margin-top: 24px;
+        /* font-size: 15px;
+        margin-top: 24px; */
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    p {
+        margin: 0 0 0px;
     }
     #main-content{
         width: 85%;
@@ -48,7 +53,6 @@
 @endsection
 @section('content')
 @php
-    $combPeriod = date('Y').date('m');
     $sumMoney = 0.0;
     $sumbv = 0.0;
     $conf = \App\Models\BvRate::first();
@@ -120,7 +124,7 @@
                         <tr>
                             <td>{{$user->member_id}}</td>
                             <td>{{$user->firstname.' '.$user->lastname}}</td>
-                            <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                            <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                             @php
                                 if($i < 2) {
                                     $sumMoney += $user->currentsalary($combPeriod)->amount ?? 0;
@@ -147,7 +151,7 @@
                         <tr class="gradeX even">
                             <td>{{$user->member_id}}</td>
                             <td>{{$user->firstname.' '.$user->lastname}}</td>
-                            <td>{{number_format(($user->currentbonus($combPeriod)->amount ?? 0), 2)}}</td>
+                            <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                             @php
                                 if($i < 2) {
                                     $sumMoney += $user->currentsalary($combPeriod)->amount ?? 0;

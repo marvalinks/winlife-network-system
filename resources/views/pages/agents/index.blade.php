@@ -30,9 +30,26 @@
 <script>
     $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
     oTable = $('#dtable').DataTable({
-            "iDisplayLength": -1
+            "iDisplayLength": -1,
+            ordering: false
         });
-    oTable.fnSort( [ [4,'asc'] ] );
+    oTable.fnSort( [[4,'asc'] ] );
+</script>
+<script>
+    function toggle(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"');
+        for (let index = 0; index < checkboxes.length; index++) {
+            if(checkboxes[index] != source) {
+                checkboxes[index].checked = source.checked
+            }
+            
+        }
+    }
+    function confirmPrint() {
+        if(confirm("Are You Sure to print this?")) {
+            document.getElementById('po').submit();
+        }
+    }
 </script>
 
 @endsection
@@ -86,6 +103,7 @@
                                 <li><a href="{{route('delete.dbs')}}">Delete DBS</a></li>
                                 <li><a href="#">Export to Excel</a></li>
                             </ul>
+                            <button type="button" onclick="confirmPrint();"  class="btn green">Bonus <i class="icon-plus"></i></button>
                         </div>
                         @endif
                     </div>
@@ -131,122 +149,126 @@
                 </div>
                 <!--  -->
                 <div class="widget-body form">
-                    <table class="table table-striped table-bordered dataTable mx-table dtable" id="dtable" aria-describedby="sample_1_info">
-                        <thead>
-                            <tr role="row">
-                                <th style="width: 24px;" class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" aria-label="">
-                                    <div class="checker" id="uniform-undefined">
-                                        <span><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" style="opacity: 0;" /></span>
-                                    </div>
-                                </th>
-                                <th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Username: activate to sort column ascending" style="width: 400px;">Name</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending" style="width: 125px;">Period</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Points: activate to sort column ascending" style="width: 122px;">Business.ID</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Layer</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Level</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">CurrentPBV</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">CurrentGBV</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCPBV</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCGBV</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
-                                @if (auth()->user()->roleid == 1)
-                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
-                                @endif
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
-                                <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody role="alert" aria-live="polite" aria-relevant="all">
-                            @php
-                                $lv = 1;
-                                $lvi = 1;
-                                $lvf = 2;
-                                $dsd = 1;
-                            @endphp
-                            @if (isset($user))
-                            <tr class="gradeX even">
-                                <td class="sorting_1">
-                                    <div class="checker" id="uniform-undefined">
-                                        <span><input type="checkbox" class="checkboxes" value="1" style="opacity: 0;" /></span>
-                                    </div>
-                                </td>
-                                <td>{{$user->firstname.' '.$user->lastname}}</td>
-                                <td>{{$user->period}}</td>
-                                <td>{{$user->member_id}}</td>
-                                <td>0</td>
-                                <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? $user->stats->level}}</td>
-                                <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
-                                @if (intval($combPeriod) >= intval($user->archievements->min('period')))
-                                <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
-                                @else
-                                <td>{{number_format(floatval(0), 2)}}</td>
-                                @endif
-                                <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
-                                <td>{{$user->sponser_id ?? '-'}}</td>
-                                <td class="{{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
-                                @if (auth()->user()->roleid == 1)
-                                    <td>
-                                        <input type="checkbox" disabled {{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
-                                    </td>
-                                @endif
-                                <td>
-                                    <a href="{{route('admin.agent.edit', [$user->member_id])}}">Adjust</a>
-                                </td>
-                                <td></td>
-                            </tr>
+                    <form id="po" action="{{route('bonus.pdf')}}" method="get">
+                        @csrf
+                        <table class="table table-striped table-bordered dataTable mx-table" id="dtable" aria-describedby="sample_1_info">
+                            <thead>
+                                <tr role="row">
+                                    <th style="width: 24px;" class="sorting_disabled">
+                                        <span><input value="" onclick="toggle(this);" type="checkbox" class="" /></span>
+                                    </th>
+                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Username: activate to sort column ascending" style="width: 400px;">Name</th>
+                                    <th colspan="1" aria-label="Email: activate to sort column ascending" style="width: 125px;">Period</th>
+                                    <th colspan="1" aria-label="Points: activate to sort column ascending" style="width: 122px;">Business.ID</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Layer</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Level</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">CurrentPBV</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">CurrentGBV</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCPBV</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">ACCGBV</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
+                                    @if (auth()->user()->roleid == 1)
+                                        <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
+                                    @endif
+                                    <th aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
+                                    <th aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
+                                </tr>
+                                
+                            </thead>
                             
-
-                            @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
-                            @if (intval($sponser->period) <= intval($combPeriod))
-                            <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
-                                <td class="sorting_1">
-                                    <div class="checker" id="uniform-undefined">
-                                        <span><input type="checkbox" class="checkboxes" value="1" style="opacity: 0;" /></span>
-                                    </div>
-                                </td>
-                                <td>{{$sponser->firstname.' '.$sponser->lastname}}</td>
-                                <td>{{$sponser->period}}</td>
-                                <td>{{$sponser->member_id}}</td>
-                                <td>{{$lv}}</td>
-                                <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
-                                <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
-                                @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
-                                <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
-                                @else
-                                <td>{{number_format(floatval(0), 2)}}</td>
-                                @endif
-                                <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
-                                <td>{{$sponser->sponser_id ?? '-'}}</td>
-                                <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
-                                @if (auth()->user()->roleid == 1)
-                                    <td>
-                                        <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
-                                    </td>
-                                @endif
-                                <td>
-                                    <a href="{{route('admin.agent.edit', [$sponser->member_id])}}">Adjust</a>
-                                </td>
-                                <td></td>
-                            </tr>
-                            @endif
-
-                            @foreach ($sponser->childrenSponsers->where('period', '<=', $combPeriod) as $k => $childrenSponser)
+                            <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                
                                 @php
-                                    if($sponser->member_id === $childrenSponser->sponser_id){
-                                        $lvi++;
-                                    }
-
+                                    $lv = 1;
+                                    $lvi = 1;
+                                    $lvf = 2;
+                                    $dsd = 1;
                                 @endphp
-                                @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
-                            @endforeach
-                            @endforeach
-                            @endif
+                                @if (isset($user))
+                                <tr class="gradeX even">
+                                    <td class="">
+                                        <div class="" id="uniform-undefined">
+                                            <span><input type="checkbox" class="" /></span>
+                                            <input type="hidden" name="sponser" value="{{$user->member_id}}" />
+                                            <input type="hidden" name="period" value="{{$yr.$mth}}" />
+                                        </div>
+                                    </td>
+                                    <td>{{$user->firstname.' '.$user->lastname}}</td>
+                                    <td>{{$user->period}}</td>
+                                    <td>{{$user->member_id}}</td>
+                                    <td>0</td>
+                                    <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? $user->stats->level}}</td>
+                                    <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
+                                    <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
+                                    @if (intval($combPeriod) >= intval($user->archievements->min('period')))
+                                    <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                                    @else
+                                    <td>{{number_format(floatval(0), 2)}}</td>
+                                    @endif
+                                    <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
+                                    <td>{{$user->sponser_id ?? '-'}}</td>
+                                    <td class="{{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+                                    @if (auth()->user()->roleid == 1)
+                                        <td>
+                                            <input type="checkbox" disabled {{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                        </td>
+                                    @endif
+                                    <td>
+                                        <a href="{{route('admin.agent.edit', [$user->member_id])}}">Adjust</a>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
+                                @if (intval($sponser->period) <= intval($combPeriod))
+                                <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
+                                    <td class="sorting_1">
+                                        <div class="" id="uniform-undefined">
+                                            <span><input type="checkbox" name="agents[]" class="checkboxes" value="{{$sponser->member_id}}" /></span>
+                                        </div>
+                                    </td>
+                                    <td>{{$sponser->firstname.' '.$sponser->lastname}}</td>
+                                    <td>{{$sponser->period}}</td>
+                                    <td>{{$sponser->member_id}}</td>
+                                    <td>{{$lv}}</td>
+                                    <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
+                                    <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
+                                    <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
+                                    @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
+                                    <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                                    @else
+                                    <td>{{number_format(floatval(0), 2)}}</td>
+                                    @endif
+                                    <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
+                                    <td>{{$sponser->sponser_id ?? '-'}}</td>
+                                    <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
+                                    @if (auth()->user()->roleid == 1)
+                                        <td>
+                                            <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                        </td>
+                                    @endif
+                                    <td>
+                                        <a href="{{route('admin.agent.edit', [$sponser->member_id])}}">Adjust</a>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                @endif
 
-                        </tbody>
-                    </table>
+                                @foreach ($sponser->childrenSponsers->where('period', '<=', $combPeriod) as $k => $childrenSponser)
+                                    @php
+                                        if($sponser->member_id === $childrenSponser->sponser_id){
+                                            $lvi++;
+                                        }
+
+                                    @endphp
+                                    @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
+                                @endforeach
+                                @endforeach
+                                @endif
+
+                            </tbody>
+                        </table>
+                    </form>
 
                 </div>
                 <!--  -->

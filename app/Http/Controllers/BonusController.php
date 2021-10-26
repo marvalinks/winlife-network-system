@@ -38,17 +38,33 @@ class BonusController extends Controller
 
     public function printPDF(Request $request)
     {
-        // ddd($request->all());
-        $sponser = json_decode($request->sponser);
-        $first = collect(json_decode($request->firstPreview))->pluck('member_id')->toArray();
-        $second = collect(json_decode($request->secondPreview))->pluck('member_id')->toArray();
-        $firstPreview = Agent::whereIn('member_id', $first)->get();
-        $secondPreview = Agent::whereIn('member_id', $second)->get();
+        if(!$request->agents || count($request->agents) < 1) {
+            $request->session()->flash('alert-danger', 'No Agent selected!');
+            return back();
+        }
+        $sps = json_decode($request->sponser);
+        $arr = [strval($sps)];
+        $arr = array_merge_recursive($arr, $request->agents);
+        $fs = [];
+        $ss = [];
+        foreach ($arr as $key => $a) {
+            if($key % 2 == 0) {
+                $fs = array_merge($fs, [$a]);
+            }else{
+                $ss = array_merge($ss, [$a]);
+            }
+        }
+        $firstPreview = Agent::whereIn('member_id', $fs)->get();
+        $secondPreview = Agent::whereIn('member_id', $ss)->get();
+        $sponser = Agent::where('member_id', $sps)->first();
+        $combPeriod = $request->period;
         $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
-            'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview
+            'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
+            'combPeriod' => $combPeriod
         ]);
         // ddd($first, $second, $this->combPeriodToday);
-        $salaries = Salary::whereIn('member_id', array_merge_recursive($first, $second))->where('period', $this->combPeriodToday)->get();
+        
+        $salaries = Salary::whereIn('member_id', $arr)->where('period', $request->period)->get();
         foreach ($salaries as $key => $salary) {
             $salary->paid = 1;
             $salary->save();
@@ -66,8 +82,13 @@ class BonusController extends Controller
         ->setOption('enable-smart-shrinking', true)
         ->setOption('javascript-delay', 1000)
         ->setTimeout(120);
+
+        // return view('pages.pdfs.payment', [
+        //     'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
+        //     'combPeriod' => $combPeriod
+        // ]);
         // return $pdf->inline();
-        $name = $this->combPeriodToday.'-'.$firstPreview[0]->member_id.'.pdf';
+        $name = $request->period.'-'.$firstPreview[0]->member_id.'.pdf';
         // ddd($name);
         return $pdf->download($name);
     }

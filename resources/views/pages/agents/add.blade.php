@@ -69,7 +69,7 @@
                                 <select class="form-control chosen-select" name="sponser_id" id="">
                                     <option value="">-choose-</option>
                                     @foreach ($sponsers as $sponser)
-                                        <option value="{{$sponser->member_id}}">{{$sponser->firstname.' '.$sponser->lastname}}</option>
+                                        <option value="{{$sponser->member_id}}">{{$sponser->member_id.'-'.$sponser->firstname.' '.$sponser->lastname}}</option>
                                     @endforeach
                                 </select>
                             </div>

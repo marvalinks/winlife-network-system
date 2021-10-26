@@ -94,7 +94,11 @@
                     </div>
                     @endif
                 @endforeach
-
+                <div class="row-fluid">
+                    <div class="btn-group pull-right" style="margin-right: 10px;">
+                            <a href="{{ url()->previous() }}" class="btn green">go back <i class="icon-back"></i></a>
+                        </div>
+                </div>
                 @yield('content')
                 <!-- END PAGE CONTAINER-->
             </div>
