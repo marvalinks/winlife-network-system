@@ -44,7 +44,7 @@ class StatisticLogService
                 if (floatval($log->acc_gbv) >= floatval(800)) {
                     $log->level = 4;
                 }
-                if (floatval($log->acc_gbv) >= floatval(5000)) {
+                if (floatval($log->acc_gbv) >= floatval(3000)) {
                     $log->level = 5;
 
                 }
