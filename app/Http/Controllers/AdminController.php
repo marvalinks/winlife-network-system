@@ -30,12 +30,11 @@ class AdminController extends Controller
 
     protected function start()
     {
-        StatisticLog::truncate();
-        Salary::truncate();
+        // StatisticLog::truncate();
+        // Salary::truncate();
         $grp = new GroupService();
         $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        Salary::truncate();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 // $st = new StatisticLogService();
