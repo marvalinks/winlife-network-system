@@ -29,10 +29,10 @@
 <script type="text/javascript" src="/backend/assets/data-tables/DT_bootstrap.js"></script>
 <script>
     $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
-    oTable = $('.dtable').DataTable({
+    oTable = $('#dtable').DataTable({
             "iDisplayLength": -1
         });
-        oTable.fnSort( [ [4,'asc'] ] );
+    oTable.fnSort( [ [4,'asc'] ] );
 </script>
 
 @endsection
@@ -131,7 +131,7 @@
                 </div>
                 <!--  -->
                 <div class="widget-body form">
-                    <table class="table table-striped table-bordered dataTable mx-table dtable" id="" aria-describedby="sample_1_info">
+                    <table class="table table-striped table-bordered dataTable mx-table dtable" id="dtable" aria-describedby="sample_1_info">
                         <thead>
                             <tr role="row">
                                 <th style="width: 24px;" class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" aria-label="">
@@ -157,8 +157,6 @@
                                 <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                             </tr>
                         </thead>
-
-                        @if (isset($user))
                         <tbody role="alert" aria-live="polite" aria-relevant="all">
                             @php
                                 $lv = 1;
@@ -166,6 +164,7 @@
                                 $lvf = 2;
                                 $dsd = 1;
                             @endphp
+                            @if (isset($user))
                             <tr class="gradeX even">
                                 <td class="sorting_1">
                                     <div class="checker" id="uniform-undefined">
@@ -197,6 +196,7 @@
                                 </td>
                                 <td></td>
                             </tr>
+                            
 
                             @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
                             @if (intval($sponser->period) <= intval($combPeriod))
@@ -243,15 +243,9 @@
                                 @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
                             @endforeach
                             @endforeach
+                            @endif
 
                         </tbody>
-                        @else
-                        <tbody>
-                            <tr>
-                                <td colspan="15" style="text-align: center;">no data found!</td>
-                            </tr>
-                        </tbody>
-                        @endif
                     </table>
 
                 </div>
