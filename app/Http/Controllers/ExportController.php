@@ -15,6 +15,11 @@ use Maatwebsite\Excel\Facades\Excel;
 class ExportController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function exportAR()
     {
         $name = date('Y').date('m').date('d');

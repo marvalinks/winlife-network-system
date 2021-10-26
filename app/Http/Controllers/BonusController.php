@@ -7,6 +7,7 @@ use App\Http\Services\GroupService;
 use App\Http\Services\LevelService;
 use App\Http\Services\StatisticLogService;
 use App\Jobs\CalculateBonus;
+use App\Jobs\LevelServiceJob;
 use App\Jobs\StatisticLogJob;
 use App\Models\Achivement;
 use App\Models\Agent;
@@ -100,17 +101,13 @@ class BonusController extends Controller
 
     public function calculateBonus(Request $request, $userid = null)
     {
-        $lv = new LevelService($this->combPeriodToday);
-        $lv->ABP();
-        $st = new StatisticLogService();
+        $this->dispatch(new LevelServiceJob($this->combPeriodToday));
         StatisticLog::truncate();
         Salary::truncate();
         $grp = new GroupService();
         $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        // ddd($acs);
         Salary::truncate();
-        $bns = new BonusService();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $this->dispatch(new CalculateBonus($ac));

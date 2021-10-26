@@ -31,7 +31,6 @@ class AdminController extends Controller
     protected function start()
     {
 
-        $st = new StatisticLogService();
         StatisticLog::truncate();
         Salary::truncate();
         $grp = new GroupService();
@@ -39,7 +38,6 @@ class AdminController extends Controller
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         // ddd($acs);
         Salary::truncate();
-        $bns = new BonusService();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $this->dispatch(new CalculateBonus($ac));
