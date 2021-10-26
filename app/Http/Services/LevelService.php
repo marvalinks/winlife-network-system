@@ -45,7 +45,7 @@ class LevelService
                 $agent->stats->level = 4;
                 $agent->level = 4;
             }
-            if (floatval($agent->stats->acc_gbv) >= floatval(5000)) {
+            if (floatval($agent->stats->acc_gbv) >= floatval(3000)) {
                 $agent->stats->level = 5;
                 $agent->level = 5;
 
