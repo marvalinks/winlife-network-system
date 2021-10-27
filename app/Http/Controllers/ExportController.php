@@ -17,6 +17,8 @@ use App\Models\TemporalAgent;
 use App\Models\UploadedData;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\AgentUploadJob;
+use App\Jobs\AchivementUploadJob;
 
 class ExportController extends Controller
 {
@@ -76,15 +78,16 @@ class ExportController extends Controller
         }
         // ddd($agg->where('sponser_id', '202110141234'));
         foreach ($agg as $key => $ag) {
-            if(!$ag->agent) {
-                Agent::create([
-                    'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
-                    'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
-                    'telephone' => $ag->telephone, 'address' => $ag->address,
-                    'period' => $ag->period, 'nationality' => $ag->nationality,
-                    'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
-                ]);
-            }
+            $this->dispatch(new AgentUploadJob($ag));
+            // if(!$ag->agent) {
+            //     Agent::create([
+            //         'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
+            //         'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
+            //         'telephone' => $ag->telephone, 'address' => $ag->address,
+            //         'period' => $ag->period, 'nationality' => $ag->nationality,
+            //         'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
+            //     ]);
+            // }
         }
         UploadedData::create([
             'data' => 'r', 'period' => $agg[0]->period ?? $agg[1]->period
@@ -101,14 +104,15 @@ class ExportController extends Controller
             return back();
         }
         foreach ($agg as $key => $ag) {
-            $agent = Agent::where('member_id', $ag->member_id)->first();
-            if($agent) {
-                Achivement::create([
-                    'member_id' => $ag->member_id, 'name' => $agent->name,
-                    'period' => $ag->period, 'total_pv' => $ag->total_pv,
-                    'country' => $ag->country,
-                ]);
-            }
+            $this->dispatch(new AchivementUploadJob($ag));
+            // $agent = Agent::where('member_id', $ag->member_id)->first();
+            // if($agent) {
+            //     Achivement::create([
+            //         'member_id' => $ag->member_id, 'name' => $agent->name,
+            //         'period' => $ag->period, 'total_pv' => $ag->total_pv,
+            //         'country' => $ag->country,
+            //     ]);
+            // }
         }
 
         UploadedData::create([

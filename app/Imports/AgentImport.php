@@ -6,7 +6,7 @@ use App\Models\Agent;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class AgentImport implements ToModel, WithHeadingRow
+class AgentImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
 
     public function __construct()
@@ -32,5 +32,15 @@ class AgentImport implements ToModel, WithHeadingRow
             'momo_name' => $row['momoname'],
             'momo_no' => strval($row['momono']),
         ]);
+    }
+
+    public function batchSize(): int
+    {
+        return 80;
+    }
+
+    public function chunkSize(): int
+    {
+        return 80;
     }
 }

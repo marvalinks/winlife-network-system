@@ -7,7 +7,7 @@ use App\Models\Agent;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class ArchievementImport implements ToModel, WithHeadingRow
+class ArchievementImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
 
     private $users;
@@ -29,5 +29,15 @@ class ArchievementImport implements ToModel, WithHeadingRow
                 'country' => $row['country'],
             ]);
         endif;
+    }
+
+    public function batchSize(): int
+    {
+        return 80;
+    }
+
+    public function chunkSize(): int
+    {
+        return 80;
     }
 }
