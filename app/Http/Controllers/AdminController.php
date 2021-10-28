@@ -7,10 +7,14 @@ use App\Http\Services\GroupService;
 use App\Http\Services\StatisticLogService;
 use App\Imports\AgentTempImport;
 use App\Imports\ArchievementTempImport;
+use App\Jobs\CalcStatsJob;
 use App\Jobs\CalculateBonus;
+use App\Jobs\Gstats;
+use App\Jobs\Pstats;
 use App\Jobs\StatisticLogJob;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\CheckRunBill;
 use App\Models\Salary;
 use App\Models\StatisticLog;
 use App\Models\TemporalAchivement;
@@ -32,17 +36,58 @@ class AdminController extends Controller
     {
         // StatisticLog::truncate();
         // Salary::truncate();
-        $grp = new GroupService();
-        $grp->GRP();
+        // $grp = new GroupService();
+        // $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 // $st = new StatisticLogService();
                 // $st->ABP($ac);
-                $this->dispatch(new CalculateBonus($ac));
-                $this->dispatch(new StatisticLogJob($ac));
+                // $this->dispatch(new CalculateBonus($ac));
+                // $this->dispatch(new StatisticLogJob($ac));
+                // $this->dispatch(new CalcStatsJob($ac));
+                // $pd = CheckRunBill::where('type', 'gps')->where('period', $ac)->first();
+                // if(!$pd) {
+                //     Agent::latest()->chunk(100, function ($users) use ($ac){
+                //         foreach ($users as $user)  {
+                //             if (intval($user->period) <= intval($ac)) {
+                //                 $this->dispatch(new Gstats($ac, $user->member_id));
+                //             }
+                //         }
+                //         CheckRunBill::create([
+                //             'period' => $ac, 'type' => 'gps'
+                //         ]);
+                //     });
+                // }
+
             }
         }
+
+    }
+
+    public function reloadStatistics()
+    {
+        $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        if(count($acs) > 0) {
+            foreach ($acs as $key => $ac) {
+                $pd = CheckRunBill::where('type', 'gps')->where('period', $ac)->first();
+                if(!$pd) {
+                    Agent::latest()->chunk(100, function ($users) use ($ac){
+                        foreach ($users as $user)  {
+                            if (intval($user->period) <= intval($ac)) {
+                                $this->dispatch(new Gstats($ac, $user->member_id));
+                                $this->dispatch(new Pstats($ac, $user->member_id));
+                            }
+                        }
+                    });
+                    CheckRunBill::create([
+                        'period' => $ac, 'type' => 'gps'
+                    ]);
+                }
+
+            }
+        }
+        die('completed');
     }
 
     public function dashboard(Request $request)
@@ -79,6 +124,11 @@ class AdminController extends Controller
     }
     public function uploadAchivement(Request $request)
     {
+        error_reporting(E_ALL);
+        ini_set('post_max_size', '6G');
+        ini_set('upload_max_filesize', '4G');
+        ini_set('display_errors', 1);
+        ini_set('memory_limit', '-1');
         return view('others.uploads.upload-achivement');
     }
     public function postuploadRegistration(Request $request)
@@ -98,6 +148,14 @@ class AdminController extends Controller
     }
     public function postuploadAchivement(Request $request)
     {
+
+        // error_reporting(E_ALL);
+        // ini_set('post_max_size', '6G');
+        // ini_set('upload_max_filesize', '4G');
+        // ini_set('display_errors', 1);
+        // ini_set('memory_limit', '-1');
+        // // ini_set('max_execution_time', 0);
+        // ddd($request->all());
         TemporalAchivement::truncate();
         $data = $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',

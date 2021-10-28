@@ -26,7 +26,7 @@ class BonusService
 
     public function calculateBonus($period)
     {
-        $pd = CheckRunBill::where('type', 'bonus')->where('period', $period)->first(); 
+        $pd = CheckRunBill::where('type', 'bonus')->where('period', $period)->first();
 
         if(!$pd):
             $users = Agent::latest()->get();
@@ -39,6 +39,8 @@ class BonusService
                 $trn->delete();
             }
             foreach ($users as $key => $user) {
+                $grp = new GroupService($user);
+                $grp->GRP();
                 $this->loopcount = 0;
                 $this->pugcount = 0;
                 $this->combPeriodToday = $period;
@@ -55,7 +57,7 @@ class BonusService
             ]);
             return true;
         endif;
-        
+
     }
 
 

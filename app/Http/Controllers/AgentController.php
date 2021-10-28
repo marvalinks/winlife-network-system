@@ -74,6 +74,8 @@ class AgentController extends Controller
             $combPeriodToday = $this->combPeriodToday;
             $agents =  Agent::where('sponser_id', $memberid)->get();
             $user =  Agent::where('member_id', $memberid)->first();
+            // ddd($combPeriod);
+            // ddd($user->cgbv->where('period', $combPeriod)->first()->amount);
             if($user) {
                 if(intval($user->period) > intval($combPeriod)) {
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');

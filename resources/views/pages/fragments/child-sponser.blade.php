@@ -10,7 +10,7 @@
     <td>{{$p ? $lvi : $lvf}}</td>
     <td>{{$child_sponser->statlogs->where('period', $combPeriod)->first()->level ?? $child_sponser->stats->level}}</td>
     <td>{{number_format($child_sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-    <td>{{number_format($child_sponser->currentgbv($combPeriod), 2)}}</td>
+    <td>{{number_format($child_sponser->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
     <!-- <td>{{number_format($child_sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2)}}</td> -->
     @if (intval($combPeriod) >= intval($child_sponser->archievements->min('period')))
     <td>{{number_format($child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
@@ -18,7 +18,7 @@
     <td>{{number_format(floatval(0), 2)}}</td>
     @endif
     <!-- <td>{{number_format($child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td> -->
-    <td>{{number_format($child_sponser->accgbv($combPeriod), 2)}}</td>
+    <td>{{number_format($child_sponser->cgbv2->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
     <td>{{$child_sponser->sponser_id ?? '-'}}</td>
     <td class="{{($child_sponser->currentsalary($combPeriod) && $child_sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($child_sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
     @if (auth()->user()->roleid == 1)
@@ -32,7 +32,7 @@
     <td></td>
 </tr>
 @if ($child_sponser->sponsers)
-    @foreach ($child_sponser->sponsers->where('period', '<=', $combPeriod) as $k => $childrenSponser)
+    @foreach ($child_sponser->sponsers->where('period', '<=', $combPeriod)->take(10) as $k => $childrenSponser)
         @php
 
             if($child_sponser->member_id === $childrenSponser->sponser_id){

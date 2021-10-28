@@ -42,7 +42,7 @@
             if(checkboxes[index] != source) {
                 checkboxes[index].checked = source.checked
             }
-            
+
         }
     }
     function confirmPrint() {
@@ -174,11 +174,11 @@
                                     <th aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                     <th aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                 </tr>
-                                
+
                             </thead>
-                            
+
                             <tbody role="alert" aria-live="polite" aria-relevant="all">
-                                
+
                                 @php
                                     $lv = 1;
                                     $lvi = 1;
@@ -200,13 +200,13 @@
                                     <td>0</td>
                                     <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? $user->stats->level}}</td>
                                     <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                    <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
+                                    <td>{{number_format($user->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
                                     @if (intval($combPeriod) >= intval($user->archievements->min('period')))
                                     <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                     @else
                                     <td>{{number_format(floatval(0), 2)}}</td>
                                     @endif
-                                    <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
+                                    <td>{{number_format($user->cgbv2->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
                                     <td>{{$user->sponser_id ?? '-'}}</td>
                                     <td class="{{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                     @if (auth()->user()->roleid == 1)
@@ -233,13 +233,13 @@
                                     <td>{{$lv}}</td>
                                     <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
                                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                    <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
+                                    <td>{{number_format($sponser->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
                                     @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
                                     <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                     @else
                                     <td>{{number_format(floatval(0), 2)}}</td>
                                     @endif
-                                    <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
+                                    <td>{{number_format($sponser->cgbv2->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
                                     <td>{{$sponser->sponser_id ?? '-'}}</td>
                                     <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                     @if (auth()->user()->roleid == 1)
@@ -255,14 +255,14 @@
                                 @endif
 
                                 @foreach ($sponser->childrenSponsers->where('period', '<=', $combPeriod) as $k => $childrenSponser)
-                                    @php
-                                        if($sponser->member_id === $childrenSponser->sponser_id){
-                                            $lvi++;
-                                        }
+                                @php
+                                    if($sponser->member_id === $childrenSponser->sponser_id){
+                                        $lvi++;
+                                    }
 
-                                    @endphp
-                                    @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
-                                @endforeach
+                                @endphp
+                                @include('pages.fragments.child-sponser', ['child_sponser' => $childrenSponser, 'k' => $k, 'p' => 0])
+                            @endforeach
                                 @endforeach
                                 @endif
 

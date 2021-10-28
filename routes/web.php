@@ -40,6 +40,7 @@ Route::prefix('admin')->group(function () {
     Route::post('upload-registration', [AdminController::class, 'postuploadRegistration'])->name('upload.registration');
     Route::get('upload-achivement', [AdminController::class, 'uploadAchivement'])->name('upload.achivement');
     Route::post('upload-achivement', [AdminController::class, 'postuploadAchivement'])->name('upload.achivement');
+    Route::get('reload-statistics', [AdminController::class, 'reloadStatistics'])->name('reload.statistics');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');

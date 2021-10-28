@@ -13,9 +13,7 @@ class AgentStatistics extends Model
 
     public function particularperiodlevel($combPeriod)
     {
-        if($this->member_id === '201266664718') {
-            ddd($combPeriod);
-        }
+
         $lv = new LevelService($combPeriod);
         $lv->ABP();
 

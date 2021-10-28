@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Http\Services\BonusService;
 use App\Http\Services\GroupService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -11,16 +10,18 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class CalculateBonus implements ShouldQueue
+class GroupServiceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-
-    public $period;
-
-    public function __construct($period)
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        $this->period = $period;
+        //
     }
 
     /**
@@ -30,8 +31,7 @@ class CalculateBonus implements ShouldQueue
      */
     public function handle()
     {
-
-        $bns = new BonusService();
-        $bns->calculateBonus($this->period);
+        $grp = new GroupService();
+        $grp->GRP();
     }
 }
