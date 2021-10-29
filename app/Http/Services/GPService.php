@@ -58,6 +58,10 @@ class GPService
             $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
             $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
         }
+        $pv = PersonalBv::where('member_id', $this->memberid)->where('period', $this->combPeriod)->first();
+        if($pv) {
+            $pv->delete();
+        }
         PersonalBv::create([
             'member_id' => $this->memberid, 'period' => $this->combPeriod,
             'amount' => floatval($this->currentGBV)
@@ -82,6 +86,10 @@ class GPService
             $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
             $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
+        }
+        $gv = GroupBv::where('member_id', $this->memberid)->where('period', $this->combPeriod)->first();
+        if($gv) {
+            $gv->delete();
         }
         GroupBv::create([
             'member_id' => $this->memberid, 'period' => $this->combPeriod,
