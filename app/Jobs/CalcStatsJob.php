@@ -30,31 +30,8 @@ class CalcStatsJob implements ShouldQueue
      */
     public function handle()
     {
-        // Agent::latest()->chunk(50, function ($users){
-        //     foreach ($users as $user) {
-        //         $this->dispatch(new Gstats($this->period, $user->member_id));
-        //     }
-        // });
         $ac = $this->period;
-        $pd = CheckRunBill::where('type', 'gps')->where('period', $this->period)->first();
-        if(!$pd) {
-            // Agent::latest()->chunk(50, function ($users) use ($ac){
-            //     foreach ($users as $user)  {
-            //         if (intval($user->period) <= intval($ac)) {
-            //             $this->dispatch(new Gstats($this->period, $user->member_id));
-            //         }
-            //     }
-
-            // });
-            $agents = Agent::latest()->get();
-            foreach ($agents as $key => $user) {
-                if (intval($user->period) <= intval($ac)) {
-                    $this->dispatch(new Gstats($this->period, $user->member_id))->delay(3);
-                }
-            }
-            CheckRunBill::create([
-                'period' => $this->period, 'type' => 'gps'
-            ]);
-        }
+        $gps = new GPService($this->period);
+        $gps->start();
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\BigAgent;
 use App\Models\CheckRunBill;
 
 class LevelService
@@ -24,9 +25,6 @@ class LevelService
 
     public function ABP()
     {
-        $pd = CheckRunBill::where('type', 'bonus')->where('period', $this->combPeriodToday)->first(); 
-
-        if(!$pd){
             $this->adjustBulkPvb();
             $agents = Agent::latest()->get();
             foreach ($agents as $key => $agent) {
@@ -70,7 +68,6 @@ class LevelService
                 $agent->stats->save();
                 $agent->save();
             }
-        }
 
     }
 
@@ -87,15 +84,21 @@ class LevelService
             $achTotal2 = $user->archievements->sum('total_pv');
             $this->currentGBV = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
             $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-            foreach ($user->sponsers as $key => $spp) {
+
+            $sponsers =  BigAgent::where('parent_id', $user->member_id)->get();
+            foreach ($sponsers as $key => $spp) {
                 $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
                 $this->ACCGBV += $spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                foreach ($spp->childrenSponsers as $k => $child_sponser) {
-                    $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                    $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                    $this->reloop($child_sponser);
-                }
             }
+            // foreach ($user->sponsers as $key => $spp) {
+            //     $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
+            //     $this->ACCGBV += $spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
+            //     foreach ($spp->childrenSponsers as $k => $child_sponser) {
+            //         $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
+            //         $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
+            //         $this->reloop($child_sponser);
+            //     }
+            // }
             // if($user->member_id == '201266664521') {
             //     ddd($achTotal2);
             // }

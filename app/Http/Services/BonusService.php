@@ -39,18 +39,20 @@ class BonusService
                 $trn->delete();
             }
             foreach ($users as $key => $user) {
-                $grp = new GroupService($user);
-                $grp->GRP();
-                $this->loopcount = 0;
-                $this->pugcount = 0;
-                $this->combPeriodToday = $period;
-                $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
+                if (intval($user->period) <= intval($period)) {
+                    $grp = new GroupService($user);
+                    $grp->GRP();
+                    $this->loopcount = 0;
+                    $this->pugcount = 0;
+                    $this->combPeriodToday = $period;
+                    $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
 
-                if($user->level > 2){
-                    $this->doBonus($user, $this->loopcount++);
+                    if($user->level > 2){
+                        $this->doBonus($user, $this->loopcount++);
+                    }
+                    $this->loopcount++;
+                    $this->reloop($user);
                 }
-                $this->loopcount++;
-                $this->reloop($user);
             }
             CheckRunBill::create([
                 'period' => $period, 'type' => 'bonus'
@@ -334,31 +336,7 @@ class BonusService
             $third_percent = 0;
         }
 
-
-
-        // ddd($user->group);
-
-        // if($user->group->group1) {
-        //     $amount = ($first_percent * floatval($accgbv));
-        // }
-        // if($user->group->group2) {
-        //     $amount = ($second_percent * floatval($accgbv));
-        // }
-        // if($user->group->group3) {
-        //     $amount = ($third_percent *  floatval($accgbv));
-        // }
-
-        // $accgbvTT = floatval($user->archievements()->sum('total_pv'));
-
         if(floatval($accgbv) > floatval(0) && floatval($accgbvTT) > floatval(200)){
-
-            // $firstsplit = floatval(150);
-            // $secondsplit = floatval(50);
-            // $thirdsplit = floatval($accgbv) - $firstsplit - $secondsplit;
-            // $amount += ($first_percent * $firstsplit) + ($second_percent * $secondsplit) + ($third_percent * $thirdsplit);
-            // $user->group->cl = 3;
-            // $user->group->bl = 0;
-            // $user->group->save();
 
             if($user->group->cl == 3) {
                 $amount = $accgbv * $third_percent;
@@ -441,88 +419,6 @@ class BonusService
             }
 
         }
-
-
-
-
-
-
-
-        // if(floatval($accgbv) >= floatval(150)){
-        //     $firstsplit = floatval(150);
-        //     $amount += ($first_percent * 150);
-        //     $rem = floatval($accgbv) - $firstsplit;
-        //     $user->group->cl = 1;
-        //     $user->group->bl = floatval(150) - floatval($accgbv);
-        //     if(floatval($rem) > floatval(50)){
-        //         $secondsplit = floatval(50);
-        //         $amount += ($second_percent * $secondsplit);
-        //         $rem = floatval($accgbv) - $secondsplit;
-        //         if($user->group->level == 3) {
-        //             $thirdsplit = floatval($accgbv);
-        //         }else{
-        //             $thirdsplit = floatval($accgbv) - $firstsplit - $secondsplit;
-        //         }
-        //         if ($this->combPeriodToday == "202110"  && $this->loopcount == 0) {
-        //             if($user->member_id === "201266669991"){
-        //                 ddd('$amount');
-        //             }
-        //         }
-        //         $amount += ($third_percent * $thirdsplit);
-        //         $user->group->cl = 3;
-        //         $user->group->bl = 0;
-
-        //     }else{
-        //         // $amount += ($first_percent * (floatval($accgbv) - $firstsplit));
-        //         $amount += ($second_percent * ($accgbv - $firstsplit));
-        //         $user->group->cl = 2;
-        //         $user->group->bl = floatval(200) - floatval($accgbv);
-        //     }
-        //     if($key == 0) {
-        //         $user->group->save();
-        //     }
-        // }
-        // if(floatval($accgbv) >= floatval(150)){
-        //     $firstsplit = floatval(150);
-        //     $amount += ($first_percent * 150);
-        //     $rem = floatval($accgbv) - $firstsplit;
-        //     if(floatval($rem) > floatval(50)){
-        //         $secondsplit = floatval(50);
-        //         $amount += ($second_percent * $secondsplit);
-        //         $rem = floatval($accgbv) - $secondsplit;
-        //         $thirdsplit = floatval($accgbv) - $firstsplit - $secondsplit;
-        //         $amount += ($third_percent * $thirdsplit);
-
-        //     }else{
-        //         // $amount += ($first_percent * (floatval($accgbv) - $firstsplit));
-        //         $amount += ($second_percent * ($accgbv - $firstsplit));
-        //     }
-        // }
-
-
-        // if ($this->combPeriodToday == "201309"  && $key == 0) {
-        //     if($user->member_id === "201266669991"){
-        //         // ddd($user->group);
-        //         // ddd(floatval($user->archievements()->sum('total_pv')));
-        //         // ddd($accgbv);
-        //         ddd($amount);
-        //         ddd($user->group->group3);
-        //         ddd($amount, $accgbv, floatval($user->archievements()->sum('total_pv')));
-        //         ddd($accgbv - floatval($user->currentach($this->combPeriodToday)->sum('total_pv')));
-        //         // ddd( - floatval($user->currentach($this->combPeriodToday)->sum('total_pv')))
-        //     }
-        // }
-
-        // if ($this->combPeriodToday == "201309") {
-        //     if($user->member_id === "201266669991"){
-        //         ddd($accgbv, $firstsplit);
-        //     }
-        // }
-
-
-
-
-        // $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
         $salary = Salary::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
 
 
@@ -546,56 +442,6 @@ class BonusService
             }
         }
 
-        // if($key == 0) {
-        //     if($bonus){
-        //         // $bonus->delete();
-        //         $bonus->period = $this->combPeriodToday;
-        //             $bonus->amount = $bonus->amount + $amount;
-        //             $bonus->save();
-        //     }
-        //     $bn = Bonus::create([
-        //         'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
-        //         'amount' => $amount
-        //     ]);
-        // }else{
-        //     if(!$bonus){
-        //         $bn = Bonus::create([
-        //             'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
-        //             'amount' => $amount
-        //         ]);
-        //     }else{
-        //         if($key > 11) {
-        //             if($user->level > 2) {
-        //                 $bonus->period = $this->combPeriodToday;
-        //                 $bonus->amount = $bonus->amount + $amount;
-        //                 $bonus->save();
-        //             }
-        //         }else{
-        //             $bonus->period = $this->combPeriodToday;
-        //             $bonus->amount = $bonus->amount + $amount;
-        //             $bonus->save();
-        //         }
-        //     }
-
-        // }
-        // if(!$bonus){
-        //     $bn = Bonus::create([
-        //         'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
-        //         'amount' => $amount
-        //     ]);
-        // }else{
-        //     if($key > 11) {
-        //         if($user->level > 2) {
-        //             $bonus->period = $this->combPeriodToday;
-        //             $bonus->amount = $bonus->amount + $amount;
-        //             $bonus->save();
-        //         }
-        //     }else{
-        //         $bonus->period = $this->combPeriodToday;
-        //         $bonus->amount = $bonus->amount + $amount;
-        //         $bonus->save();
-        //     }
-        // }
     }
 
 

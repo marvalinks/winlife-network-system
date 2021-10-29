@@ -12,6 +12,7 @@ use App\Jobs\LevelServiceJob;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\BigAgent;
 use App\Models\Salary;
 use App\Models\StatisticLog;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
@@ -32,7 +33,7 @@ class AgentController extends Controller
         $this->combPeriodToday = date('Y').date('m');
         $this->currentGBV = floatval(0);
         $this->ACCGBV = floatval(0);
-        $this->start();
+        // $this->start();
     }
 
     protected function start()
@@ -50,8 +51,8 @@ class AgentController extends Controller
         //         $bns->calculateBonus($ac);
         //     }
         // }
-        $this->dispatch(new LevelServiceJob($this->combPeriodToday));
-        $this->dispatch(new AwardServiceJob($this->combPeriodToday));
+        // $this->dispatch(new LevelServiceJob($this->combPeriodToday));
+        // $this->dispatch(new AwardServiceJob($this->combPeriodToday));
 
     }
 
@@ -72,17 +73,15 @@ class AgentController extends Controller
             $yr = intval($request->selectedYear);
             $mth = $request->selectedMonth;
             $combPeriodToday = $this->combPeriodToday;
-            $agents =  Agent::where('sponser_id', $memberid)->get();
-            $user =  Agent::where('member_id', $memberid)->first();
-            // ddd($combPeriod);
-            // ddd($user->cgbv->where('period', $combPeriod)->first()->amount);
+            // ddd($agents);
+            $user =  BigAgent::where('member_id', $memberid)->first();
             if($user) {
                 if(intval($user->period) > intval($combPeriod)) {
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
                     return redirect()->route('admin.agents');
                 }
+                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->simplePaginate(25);
                 $user = $user;
-                $sponsers = $agents;
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
             }else{
                 $request->session()->flash('alert-danger', 'Member ID not found in system!');
@@ -135,12 +134,18 @@ class AgentController extends Controller
         // ini_set('memory_limit', '-1');
         // ini_set('max_execution_time', 0);
         $sponser = Agent::where('member_id', $id)->first();
-        $sponsers =  Agent::where('sponser_id', $id)->get();
-        // ddd($request->all());
         $combPeriod = $this->combPeriodToday;
+        $yr = date('Y');
+        $mth = date('m');
         if($request->year && $request->month) {
             $combPeriod = $request->year.''. $request->month;
+            $yr = intval($request->year);
+            $mth = $request->month;
         }
+        // $rt = $sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0);
+        // ddd($sponser->archievements->where('period', $combPeriod));
+        // ddd($this->combPeriodToday);
+        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->simplePaginate(15);
         $this->currentGBV = $sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
         $this->ACCGBV = $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
 
@@ -170,7 +175,7 @@ class AgentController extends Controller
             'November' => '11','December' => '12'
         ];
         // ddd($combPeriod);
-        return view('pages.agents.edit', compact('sponser', 'sponsers', 'combPeriod', 'archievements', 'ACCGBV', 'currentGBV', 'combPeriodToday', 'months'));
+        return view('pages.agents.edit', compact('yr', 'mth', 'sponser', 'sponsers', 'combPeriod', 'archievements', 'ACCGBV', 'currentGBV', 'combPeriodToday', 'months'));
     }
 
     public function adjustPvb(Request $request, $id)

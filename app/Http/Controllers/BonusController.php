@@ -63,7 +63,7 @@ class BonusController extends Controller
             'combPeriod' => $combPeriod
         ]);
         // ddd($first, $second, $this->combPeriodToday);
-        
+
         $salaries = Salary::whereIn('member_id', $arr)->where('period', $request->period)->get();
         foreach ($salaries as $key => $salary) {
             $salary->paid = 1;
@@ -89,7 +89,6 @@ class BonusController extends Controller
         // ]);
         // return $pdf->inline();
         $name = $request->period.'-'.$firstPreview[0]->member_id.'.pdf';
-        // ddd($name);
         return $pdf->download($name);
     }
 

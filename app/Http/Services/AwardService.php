@@ -24,9 +24,6 @@ class AwardService
 
     public function ABP()
     {
-        $pd = CheckRunBill::where('type', 'bonus')->where('period', $this->combPeriodToday)->first(); 
-
-        if(!$pd){
             $agents = Agent::latest()->get();
             foreach ($agents as $key => $agent) {
                 $sponsers = Agent::where('sponser_id', $agent->member_id)->get();
@@ -138,7 +135,6 @@ class AwardService
                 }
 
             }
-        }
 
     }
 

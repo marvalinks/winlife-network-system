@@ -31,14 +31,13 @@
     $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
     oTable = $('#dtable').DataTable({
             "iDisplayLength": -1,
-            ordering: false,
-            bPaginate: false
+            ordering: false
         });
     oTable.fnSort( [[4,'asc'] ] );
 </script>
 <script>
     function toggle(source) {
-        var checkboxes = document.getElementsByClassName('ckbox');
+        var checkboxes = document.querySelectorAll('input[type="checkbox"');
         for (let index = 0; index < checkboxes.length; index++) {
             if(checkboxes[index] != source) {
                 checkboxes[index].checked = source.checked
@@ -180,12 +179,17 @@
 
                             <tbody role="alert" aria-live="polite" aria-relevant="all">
 
-
+                                @php
+                                    $lv = 1;
+                                    $lvi = 1;
+                                    $lvf = 2;
+                                    $dsd = 1;
+                                @endphp
                                 @if (isset($user))
                                 <tr class="gradeX even">
                                     <td class="">
                                         <div class="" id="uniform-undefined">
-                                            <span><input type="checkbox" class="ckbox" /></span>
+                                            <span><input type="checkbox" class="" /></span>
                                             <input type="hidden" name="sponser" value="{{$user->member_id}}" />
                                             <input type="hidden" name="period" value="{{$yr.$mth}}" />
                                         </div>
@@ -194,7 +198,7 @@
                                     <td>{{$user->period}}</td>
                                     <td>{{$user->member_id}}</td>
                                     <td>0</td>
-                                    <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? '1'}}</td>
+                                    <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? $user->stats->level}}</td>
                                     <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                     <td>{{number_format($user->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
                                     @if (intval($combPeriod) >= intval($user->archievements->min('period')))
@@ -215,18 +219,19 @@
                                     </td>
                                     <td></td>
                                 </tr>
-                                @foreach ($sponsers as $key => $sponser)
+                                @foreach ($sponsers->where('period', '<=', $combPeriod) as $key => $sponser)
+                                @if (intval($sponser->period) <= intval($combPeriod))
                                 <tr class="gradeX {{($key+1) % 2 == 0 ? 'even' : 'odd'}}">
                                     <td class="sorting_1">
                                         <div class="" id="uniform-undefined">
-                                            <span><input type="checkbox" name="agents[]" class="checkboxes ckbox" value="{{$sponser->member_id}}" /></span>
+                                            <span><input type="checkbox" name="agents[]" class="checkboxes" value="{{$sponser->member_id}}" /></span>
                                         </div>
                                     </td>
                                     <td>{{$sponser->firstname.' '.$sponser->lastname}}</td>
                                     <td>{{$sponser->period}}</td>
                                     <td>{{$sponser->member_id}}</td>
-                                    <td>{{$sponser->level}}</td>
-                                    <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? '1'}}</td>
+                                    <td>{{$lv}}</td>
+                                    <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
                                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                     <td>{{number_format($sponser->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
                                     @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
@@ -247,23 +252,16 @@
                                     </td>
                                     <td></td>
                                 </tr>
+                                @endif
+
+
                                 @endforeach
                                 @endif
 
                             </tbody>
                         </table>
                     </form>
-                    @if (isset($sponsers))
-                    <div class="row-fluid">
-                        <div class="span6"></div>
-                        <div class="span6">
-                            <div class="dataTables_paginate paging_bootstrap pagination">
-                                {{$sponsers->appends(request()->input())->links()}}
-                            </div>
-                        </div>
-                    </div>
 
-                    @endif
                 </div>
                 <!--  -->
             </div>
