@@ -4,9 +4,11 @@ namespace App\Imports;
 
 use App\Models\TemporalAgent;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class AgentTempImport implements ToModel, WithHeadingRow
+class AgentTempImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
     /**
     * @param array $row
@@ -30,5 +32,15 @@ class AgentTempImport implements ToModel, WithHeadingRow
             // 'momo_name' => $row['momoname'] ?? null,
             // 'momo_no' => strval($row['momono']) ?? null,
         ]);
+    }
+
+    public function chunkSize(): int
+    {
+        return 50;
+    }
+
+    public function batchSize(): int
+    {
+        return 50;
     }
 }

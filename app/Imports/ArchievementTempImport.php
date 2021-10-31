@@ -4,9 +4,11 @@ namespace App\Imports;
 
 use App\Models\TemporalAchivement;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class ArchievementTempImport implements ToModel, WithHeadingRow
+class ArchievementTempImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
     /**
     * @param array $row
@@ -23,5 +25,15 @@ class ArchievementTempImport implements ToModel, WithHeadingRow
             'total_pv' => $row['total_pv'] ?? floatval(0),
             'country' => $row['country'],
         ]);
+    }
+
+    public function chunkSize(): int
+    {
+        return 50;
+    }
+
+    public function batchSize(): int
+    {
+        return 50;
     }
 }
