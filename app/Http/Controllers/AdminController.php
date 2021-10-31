@@ -12,6 +12,7 @@ use App\Jobs\AgentUploadJob;
 use App\Jobs\AwardServiceJob;
 use App\Jobs\CalcStatsJob;
 use App\Jobs\CalculateBonus;
+use App\Jobs\GroupServiceJob;
 use App\Jobs\Gstats;
 use App\Jobs\LevelServiceJob;
 use App\Jobs\Pstats;
@@ -25,7 +26,6 @@ use App\Models\StatisticLog;
 use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
 use App\Models\UploadedData;
-use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Maatwebsite\Excel\Facades\Excel;
@@ -47,7 +47,7 @@ class AdminController extends Controller
 
         BigAgent::truncate();
         $ss = new BigAgentService();
-        $agents = Agent::whereHas('childrenSponsers')->latest()->pluck('member_id');
+        $agents = Agent::latest()->pluck('member_id');
         // ddd($agents);
         foreach ($agents as $key => $agent) {
             // $ss->mk($agent);
@@ -62,17 +62,17 @@ class AdminController extends Controller
         $this->dispatch(new AwardServiceJob($this->combPeriodToday));
 
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        // ddd($acs);
+        $jobs = [];
         $batchid = '';
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
 
                 //calculating the Statistcis
-                $this->dispatch(new StatisticLogJob($ac));
+                $jobs[] = new StatisticLogJob($ac);
                 //calculating the Salary
-                $this->dispatch(new CalculateBonus($ac));
+                $jobs[] = new CalculateBonus($ac);
                 //calculating the groubBV and personalBV
-                $this->dispatch(new CalcStatsJob($ac));
+                $jobs[] = new CalcStatsJob($ac);
 
                 // $batch = Bus::batch([
                 //     new StatisticLogJob($ac),
@@ -83,6 +83,37 @@ class AdminController extends Controller
         }
 
     }
+
+    public function chainJobs()
+    {
+        // $this->dispatch(new GroupServiceJob());
+        // $bns = new BonusService();
+        // $bns->calculateBonus('201402');
+        // $bns->calculateBonus('201405');
+
+        $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        $jobs = [];
+        $jobs[] = new GroupServiceJob();
+        // ddd($acs);
+        if(count($acs) > 0) {
+            foreach ($acs as $key => $ac) {
+                $jobs[] = new StatisticLogJob($ac);
+                //calculating the Salary
+                $jobs[] = new CalculateBonus($ac);
+                //calculating the groubBV and personalBV
+                $jobs[] = new CalcStatsJob($ac);
+                // $jobs[] = new CalculateBonus($ac);
+            }
+        }
+        $batch = Bus::batch($jobs)->dispatch();
+        return $batch->id;
+        if(count($jobs) > 0) {
+            return redirect()->route('admin.dashboard', ['batch_id' => $batch->id]);
+        }
+        return view('pages.dashboard', ['batch_id' => $batch->id]);
+    }
+
+    // 201266664517
 
     public function reloadStatistics()
     {
@@ -111,7 +142,12 @@ class AdminController extends Controller
 
     public function dashboard(Request $request)
     {
-        $batch = $this->start();
+        // $batch = $this->start();
+        $batch = null;
+        if($request->batch_id) {
+            $batch = Bus::findBatch($request->batch_id);
+            ddd($batch);
+        }
         return view('pages.dashboard');
     }
     public function deleteDBS(Request $request)

@@ -16,6 +16,7 @@ class BigAgentService
     public $lvf;
     public $dsd;
     public $user;
+    public $loopCount;
     public function __construct()
     {
         $this->lv = 1;
@@ -37,30 +38,53 @@ class BigAgentService
     {
         $user =  Agent::where('member_id', $memberid)->first();
         $this->user = $user;
-        $sponsers =  Agent::where('sponser_id', $memberid)->get();
+        $this->loopCount = 0;
+        // $sponsers =  Agent::where('sponser_id', $memberid)->get();
         BigAgent::create([
             'member_id' => $user->member_id, 'sponser_id' => $user->sponser_id ?? null,
-            'parent_id' => null, 'level' => 0, 'period' => $user->period,
+            'parent_id' => null, 'level' => $this->loopCount, 'period' => $user->period,
             'firstname' => $user->firstname, 'lastname' => $user->lastname
         ]);
 
-        foreach ($sponsers as $key => $sponser) {
+        if($user->sponser) {
+            $this->loopCount++;
             BigAgent::create([
-                'member_id' => $sponser->member_id, 'sponser_id' => $sponser->sponser_id ?? null,
-                'parent_id' => $user->member_id, 'level' => $this->lv, 'period' => $sponser->period,
-                'firstname' => $sponser->firstname, 'lastname' => $sponser->lastname
+                'member_id' =>$user->member_id, 'sponser_id' =>$user->sponser_id ?? null,
+                'parent_id' => $user->sponser->member_id, 'level' => $this->loopCount, 'period' =>$user->period,
+                'firstname' =>$user->firstname, 'lastname' =>$user->lastname
             ]);
-            foreach ($sponser->childrenSponsers as $k => $childrenSponser) {
-                if($sponser->member_id === $childrenSponser->sponser_id){
-                    $num = 2;
-                    $this->lvi = $num;
-                }
-                // $child_sponser = $childrenSponser;
-                $this->reloop($childrenSponser, $num);
-            }
+            $this->addSponser($user->sponser);
         }
 
+        // foreach ($sponsers as $key => $sponser) {
+        //     BigAgent::create([
+        //         'member_id' => $sponser->member_id, 'sponser_id' => $sponser->sponser_id ?? null,
+        //         'parent_id' => $user->member_id, 'level' => $this->lv, 'period' => $sponser->period,
+        //         'firstname' => $sponser->firstname, 'lastname' => $sponser->lastname
+        //     ]);
+        //     foreach ($sponser->childrenSponsers as $k => $childrenSponser) {
+        //         if($sponser->member_id === $childrenSponser->sponser_id){
+        //             $num = 2;
+        //             $this->lvi = $num;
+        //         }
+        //         $this->reloop($childrenSponser, $num);
+        //     }
+        // }
 
+
+    }
+
+    protected function addSponser($user)
+    {
+        if($user->sponser){
+            $this->loopCount++;
+            BigAgent::create([
+                'member_id' =>$this->user->member_id, 'sponser_id' =>$this->user->sponser_id ?? null,
+                'parent_id' => $user->sponser->member_id, 'level' => $this->loopCount, 'period' =>$this->user->period,
+                'firstname' =>$this->user->firstname, 'lastname' =>$this->user->lastname
+            ]);
+            $this->addSponser($user->sponser);
+        }
     }
 
     protected function reloop($child_sponser,$num, $p = false)

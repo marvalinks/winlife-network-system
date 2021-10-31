@@ -42,6 +42,7 @@ Route::prefix('admin')->group(function () {
     Route::post('upload-achivement', [AdminController::class, 'postuploadAchivement'])->name('upload.achivement');
     Route::get('reload-statistics', [AdminController::class, 'reloadStatistics'])->name('reload.statistics');
     Route::get('test-data', [AdminController::class, 'testData']);
+    Route::get('chain-data', [AdminController::class, 'chainJobs']);
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');

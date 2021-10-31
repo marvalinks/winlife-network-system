@@ -42,6 +42,10 @@ class BigAgent extends Model
     {
         return $this->belongsTo(Agent::class, 'sponser_id', 'member_id');
     }
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class, 'parent_id', 'member_id');
+    }
     public function group()
     {
         return $this->belongsTo(GroupAmt::class, 'member_id', 'member_id');

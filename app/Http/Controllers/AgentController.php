@@ -74,13 +74,13 @@ class AgentController extends Controller
             $mth = $request->selectedMonth;
             $combPeriodToday = $this->combPeriodToday;
             // ddd($agents);
-            $user =  BigAgent::where('member_id', $memberid)->first();
+            $user =  BigAgent::where('member_id', $memberid)->where('level', 0)->first();
             if($user) {
                 if(intval($user->period) > intval($combPeriod)) {
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
                     return redirect()->route('admin.agents');
                 }
-                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->simplePaginate(25);
+                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(25);
                 $user = $user;
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
             }else{
@@ -145,7 +145,7 @@ class AgentController extends Controller
         // $rt = $sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0);
         // ddd($sponser->archievements->where('period', $combPeriod));
         // ddd($this->combPeriodToday);
-        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->simplePaginate(15);
+        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(15);
         $this->currentGBV = $sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
         $this->ACCGBV = $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
 

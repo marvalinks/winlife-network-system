@@ -6,6 +6,7 @@ use App\Http\Services\GPService;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\CheckRunBill;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 
 class CalcStatsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $period;
     public function __construct($period)

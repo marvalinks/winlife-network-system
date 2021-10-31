@@ -19,6 +19,9 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Jobs\AgentUploadJob;
 use App\Jobs\AchivementUploadJob;
+use App\Jobs\CalcStatsJob;
+use App\Jobs\NewAgentBigAgent;
+use Illuminate\Support\Facades\Bus;
 
 class ExportController extends Controller
 {
@@ -77,18 +80,11 @@ class ExportController extends Controller
             return back();
         }
         // ddd($agg->where('sponser_id', '202110141234'));
+        $jobs = [];
         foreach ($agg as $key => $ag) {
-            $this->dispatch(new AgentUploadJob($ag));
-            // if(!$ag->agent) {
-            //     Agent::create([
-            //         'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
-            //         'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
-            //         'telephone' => $ag->telephone, 'address' => $ag->address,
-            //         'period' => $ag->period, 'nationality' => $ag->nationality,
-            //         'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
-            //     ]);
-            // }
+            $jobs[] = new NewAgentBigAgent($ag);
         }
+        $batch = Bus::batch($jobs)->dispatch();
         UploadedData::create([
             'data' => 'r', 'period' => $agg[0]->period ?? $agg[1]->period
         ]);
@@ -97,6 +93,7 @@ class ExportController extends Controller
     }
     public function uploadExportA(Request $request)
     {
+        $jobs = [];
         $agg = TemporalAchivement::all();
         $ups = UploadedData::where('period', $agg[0]->period ?? $agg[1]->period)->where('data', 'a')->first();
         if($ups) {
@@ -104,7 +101,7 @@ class ExportController extends Controller
             return back();
         }
         foreach ($agg as $key => $ag) {
-            $this->dispatch(new AchivementUploadJob($ag));
+            $jobs[] = new AchivementUploadJob($ag);
             // $agent = Agent::where('member_id', $ag->member_id)->first();
             // if($agent) {
             //     Achivement::create([
@@ -115,10 +112,15 @@ class ExportController extends Controller
             // }
         }
 
+        $jobs[] = new StatisticLogJob($agg[0]->period ?? $agg[1]->period);
+        $jobs[] = new CalculateBonus($agg[0]->period ?? $agg[1]->period);
+        $jobs[] = new CalcStatsJob($agg[0]->period ?? $agg[1]->period);
+
+        $batch = Bus::batch($jobs)->dispatch();
         UploadedData::create([
             'data' => 'a', 'period' => $agg[0]->period ?? $agg[1]->period
         ]);
-        $this->start();
+        // $this->start();
         $request->session()->flash('alert-success', 'Agent achivement successfully uploaded!');
         return back();
     }
