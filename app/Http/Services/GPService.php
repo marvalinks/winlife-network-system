@@ -6,6 +6,7 @@ use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
 use App\Models\BigAgent;
+use App\Models\CheckGsjRun;
 use App\Models\CheckRunBill;
 use App\Models\GroupBv;
 use App\Models\PersonalBv;
@@ -40,6 +41,16 @@ class GPService
             ]);
         }
 
+    }
+
+    public function start2($id)
+    {
+        $pd = CheckGsjRun::where('member_id', $id)->where('period', $this->combPeriod)->first();
+        if(!$pd) {
+            $this->currentgbv($id);
+            $this->accgbv($id);
+            CheckGsjRun::create(['member_id' => $id, 'period' => $this->combPeriod]);
+        }
     }
 
     public function currentgbv($id)

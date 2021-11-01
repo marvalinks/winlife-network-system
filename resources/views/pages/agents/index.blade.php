@@ -196,13 +196,13 @@
                                     <td>0</td>
                                     <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? '1'}}</td>
                                     <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                    <td>{{number_format($user->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
+                                    <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
                                     @if (intval($combPeriod) >= intval($user->archievements->min('period')))
                                     <td>{{number_format($user->archievements->whereBetween('period', [$user->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                     @else
                                     <td>{{number_format(floatval(0), 2)}}</td>
                                     @endif
-                                    <td>{{number_format($user->cgbv2->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
+                                    <td>{{number_format($user->accgbv($combPeriod), 2)}}</td>
                                     <td>{{$user->sponser_id ?? '-'}}</td>
                                     <td class="{{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                     @if (auth()->user()->roleid == 1)
@@ -228,13 +228,13 @@
                                     <td>{{$sponser->level}}</td>
                                     <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? '1'}}</td>
                                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                    <td>{{number_format($sponser->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
+                                    <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
                                     @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
                                     <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                     @else
                                     <td>{{number_format(floatval(0), 2)}}</td>
                                     @endif
-                                    <td>{{number_format($sponser->cgbv2->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
+                                    <td>{{number_format($sponser->accgbv($combPeriod), 2)}}</td>
                                     <td>{{$sponser->sponser_id ?? '-'}}</td>
                                     <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                     @if (auth()->user()->roleid == 1)

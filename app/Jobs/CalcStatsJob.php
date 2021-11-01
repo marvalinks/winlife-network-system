@@ -19,9 +19,11 @@ class CalcStatsJob implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $period;
-    public function __construct($period)
+    public $agent;
+    public function __construct($period, $agent)
     {
         $this->period = $period;
+        $this->agent = $agent;
     }
 
     /**
@@ -33,6 +35,6 @@ class CalcStatsJob implements ShouldQueue
     {
         $ac = $this->period;
         $gps = new GPService($ac);
-        $gps->start();
+        $gps->start2($this->agent);
     }
 }

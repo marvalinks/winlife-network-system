@@ -101,8 +101,8 @@ class AdminController extends Controller
                 //calculating the Salary
                 $jobs[] = new CalculateBonus($ac);
                 //calculating the groubBV and personalBV
-                $jobs[] = new CalcStatsJob($ac);
-                // $jobs[] = new CalculateBonus($ac);
+                // $jobs[] = new CalcStatsJob($ac);
+                // $this->calcStats($ac);
             }
         }
         $batch = Bus::batch($jobs)->dispatch();
@@ -115,7 +115,28 @@ class AdminController extends Controller
         return back();
     }
 
-    // 201266664517
+    protected function calcStats($period)
+    {
+
+        // $pd = CheckRunBill::where('type', 'gps')->where('period', $period)->first();
+
+        // if(!$pd){
+            $jobs = [];
+            $agents = Agent::latest()->pluck('member_id');
+            // ddd($agents);
+            foreach ($agents as $agent) {
+                $jobs[] = new CalcStatsJob($period, $agent);
+            }
+            // ddd($jobs);
+
+            // CheckRunBill::create([
+            //     'period' => $this->combPeriod, 'type' => 'gps'
+            // ]);
+        // }
+            // $jobs[] = new CalcStatsJob($period, $agent);
+            $batch = Bus::batch($jobs)->dispatch();
+
+    }
 
     public function reloadStatistics()
     {
