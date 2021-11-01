@@ -106,7 +106,7 @@ class AdminController extends Controller
             }
         }
         $batch = Bus::batch($jobs)->dispatch();
-        return $batch->id;
+        // return $batch->id;
         if(count($jobs) > 0) {
             $request->session()->flash('alert-success', 'Achivement successfully uploaded. Please wait, bonus is calculating...');
             return redirect()->route('admin.agents');
