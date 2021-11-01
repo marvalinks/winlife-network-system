@@ -6,6 +6,7 @@ use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
 use App\Models\BigAgent;
+use App\Models\CheckGsjRun;
 use App\Models\CheckRunBill;
 use App\Models\GroupBv;
 use App\Models\PersonalBv;
@@ -27,17 +28,16 @@ class GPService
 
     public function start()
     {
-        $pd = CheckRunBill::where('type', 'gps')->where('period', $this->combPeriod)->first();
 
-        if(!$pd){
-            $agents = Agent::latest()->pluck('member_id');
-            foreach ($agents as $agent) {
+        $agents = Agent::latest()->pluck('member_id');
+        foreach ($agents as $agent) {
+            $pd = CheckGsjRun::where('member_id', $agent)->where('period', $this->combPeriod)->first();
+            if(!$pd) {
                 $this->currentgbv($agent);
                 $this->accgbv($agent);
+
+                CheckGsjRun::create(['member_id' => $agent, 'period', $this->combPeriod]);
             }
-            CheckRunBill::create([
-                'period' => $this->combPeriod, 'type' => 'gps'
-            ]);
         }
 
     }
@@ -52,7 +52,7 @@ class GPService
         $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
         $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
-        $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->get();
+        $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->orderBy('level', 'asc')->get();
 
         foreach ($agents as $key => $sponser) {
             $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
@@ -75,7 +75,7 @@ class GPService
         $this->memberid = $id;
         $this->currentGBV = 0.0;
         $this->ACCGBV = 0.0;
-        $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->get();
+        $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->orderBy('level', 'asc')->get();
         $user =  Agent::where('member_id', $id)->first();
 
         $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);

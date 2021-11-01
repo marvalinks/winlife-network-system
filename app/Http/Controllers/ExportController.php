@@ -112,14 +112,15 @@ class ExportController extends Controller
             // }
         }
 
-        $jobs[] = new StatisticLogJob($agg[0]->period ?? $agg[1]->period);
-        $jobs[] = new CalculateBonus($agg[0]->period ?? $agg[1]->period);
-        $jobs[] = new CalcStatsJob($agg[0]->period ?? $agg[1]->period);
+        // $jobs[] = new StatisticLogJob($agg[0]->period ?? $agg[1]->period);
+        // $jobs[] = new CalculateBonus($agg[0]->period ?? $agg[1]->period);
+        // $jobs[] = new CalcStatsJob($agg[0]->period ?? $agg[1]->period);
 
         $batch = Bus::batch($jobs)->dispatch();
         UploadedData::create([
             'data' => 'a', 'period' => $agg[0]->period ?? $agg[1]->period
         ]);
+        return redirect()->route('chain.data');
         // $this->start();
         $request->session()->flash('alert-success', 'Agent achivement successfully uploaded!');
         return back();

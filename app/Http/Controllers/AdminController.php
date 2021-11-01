@@ -84,7 +84,7 @@ class AdminController extends Controller
 
     }
 
-    public function chainJobs()
+    public function chainJobs(Request $request)
     {
         // $this->dispatch(new GroupServiceJob());
         // $bns = new BonusService();
@@ -108,9 +108,11 @@ class AdminController extends Controller
         $batch = Bus::batch($jobs)->dispatch();
         return $batch->id;
         if(count($jobs) > 0) {
-            return redirect()->route('admin.dashboard', ['batch_id' => $batch->id]);
+            $request->session()->flash('alert-success', 'Achivement successfully uploaded. Please wait, bonus is calculating...');
+            return redirect()->route('admin.agents');
+            // return redirect()->route('admin.dashboard', ['batch_id' => $batch->id]);
         }
-        return view('pages.dashboard', ['batch_id' => $batch->id]);
+        return back();
     }
 
     // 201266664517
