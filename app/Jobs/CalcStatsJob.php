@@ -32,7 +32,7 @@ class CalcStatsJob implements ShouldQueue
     public function handle()
     {
         $ac = $this->period;
-        $gps = new GPService($this->period);
+        $gps = new GPService($ac);
         $gps->start();
     }
 }
