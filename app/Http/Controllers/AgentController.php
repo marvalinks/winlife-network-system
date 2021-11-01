@@ -81,6 +81,7 @@ class AgentController extends Controller
                     return redirect()->route('admin.agents');
                 }
                 $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(25);
+                // ddd($sponsers);
                 $user = $user;
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
             }else{

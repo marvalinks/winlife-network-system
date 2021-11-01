@@ -27,16 +27,17 @@ class StatisticLogService
         $pd = CheckRunBill::where('type', 'statistics')->where('period', $period)->first();
         if(!$pd){
             $this->combPeriodToday = $period;
-            $this->adjustBulkPvb();
+
 
             $agents = Agent::where('period', '<=', $this->combPeriodToday)->latest()->get();
             foreach ($agents as $key => $agent) {
                 if (intval($agent->period) <= intval($this->combPeriodToday)) {
-
+                    $this->adjustBulkPvb($agent);
                     $log = StatisticLog::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->first();
                     $salary = Salary::where('period', $this->combPeriodToday)->where('member_id', $agent->member_id)->first();
                     $logs = StatisticLog::distinct('period')->where('member_id', $agent->member_id)
                             ->where('owe_bl', '>', 0)->get();
+                    // ddd($log);
                     if($log) {
                         if (floatval($log->acc_pvb) < floatval(50)) {
                             $log->level = 1;
@@ -66,6 +67,8 @@ class StatisticLogService
                         }
                         $log->save();
                     }
+
+                    // ddd($log);
 
                     if($log->level === 5) {
 
@@ -197,35 +200,33 @@ class StatisticLogService
 
     }
 
-    protected function adjustBulkPvb()
+    protected function adjustBulkPvb($user)
     {
         $this->currentGBV = floatval(0);
         $this->ACCGBV = floatval(0);
         $this->ACCGBV = floatval(0);
-        $users = Agent::where('period', '<=', $this->combPeriodToday)->latest()->get();
-        foreach ($users as $key => $user) {
-            if (intval($user->period) <= intval($this->combPeriodToday)) {
-                $achTotal = floatval($user->currentach($this->combPeriodToday)->sum('total_pv'));
-                $achTotal2 = $user->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                $this->currentGBV = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                $this->ACCGBV = $user->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
 
-                $sponsers =  BigAgent::where('parent_id', $user->member_id)->where('period', '<=', $this->combPeriodToday)->get();
+        if (intval($user->period) <= intval($this->combPeriodToday)) {
+            $achTotal = floatval($user->currentach($this->combPeriodToday)->sum('total_pv'));
+            $achTotal2 = $user->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
+            $this->currentGBV = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
+            $this->ACCGBV = $user->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
 
-                foreach ($sponsers as $key => $spp) {
-                    $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                    $this->ACCGBV += $spp->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                }
-                $stats = new StatisticLog();
-                $stats->member_id = $user->member_id;
-                $stats->period = $this->combPeriodToday;
-                $stats->current_pbv = $achTotal;
-                $stats->acc_pvb = $achTotal2;
-                $stats->current_gbv = $this->currentGBV;
-                $stats->acc_gbv = $this->ACCGBV;
-                $stats->save();
+            $sponsers =  BigAgent::where('parent_id', $user->member_id)->where('period', '<=', $this->combPeriodToday)->get();
+
+            foreach ($sponsers as $key => $spp) {
+                $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
+                $this->ACCGBV += $spp->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
             }
-
+            // ddd($achTotal);
+            $stats = new StatisticLog();
+            $stats->member_id = $user->member_id;
+            $stats->period = $this->combPeriodToday;
+            $stats->current_pbv = $achTotal;
+            $stats->acc_pvb = $achTotal2;
+            $stats->current_gbv = $this->currentGBV;
+            $stats->acc_gbv = $this->ACCGBV;
+            $stats->save();
         }
     }
 

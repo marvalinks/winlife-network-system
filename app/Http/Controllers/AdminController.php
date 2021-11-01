@@ -90,6 +90,10 @@ class AdminController extends Controller
         // $bns = new BonusService();
         // $bns->calculateBonus('201402');
         // $bns->calculateBonus('201405');
+        // $st = new StatisticLogService();
+        // $st->ABP('201409');
+
+        // ddd('done');
 
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         $jobs = [];
