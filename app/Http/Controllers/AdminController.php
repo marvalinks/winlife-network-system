@@ -93,8 +93,8 @@ class AdminController extends Controller
 
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         $jobs = [];
-        $jobs[] = new GroupServiceJob();
         // ddd($acs);
+        $jobs[] = new GroupServiceJob();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $jobs[] = new StatisticLogJob($ac);

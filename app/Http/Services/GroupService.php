@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Models\Agent;
+use App\Models\CheckGsjRun;
 use App\Models\CheckRunBill;
 use App\Models\GroupAmt;
 
@@ -50,32 +51,39 @@ class GroupService
         // }
 
 
-        $pd = CheckRunBill::where('type', 'gsj')->first();
-        if(!$pd):
-            GroupAmt::truncate();
+        // $pd = CheckRunBill::where('type', 'gsj')->first();
+        // if(!$pd):
+            // GroupAmt::truncate();
             $agents = Agent::latest()->get();
             foreach ($agents as $key => $user) {
-                $accgbv = floatval($user->archievements()->sum('total_pv')) ?? floatval(0);
-                if(floatval($accgbv) > floatval(200)){
-                    GroupAmt::create([
-                        'member_id' => $user->member_id, 'group1' => 1, 'group2' => 1,
-                        'group3' => 1, 'level' => 3, 'cl' => 1, 'cl2' => 1
-                    ]);
-                }elseif(floatval($accgbv) > floatval(150) && floatval($accgbv) <= floatval(200)) {
-                    GroupAmt::create([
-                        'member_id' => $user->member_id, 'group1' => 1, 'group2' => 1,
-                        'group3' => 0, 'level' => 2, 'cl' => 1, 'cl2' => 1
-                    ]);
-                }else{
-                    GroupAmt::create([
-                        'member_id' => $user->member_id, 'group1' => 1, 'group2' => 0,
-                        'group3' => 0, 'level' => 1, 'cl' => 1, 'cl2' => 1
-                    ]);
+                $gsj = CheckGsjRun::where('member_id', $user->member_id)->first();
+                if (!$gsj) {
+                    $accgbv = floatval($user->archievements()->sum('total_pv')) ?? floatval(0);
+                    if(floatval($accgbv) > floatval(200)){
+                        GroupAmt::create([
+                            'member_id' => $user->member_id, 'group1' => 1, 'group2' => 1,
+                            'group3' => 1, 'level' => 3, 'cl' => 1, 'cl2' => 1
+                        ]);
+                    }
+                    if(floatval($accgbv) > floatval(150) && floatval($accgbv) <= floatval(200)) {
+                        GroupAmt::create([
+                            'member_id' => $user->member_id, 'group1' => 1, 'group2' => 1,
+                            'group3' => 0, 'level' => 2, 'cl' => 1, 'cl2' => 1
+                        ]);
+                    }
+                    if(floatval($accgbv) <= floatval(150)){
+                        GroupAmt::create([
+                            'member_id' => $user->member_id, 'group1' => 1, 'group2' => 0,
+                            'group3' => 0, 'level' => 1, 'cl' => 1, 'cl2' => 1
+                        ]);
+                    }
+                    CheckGsjRun::create([ 'member_id' => $user->member_id]);
                 }
+
             }
-            CheckRunBill::create([ 'type' => 'gsj']);
+            // CheckRunBill::create([ 'type' => 'gsj']);
             return true;
-        endif;
+        // endif;
 
     }
 
