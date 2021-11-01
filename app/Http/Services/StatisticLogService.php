@@ -202,29 +202,19 @@ class StatisticLogService
         $this->currentGBV = floatval(0);
         $this->ACCGBV = floatval(0);
         $this->ACCGBV = floatval(0);
-        $users = Agent::latest()->get();
+        $users = Agent::where('period', '<=', $this->combPeriodToday)->latest()->get();
         foreach ($users as $key => $user) {
             if (intval($user->period) <= intval($this->combPeriodToday)) {
-                // $stats = AgentStatistics::where('agent_id', $user->member_id)->first();
                 $achTotal = floatval($user->currentach($this->combPeriodToday)->sum('total_pv'));
-                // $achTotal2 = $user->archievements->sum('total_pv');
-                $achTotal2 = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
+                $achTotal2 = $user->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
                 $this->currentGBV = $user->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                // foreach ($user->sponsers as $key => $spp) {
-                //     $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                //     $this->ACCGBV += $spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                //     foreach ($spp->childrenSponsers as $k => $child_sponser) {
-                //         $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                //         $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                //         $this->reloop($child_sponser);
-                //     }
-                // }
+                $this->ACCGBV = $user->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
+
                 $sponsers =  BigAgent::where('parent_id', $user->member_id)->where('period', '<=', $this->combPeriodToday)->get();
 
                 foreach ($sponsers as $key => $spp) {
                     $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                    $this->ACCGBV += $spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
+                    $this->ACCGBV += $spp->archievements->whereBetween('period', ['201307', $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
                 }
                 $stats = new StatisticLog();
                 $stats->member_id = $user->member_id;
