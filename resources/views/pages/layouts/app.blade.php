@@ -97,7 +97,7 @@
                 <div class="row-fluid">
                     <div class="btn-group pull-right" style="margin-right: 10px;">
                         @if (auth()->user()->roleid == 1)
-                            <a href="{{ route('reload.statistics') }}" class="btn green">reload all agents statistics</a>
+                            <a href="{{ route('chain.data') }}" class="btn green">reload all agents statistics</a>
                         @endif
                         <a href="{{ url()->previous() }}" class="btn green">go back <i class="icon-back"></i></a>
                     </div>

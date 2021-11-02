@@ -29,7 +29,6 @@ class GPService
     public function start()
     {
         $pd = CheckRunBill::where('type', 'gps')->where('period', $this->combPeriod)->first();
-
         if(!$pd){
             $agents = Agent::latest()->pluck('member_id');
             foreach ($agents as $agent) {
@@ -56,26 +55,27 @@ class GPService
     public function currentgbv($id)
     {
         $this->memberid = $id;
-        $this->currentGBV = 0.0;
-        $this->ACCGBV = 0.0;
+        // $this->currentGBV = 0.0;
+        // $this->ACCGBV = 0.0;
         $user =  Agent::where('member_id', $id)->first();
 
-        $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-        $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
+        // $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
+        // $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
-        $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->get();
+        // $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->get();
 
-        foreach ($agents as $key => $sponser) {
-            $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-            $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
-        }
-        $pv = PersonalBv::where('member_id', $this->memberid)->where('period', $this->combPeriod)->first();
-        if($pv) {
-            $pv->delete();
-        }
+        // foreach ($agents as $key => $sponser) {
+        //     $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
+        //     $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
+        // }
+        // $pv = PersonalBv::where('member_id', $this->memberid)->where('period', $this->combPeriod)->first();
+        // if($pv) {
+        //     $pv->delete();
+        // }
+        // ddd($user->currentgbv($this->combPeriod));
         PersonalBv::create([
             'member_id' => $this->memberid, 'period' => $this->combPeriod,
-            'amount' => floatval($this->currentGBV)
+            'amount' => floatval($user->currentgbv($this->combPeriod))
         ]);
 
 
@@ -84,27 +84,28 @@ class GPService
     public function accgbv($id)
     {
         $this->memberid = $id;
-        $this->currentGBV = 0.0;
-        $this->ACCGBV = 0.0;
-        $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->get();
+        // $this->currentGBV = 0.0;
+        // $this->ACCGBV = 0.0;
+        // $agents =  BigAgent::where('parent_id', $id)->where('period', '<=', $this->combPeriod)->get();
         $user =  Agent::where('member_id', $id)->first();
 
-        $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-        $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
+        // $this->currentGBV = $user->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
+        // $this->ACCGBV = $user->archievements->whereBetween('period', [$user->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
-        foreach ($agents as $key => $sponser) {
+        // foreach ($agents as $key => $sponser) {
 
-            $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
-            $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
+        //     $this->currentGBV += $sponser->archievements->where('period', $this->combPeriod)->sum('total_pv') ?? floatval(0);
+        //     $this->ACCGBV += $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriod])->sum('total_pv') ?? floatval(0);
 
-        }
-        $gv = GroupBv::where('member_id', $this->memberid)->where('period', $this->combPeriod)->first();
-        if($gv) {
-            $gv->delete();
-        }
+        // }
+        // $gv = GroupBv::where('member_id', $this->memberid)->where('period', $this->combPeriod)->first();
+        // if($gv) {
+        //     $gv->delete();
+        // }
+        // ddd($user->currentgbv($this->combPeriod));
         GroupBv::create([
             'member_id' => $this->memberid, 'period' => $this->combPeriod,
-            'amount' => floatval($this->ACCGBV)
+            'amount' => floatval($user->accgbv($this->combPeriod))
         ]);
 
     }

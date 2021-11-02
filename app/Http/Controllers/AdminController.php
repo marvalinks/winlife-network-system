@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Services\BigAgentService;
 use App\Http\Services\BonusService;
+use App\Http\Services\GPService;
 use App\Http\Services\GroupService;
 use App\Http\Services\StatisticLogService;
 use App\Imports\AgentTempImport;
@@ -64,13 +65,14 @@ class AdminController extends Controller
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         $jobs = [];
         $batchid = '';
+
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
 
                 //calculating the Statistcis
-                $jobs[] = new StatisticLogJob($ac);
+                // $jobs[] = new StatisticLogJob($ac);
                 //calculating the Salary
-                $jobs[] = new CalculateBonus($ac);
+                // $jobs[] = new CalculateBonus($ac);
                 //calculating the groubBV and personalBV
                 $jobs[] = new CalcStatsJob($ac);
 
@@ -95,17 +97,21 @@ class AdminController extends Controller
 
         // ddd('done');
 
+        // $gps = new GPService(201401);
+        // $gps->start();
+        // ddd('op');
+
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         $jobs = [];
         // ddd($acs);
         $jobs[] = new GroupServiceJob();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
-                $jobs[] = new StatisticLogJob($ac);
+                // $jobs[] = new StatisticLogJob($ac);
                 //calculating the Salary
-                $jobs[] = new CalculateBonus($ac);
+                // $jobs[] = new CalculateBonus($ac);
                 //calculating the groubBV and personalBV
-                // $jobs[] = new CalcStatsJob($ac);
+                $jobs[] = new CalcStatsJob($ac);
                 // $this->calcStats($ac);
             }
         }
@@ -113,7 +119,7 @@ class AdminController extends Controller
         // return $batch->id;
         if(count($jobs) > 0) {
             $request->session()->flash('alert-success', 'Achivement successfully uploaded. Please wait, bonus is calculating...');
-            return redirect()->route('admin.agents');
+            return redirect()->route('batch.progress');
             // return redirect()->route('admin.dashboard', ['batch_id' => $batch->id]);
         }
         return back();
@@ -238,11 +244,12 @@ class AdminController extends Controller
         // ini_set('display_errors', 1);
         // ini_set('memory_limit', '-1');
         // // ini_set('max_execution_time', 0);
-        // ddd($request->all());
+
         TemporalAchivement::truncate();
         $data = $request->validate([
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);
+        // ddd($request->all());
         try {
             Excel::import(new ArchievementTempImport(), $data['file']);
         } catch (\Throwable $th) {

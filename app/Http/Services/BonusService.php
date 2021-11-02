@@ -61,13 +61,14 @@ class BonusService
                     $this->pugcount = 0;
                     $this->combPeriodToday = $period;
                     $this->accgbv = floatval($user->currentach($period)->sum('total_pv'));
-                    if(($user->statlogs->where('period', $period)->first()->level ?? 1) > 2){
+                    if(true){
                         if(floatval($this->accgbv) > floatval(0)) {
                             $this->old_cl = $this->user->group->cl;
                             $this->old_bl = $this->user->group->bl;
                             $ags = BigAgent::where('member_id', $user->member_id)->where('period', '<=', $period)->where('level', '>', intval(0))->orderBy('level', 'asc')->get();
 
                             // ddd($ags);
+
                             $this->doBonus($user, intval(0));
                             foreach ($ags as $key => $ag) {
                                 $this->user = $user;
@@ -530,25 +531,28 @@ class BonusService
     {
         $salary = Salary::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
 
+        if(($user->statlogs->where('period', $this-> combPeriodToday)->first()->level ?? 1) > 2) {
+            if(!$salary){
+                $bn = Salary::create([
+                    'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
+                    'amount' => $amount, 'level' => $key
+                ]);
 
-        if(!$salary){
-            $bn = Salary::create([
-                'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
-                'amount' => $amount, 'level' => $key
-            ]);
-
-        }else{
-            if($key > 11) {
-                if($user->level > 2) {
+            }else{
+                if($key > 11) {
+                    if($user->level > 2) {
+                        $salary->amount = $salary->amount + $amount;
+                        $salary->save();
+                    }
+                }else{
                     $salary->amount = $salary->amount + $amount;
                     $salary->save();
-                }
-            }else{
-                $salary->amount = $salary->amount + $amount;
-                $salary->save();
 
+                }
             }
         }
+
+
     }
 
     protected function doBonus($user, $key)
@@ -622,42 +626,51 @@ class BonusService
 
 
         // ddd($user->group);
-        if($this->user->group->cl == 1) {
-            if(floatval($this->user->group->bl) > floatval(0)) {
-                $this->firstLevelCalculation($user, $accgbv, $key);
-            }else{
-                $bl = floatval(0);
-                $firstsplit = floatval(0);
-                if(floatval($accgbv) >= floatval(150)) {
-                    $amount_to_next = floatval($accgbv) - floatval(150);
-                    $firstsplit = floatval(150);
-                    $amount = ($first_percent * $firstsplit);
-                    $this->user->group->cl = 2;
-                    $this->user->group->bl = 0;
-                    $this->new_cl = 2;
-                    $this->new_bl = 0;
-                    $this->user->group->save();
-                    // ddd($amount);
 
-                    $this->addSalary($user, $amount, $key);
-
-                    $this->secondLevelCalculation($user, $amount_to_next, $key);
-                    //next 50 calculation
+            if($this->user->group->cl == 1) {
+                if(floatval($this->user->group->bl) > floatval(0)) {
+                    $this->firstLevelCalculation($user, $accgbv, $key);
                 }else{
-                    $bl = floatval(150) - floatval($accgbv);
-                    $firstsplit = floatval($accgbv);
-                    $amount += ($first_percent * $firstsplit);
-                    $user->group->cl = 1;
-                    $user->group->bl = $bl;
-                    $this->new_cl = 1;
-                    $this->new_bl = $bl;
-                    $user->group->save();
+                    $bl = floatval(0);
+                    $firstsplit = floatval(0);
+                    if(floatval($accgbv) >= floatval(150)) {
+                        $amount_to_next = floatval($accgbv) - floatval(150);
+                        $firstsplit = floatval(150);
+                        $amount = ($first_percent * $firstsplit);
+                        $this->user->group->cl = 2;
+                        $this->user->group->bl = 0;
+                        $this->new_cl = 2;
+                        $this->new_bl = 0;
+                        $this->user->group->save();
+                        // ddd($amount);
 
-                    $this->addSalary($user, $amount, $key);
+                        $this->addSalary($user, $amount, $key);
+
+                        $this->secondLevelCalculation($user, $amount_to_next, $key);
+                        //next 50 calculation
+                    }else{
+                        $bl = floatval(150) - floatval($accgbv);
+                        $firstsplit = floatval($accgbv);
+                        $amount += ($first_percent * $firstsplit);
+                        $user->group->cl = 1;
+                        $user->group->bl = $bl;
+                        $this->new_cl = 1;
+                        $this->new_bl = $bl;
+                        $user->group->save();
+
+                        $this->addSalary($user, $amount, $key);
+                    }
+
                 }
-
             }
-        }
+
+            if ($this->old_cl == 2) {
+                $this->secondLevelCalculation($user, $accgbv, $key);
+            }
+            if ($this->old_cl == 3) {
+                $this->thirdLevelCalculation($user, $accgbv, $key);
+            }
+
 
         // if($key == 1) {
         //     ddd($amount, $user->salary, $key);
@@ -665,12 +678,7 @@ class BonusService
 
         // ddd('op');
 
-        if ($this->old_cl == 2) {
-            $this->secondLevelCalculation($user, $accgbv, $key);
-        }
-        if ($this->old_cl == 3) {
-            $this->thirdLevelCalculation($user, $accgbv, $key);
-        }
+
 
         // ddd($user->salaries);
 

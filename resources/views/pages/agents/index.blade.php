@@ -104,7 +104,7 @@
                                 <li><a href="{{route('delete.dbs')}}">Delete DBS</a></li>
                                 <li><a href="#">Export to Excel</a></li>
                             </ul>
-                            <button type="button" onclick="confirmPrint();"  class="btn green">Bonus <i class="icon-plus"></i></button>
+                            <button type="button" onclick="confirmPrint();"  class="btn green">Print Bonus <i class="icon-plus"></i></button>
                         </div>
                         @endif
                     </div>

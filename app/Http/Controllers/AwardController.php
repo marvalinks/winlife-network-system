@@ -19,7 +19,7 @@ class AwardController extends Controller
     {
         $this->middleware('auth');
         $this->combPeriodToday = date('Y').date('m');
-        $this->start();
+        // $this->start();
     }
 
     protected function start()
@@ -30,6 +30,7 @@ class AwardController extends Controller
 
     public function index(Request $request)
     {
+        // ddd('$awards');
         $month = date('m');
         $year = date('Y');
         $combPeriodToday = $this->combPeriodToday;
@@ -50,6 +51,7 @@ class AwardController extends Controller
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
+        // ddd($awards);
         return view('pages.awards.index', compact('awards', 'agents', 'months', 'month', 'year'));
     }
     public function add(Request $request)

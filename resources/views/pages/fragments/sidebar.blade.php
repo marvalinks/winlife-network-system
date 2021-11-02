@@ -45,6 +45,12 @@
                 <span>Awards</span>
             </a>
         </li>
+        <li>
+            <a class="" href="{{route('batch.progress')}}">
+                <span class="icon-box"><i class="icon-gear"></i></span>
+                <span>Background Tasks</span>
+            </a>
+        </li>
         @endif
     </ul>
     <!-- END SIDEBAR MENU -->

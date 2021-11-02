@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AwardController;
+use App\Http\Controllers\BatchProgressController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PagesController;
@@ -43,6 +44,7 @@ Route::prefix('admin')->group(function () {
     Route::get('reload-statistics', [AdminController::class, 'reloadStatistics'])->name('reload.statistics');
     Route::get('test-data', [AdminController::class, 'testData']);
     Route::get('chain-data', [AdminController::class, 'chainJobs'])->name('chain.data');
+    Route::get('background-progress', [BatchProgressController::class, 'index'])->name('batch.progress');
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');

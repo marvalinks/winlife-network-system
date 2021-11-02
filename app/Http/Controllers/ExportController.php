@@ -82,7 +82,13 @@ class ExportController extends Controller
         // ddd($agg->where('sponser_id', '202110141234'));
         $jobs = [];
         foreach ($agg as $key => $ag) {
-            $jobs[] = new NewAgentBigAgent($ag);
+            if($ag->member_id != $ag->sponser_id) {
+                if(!$ag->agent) {
+                    $jobs[] = new AgentUploadJob($ag);
+                    $jobs[] = new NewAgentBigAgent($ag);
+                }
+            }
+
         }
         $batch = Bus::batch($jobs)->dispatch();
         UploadedData::create([
@@ -120,7 +126,7 @@ class ExportController extends Controller
         UploadedData::create([
             'data' => 'a', 'period' => $agg[0]->period ?? $agg[1]->period
         ]);
-        return redirect()->route('chain.data');
+        // return redirect()->route('chain.data');
         // $this->start();
         $request->session()->flash('alert-success', 'Agent achivement successfully uploaded!');
         return back();

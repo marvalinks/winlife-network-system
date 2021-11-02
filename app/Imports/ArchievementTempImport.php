@@ -19,21 +19,21 @@ class ArchievementTempImport implements ToModel, WithHeadingRow, WithChunkReadin
     {
         // ddd($row);
         return new TemporalAchivement([
-            'member_id' => strval($row['distributor_no']),
+            'member_id' => strval(intval($row['distributor_no'])),
             'name' => $row['names'] ?? null,
             'period' => $row['period'],
-            'total_pv' => $row['total_pv'] ?? floatval(0),
+            'total_pv' => floatval($row['total_pv']),
             'country' => $row['country'],
         ]);
     }
 
     public function chunkSize(): int
     {
-        return 50;
+        return 80;
     }
 
     public function batchSize(): int
     {
-        return 50;
+        return 80;
     }
 }

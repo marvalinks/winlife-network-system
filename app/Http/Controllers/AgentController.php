@@ -80,8 +80,8 @@ class AgentController extends Controller
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
                     return redirect()->route('admin.agents');
                 }
-                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(25);
-                // ddd($sponsers);
+                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(20);
+
                 $user = $user;
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
             }else{
@@ -134,7 +134,7 @@ class AgentController extends Controller
         ini_set('display_errors', 1);
         // ini_set('memory_limit', '-1');
         // ini_set('max_execution_time', 0);
-        $sponser = Agent::where('member_id', $id)->first();
+        // $sponser = Agent::where('member_id', $id)->first();
         $combPeriod = $this->combPeriodToday;
         $yr = date('Y');
         $mth = date('m');
@@ -143,40 +143,25 @@ class AgentController extends Controller
             $yr = intval($request->year);
             $mth = $request->month;
         }
-        // $rt = $sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0);
-        // ddd($sponser->archievements->where('period', $combPeriod));
-        // ddd($this->combPeriodToday);
-        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(15);
-        $this->currentGBV = $sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-        $this->ACCGBV = $sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
 
-        foreach ($sponser->sponsers as $key => $spp) {
-            $this->currentGBV += $spp->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-            $this->ACCGBV += $spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-            // $this->ACCGBV += 1;
-            foreach ($spp->childrenSponsers as $k => $child_sponser) {
-                //level2
-                // $this->currentGBV += 1;
-                $this->currentGBV += $child_sponser->archievements->where('period', $this->combPeriodToday)->sum('total_pv') ?? floatval(0);
-                // $this->ACCGBV += 1;
-                $this->ACCGBV += $child_sponser->archievements->whereBetween('period', [$child_sponser->archievements->min('period'), $this->combPeriodToday])->sum('total_pv') ?? floatval(0);
-                $this->reloop($child_sponser);
-            }
+        $user =  BigAgent::where('member_id', $id)->where('level', 0)->first();
+
+        if(intval($user->period) > intval($combPeriod)) {
+            $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
+            return redirect()->route('admin.agents');
         }
-        // ddd($this->currentGBV, $this->ACCGBV);
-        $currentGBV = $this->currentGBV;
-        $ACCGBV = $this->ACCGBV;
+        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(10);
+        $sponser = $user;
         $combPeriodToday = $this->combPeriodToday;
-
-        $archievements = Achivement::where('member_id', $id)->latest()->paginate(150);
+        $archievements = Achivement::where('member_id', $id)->orderBy('period', 'asc')->paginate(50);
         $months = [
             'January' => '01','February' => '02','March' => '03',
             'April' => '04','May' => '05','June' => '06','July' => '07',
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
-        // ddd($combPeriod);
-        return view('pages.agents.edit', compact('yr', 'mth', 'sponser', 'sponsers', 'combPeriod', 'archievements', 'ACCGBV', 'currentGBV', 'combPeriodToday', 'months'));
+        // ddd($archievements);
+        return view('pages.agents.edit', compact('yr', 'mth', 'sponser', 'sponsers', 'combPeriod', 'archievements', 'months'));
     }
 
     public function adjustPvb(Request $request, $id)

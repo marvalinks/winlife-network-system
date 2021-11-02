@@ -36,16 +36,7 @@ class NewAgentBigAgent implements ShouldQueue
     {
         $ag = $this->ag;
         $ss = new BigAgentService();
-        if(!$ag->agent) {
-            $agent = Agent::create([
-                'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
-                'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
-                'telephone' => $ag->telephone, 'address' => $ag->address,
-                'period' => $ag->period, 'nationality' => $ag->nationality,
-                'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
-            ]);
-            $ss->mk($agent->member_id);
-        }
+        $ss->mk($ag->member_id);
 
     }
 }

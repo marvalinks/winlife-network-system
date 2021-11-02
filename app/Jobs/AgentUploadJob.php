@@ -12,15 +12,16 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Agent;
 use App\Models\Achivement;
 use App\Models\BigAgent;
+use Illuminate\Bus\Batchable;
 
 class AgentUploadJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $id;
-    public function __construct($id)
+    public $ag;
+    public function __construct($ag)
     {
-        $this->id = $id;
+        $this->ag = $ag;
     }
 
     /**
@@ -30,7 +31,13 @@ class AgentUploadJob implements ShouldQueue
      */
     public function handle()
     {
-        $ss = new BigAgentService();
-        $ss->mk($this->id);
+        $ag = $this->ag;
+        Agent::create([
+            'member_id' => $ag->member_id, 'sponser_id' => $ag->sponser_id,
+            'firstname' => $ag->firstname, 'lastname' => $ag->lastname,
+            'telephone' => $ag->telephone, 'address' => $ag->address,
+            'period' => $ag->period, 'nationality' => $ag->nationality,
+            'bank_name' => $ag->bank_name, 'bank_no' => $ag->bank_no,
+        ]);
     }
 }

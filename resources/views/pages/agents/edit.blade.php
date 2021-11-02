@@ -151,11 +151,11 @@
                                         <td>{{$sponser->period}}</td>
                                         <td>{{$sponser->member_id}}</td>
                                         <td>0</td>
-                                        <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? '1'}}</td>
+                                        <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}</td>
                                         <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                         <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
                                         @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
-                                        <td>{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
+                                        <td>{{number_format($sponser->archievements->whereBetween('period', ['201302', $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                         @else
                                         <td>{{number_format(floatval(0), 2)}}</td>
                                         @endif
@@ -182,15 +182,15 @@
                                         <td>{{$spp->period}}</td>
                                         <td>{{$spp->member_id}}</td>
                                         <td>{{$spp->level}}</td>
-                                        <td>{{$spp->statlogs->where('period', $combPeriod)->first()->level ?? '1'}}</td>
+                                        <td>{{$spp->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}</td>
                                         <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
-                                        <td>{{number_format($spp->cgbv->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
+                                        <td>{{number_format($spp->currentgbv($combPeriod), 2)}}</td>
                                         @if (intval($combPeriod) >= intval($spp->archievements->min('period')))
                                         <td>{{number_format($spp->archievements->whereBetween('period', [$spp->archievements->min('period'), $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}</td>
                                         @else
                                         <td>{{number_format(floatval(0), 2)}}</td>
                                         @endif
-                                        <td>{{number_format($spp->cgbv2->where('period', $combPeriod)->first()->amount ?? 0, 2)}}</td>
+                                        <td>{{number_format($spp->accgbv($combPeriod), 2)}}</td>
                                         <td>{{$spp->sponser_id ?? '-'}}</td>
                                         <td class="{{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($spp->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                         @if (auth()->user()->roleid == 1)
@@ -291,31 +291,31 @@
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">Level</label>
-                                <input value="{{$sponser->stats->level}}" disabled type="text" class="form-control">
+                                <input value="{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}" disabled type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">CurrentPBV</label>
-                                <input value="{{number_format($sponser->archievements->where('period', $combPeriodToday)->sum('total_pv') ?? floatval(0),2)}}" disabled type="text" class="form-control">
+                                <input value="{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}" disabled type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">CurrentGBV</label>
-                                <input value="{{number_format($currentGBV, 2)}}" disabled type="text" class="form-control">
+                                <input value="{{number_format($sponser->currentgbv($combPeriod), 2)}}" disabled type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">ACCPBV</label>
-                                <input value="{{number_format($sponser->archievements->whereBetween('period', [$sponser->archievements->min('period'), $combPeriodToday])->sum('total_pv') ?? floatval(0), 2)}}" disabled type="text" class="form-control">
+                                <input value="{{number_format($sponser->archievements->whereBetween('period', ['201302', $combPeriod])->sum('total_pv') ?? floatval(0), 2)}}" disabled type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">ACCGBV</label>
-                                <input value="{{number_format($ACCGBV, 2)}}" disabled type="text" class="form-control">
+                                <input value="{{number_format($sponser->accgbv($combPeriod), 2)}}" disabled type="text" class="form-control">
                             </div>
                         </div>
                         @if (auth()->user()->roleid == 1)
