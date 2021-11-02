@@ -107,9 +107,9 @@ class AdminController extends Controller
         $jobs[] = new GroupServiceJob();
         if(count($acs) > 0) {
             foreach ($acs as $key => $ac) {
-                // $jobs[] = new StatisticLogJob($ac);
-                //calculating the Salary
-                // $jobs[] = new CalculateBonus($ac);
+                $jobs[] = new StatisticLogJob($ac);
+                // calculating the Salary
+                $jobs[] = new CalculateBonus($ac);
                 //calculating the groubBV and personalBV
                 $jobs[] = new CalcStatsJob($ac);
                 // $this->calcStats($ac);
