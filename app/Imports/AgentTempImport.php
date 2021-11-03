@@ -24,7 +24,7 @@ class AgentTempImport implements ToModel, WithHeadingRow, WithChunkReading, With
             'lastname' => $row['lastname'],
             'telephone' => $row['phone'],
             'address' => $row['address'],
-            'period' => strval($row['join_period']),
+            'period' => intval($row['join_period']),
             'sponser_id' => strval($row['sponsor_no']),
             'nationality' => $row['nationality'],
             'bank_name' => $row['bank_name'] ?? 'null',

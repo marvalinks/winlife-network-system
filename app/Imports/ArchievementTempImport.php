@@ -21,7 +21,7 @@ class ArchievementTempImport implements ToModel, WithHeadingRow, WithChunkReadin
         return new TemporalAchivement([
             'member_id' => strval(intval($row['distributor_no'])),
             'name' => $row['names'] ?? null,
-            'period' => $row['period'],
+            'period' => intval($row['period']),
             'total_pv' => floatval($row['total_pv']),
             'country' => $row['country'],
         ]);

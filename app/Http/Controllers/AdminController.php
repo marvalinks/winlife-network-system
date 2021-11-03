@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\AwardService;
 use App\Http\Services\BigAgentService;
 use App\Http\Services\BonusService;
 use App\Http\Services\GPService;
@@ -89,6 +90,10 @@ class AdminController extends Controller
     public function chainJobs(Request $request)
     {
 
+
+        // $aw = new AwardService('201509');
+        // $aw->ABP();
+        // ddd('okay');
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         $jobs = [];
         // ddd($acs);
@@ -101,7 +106,7 @@ class AdminController extends Controller
                 //calculating the groubBV and personalBV
                 // $jobs[] = new CalcStatsJob($ac);
                 // $this->calcStats($ac);
-                $jobs[] = new AwardServiceJob($ac);
+                // $jobs[] = new AwardServiceJob($ac);
             }
         }
         // $jobs[] = new StatisticLogJob('201507');
@@ -219,10 +224,11 @@ class AdminController extends Controller
         try {
             Excel::import(new AgentTempImport(), $data['file']);
         } catch (\Throwable $th) {
-            return back()->withError('There was a problem with your excel file.');
+            $request->session()->flash('alert-error', 'There was a problem with your excel file.');
+            return back();
         }
         $this->fixTemp();
-        $exports = TemporalAgent::latest()->get();
+        $exports = TemporalAgent::latest()->paginate(100);
         return view('others.uploads.upload-registration', compact('exports'));
     }
     public function postuploadAchivement(Request $request)
@@ -243,7 +249,8 @@ class AdminController extends Controller
         try {
             Excel::import(new ArchievementTempImport(), $data['file']);
         } catch (\Throwable $th) {
-            return back()->withError('There was a problem with your excel file.');
+            $request->session()->flash('alert-error', 'There was a problem with your excel file.');
+            return back();
         }
         $this->fixTemp();
         $aexports = TemporalAchivement::latest()->get();
