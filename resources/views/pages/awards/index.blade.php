@@ -70,7 +70,7 @@
                                 <div class="control-group span3">
                                     <label class="control-label">Member</label>
                                     <div class="controls">
-                                        <input type="text" name="member_id" value="{{$agents[0]->member_id ?? ''}}">
+                                        <input type="text" name="member_id" value="{{$memberid}}">
                                     </div>
                                 </div>
                                 <div class="control-group span3">
@@ -127,9 +127,9 @@
                                         <td>{{$agent->name}}</td>
                                         <td></td>
                                         @foreach ($awards as $award)
-                                        <td>
-                                            <input disabled type="checkbox"  {{($agent->awards->where('award_id', $award->award_id)->first() && $agent->awards->where('award_id', $award->award_id)->first()->collected) ? 'checked' : ''}} name="" id="">
+                                        <td class="{{$agent->awards->where('award_id', $award->award_id)->first() ? 'agreen' : ''}}">
                                             @if ($agent->awards->where('award_id', $award->award_id)->first())
+                                            <input disabled type="checkbox"  {{($agent->awards->where('award_id', $award->award_id)->first() && $agent->awards->where('award_id', $award->award_id)->first()->collected) ? 'checked' : ''}} name="" id="">
                                             <a href="#" disabled>Asign award</a>
                                             @endif
                                         </td>

@@ -16,7 +16,7 @@ class CreatePersonalBvsTable extends Migration
         Schema::create('personal_bvs', function (Blueprint $table) {
             $table->id();
             $table->string('member_id');
-            $table->string('period');
+            $table->integer('period');
             $table->float('amount');
             $table->timestamps();
         });

@@ -62,6 +62,54 @@ class BonusController extends Controller
             'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
             'combPeriod' => $combPeriod
         ]);
+        $orientation = 'portrait';
+        $paper = 'A4';
+        $pdf->setOrientation($orientation)
+        ->setOption('page-size', $paper)
+        ->setOption('margin-bottom', '0mm')
+        ->setOption('margin-top', '8.7mm')
+        ->setOption('margin-right', '0mm')
+        ->setOption('margin-left', '0mm')
+        ->setOption('enable-javascript', true)
+        ->setOption('no-stop-slow-scripts', true)
+        ->setOption('enable-smart-shrinking', true)
+        ->setOption('javascript-delay', 1000)
+        ->setTimeout(120);
+
+        // return view('pages.pdfs.payment', [
+        //     'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
+        //     'combPeriod' => $combPeriod
+        // ]);
+        // return $pdf->inline();
+        $name = $request->period.'-'.$firstPreview[0]->member_id.'.pdf';
+        return $pdf->download($name);
+    }
+    public function printPDF2(Request $request)
+    {
+        if(!$request->agents || count($request->agents) < 1) {
+            $request->session()->flash('alert-danger', 'No Agent selected!');
+            return back();
+        }
+        $sps = json_decode($request->sponser);
+        $arr = [strval($sps)];
+        $arr = array_merge_recursive($arr, $request->agents);
+        $fs = [];
+        $ss = [];
+        foreach ($arr as $key => $a) {
+            if($key % 2 == 0) {
+                $fs = array_merge($fs, [$a]);
+            }else{
+                $ss = array_merge($ss, [$a]);
+            }
+        }
+        $firstPreview = Agent::whereIn('member_id', $fs)->get();
+        $secondPreview = Agent::whereIn('member_id', $ss)->get();
+        $sponser = Agent::where('member_id', $sps)->first();
+        $combPeriod = $request->period;
+        $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
+            'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
+            'combPeriod' => $combPeriod
+        ]);
         // ddd($first, $second, $this->combPeriodToday);
 
         $salaries = Salary::whereIn('member_id', $arr)->where('period', $request->period)->get();

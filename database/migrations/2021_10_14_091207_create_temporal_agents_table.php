@@ -20,7 +20,7 @@ class CreateTemporalAgentsTable extends Migration
             $table->string('lastname')->nullable();
             $table->string('telephone')->nullable();
             $table->string('address')->nullable();
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->string('sponser_id')->nullable();
             $table->string('nationality')->nullable();
             $table->string('bank_name')->nullable();

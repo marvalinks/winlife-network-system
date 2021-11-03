@@ -15,7 +15,7 @@ class CreateCheckRunBillsTable extends Migration
     {
         Schema::create('check_run_bills', function (Blueprint $table) {
             $table->id();
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->string('type')->nullable();
             $table->timestamps();
         });

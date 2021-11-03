@@ -16,7 +16,7 @@ class CreateActiveStateBvsTable extends Migration
         Schema::create('active_state_bvs', function (Blueprint $table) {
             $table->id();
             $table->string('member_id');
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->float('amount')->nullable();
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ class CreateStatisticLogsTable extends Migration
             $table->id();
             $table->string('member_id');
             $table->integer('level')->default(1);
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->float('current_pbv')->default(0);
             $table->float('current_gbv')->default(0);
             $table->float('acc_pvb')->default(0);

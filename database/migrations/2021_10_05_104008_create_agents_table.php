@@ -20,7 +20,7 @@ class CreateAgentsTable extends Migration
             $table->string('lastname')->nullable();
             $table->string('telephone')->nullable();
             $table->string('address')->nullable();
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->string('level')->default(1);
             $table->boolean('active')->default(1);
             $table->string('sponser_id')->nullable();

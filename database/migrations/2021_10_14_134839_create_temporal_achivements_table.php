@@ -17,7 +17,7 @@ class CreateTemporalAchivementsTable extends Migration
             $table->id();
             $table->string('member_id')->nullable();
             $table->string('name')->nullable();
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->float('total_pv')->default(0);
             $table->string('country')->nullable();
             $table->timestamps();

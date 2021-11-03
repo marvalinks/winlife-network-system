@@ -15,7 +15,7 @@ class CreateCheckGsjRunsTable extends Migration
     {
         Schema::create('check_gsj_runs', function (Blueprint $table) {
             $table->id();
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->string('member_id')->nullable();
             $table->timestamps();
         });

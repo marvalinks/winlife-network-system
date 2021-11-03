@@ -26,7 +26,7 @@ class StatisticLogService
     {
         $pd = CheckRunBill::where('type', 'statistics')->where('period', $period)->first();
         if(!$pd){
-            $this->combPeriodToday = $period;
+            $this->combPeriodToday = intval($period);
 
 
             $agents = Agent::where('period', '<=', $this->combPeriodToday)->latest()->get();

@@ -88,18 +88,6 @@ class AdminController extends Controller
 
     public function chainJobs(Request $request)
     {
-        // $this->dispatch(new GroupServiceJob());
-        // $bns = new BonusService();
-        // $bns->calculateBonus('201402');
-        // $bns->calculateBonus('201405');
-        // $st = new StatisticLogService();
-        // $st->ABP('201409');
-
-        // ddd('done');
-
-        // $gps = new GPService(201401);
-        // $gps->start();
-        // ddd('op');
 
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
         $jobs = [];
@@ -111,10 +99,12 @@ class AdminController extends Controller
                 // calculating the Salary
                 $jobs[] = new CalculateBonus($ac);
                 //calculating the groubBV and personalBV
-                $jobs[] = new CalcStatsJob($ac);
+                // $jobs[] = new CalcStatsJob($ac);
                 // $this->calcStats($ac);
+                // $jobs[] = new AwardServiceJob($ac);
             }
         }
+        // $jobs[] = new StatisticLogJob('201507');
         $batch = Bus::batch($jobs)->dispatch();
         // return $batch->id;
         if(count($jobs) > 0) {

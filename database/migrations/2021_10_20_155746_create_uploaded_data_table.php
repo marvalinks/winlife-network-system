@@ -15,7 +15,7 @@ class CreateUploadedDataTable extends Migration
     {
         Schema::create('uploaded_data', function (Blueprint $table) {
             $table->id();
-            $table->string('period');
+            $table->integer('period');
             $table->string('data');
             $table->timestamps();
         });

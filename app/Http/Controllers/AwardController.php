@@ -30,20 +30,31 @@ class AwardController extends Controller
 
     public function index(Request $request)
     {
-        // ddd('$awards');
+        // ddd($request->all());
         $month = date('m');
-        $year = date('Y');
+        $year = intval(date('Y'));
+        $memberid = "";
         $combPeriodToday = $this->combPeriodToday;
         $awards = Award::orderBy('order', 'asc')->get();
         $agents = Agent::query();
         if ($request->member_id) {
-            $agents = $agents->where('member_id', $request->member_id)->paginate(1);
-        } else {
-            $callback = function($query) use ($combPeriodToday) {
-                $query->where('period', $combPeriodToday);
-            };
-            $agents = $agents->whereHas('awards', $callback)->with(['awards' => $callback])->orderBy('created_at', 'asc')->paginate(200);
+            $agents = $agents->where('member_id', $request->member_id);
+            $memberid = $request->member_id;
         }
+        if($request->selectedYear && $request->selectedMonth) {
+            $combPeriodToday = $request->selectedYear.$request->selectedMonth;
+            $year = intval($request->selectedYear);
+            $month = $request->selectedMonth;
+        }
+        // ddd($this->combPeriodToday);
+        $callback = function($query) use ($combPeriodToday) {
+            $query->where('period', $combPeriodToday);
+        };
+        // ddd($agents);
+        $agents = $agents->whereHas('awards', $callback)->with(['awards' => $callback])->latest()->paginate(30);
+
+
+        // ddd($agents);
 
         $months = [
             'January' => '01','February' => '02','March' => '03',
@@ -52,7 +63,7 @@ class AwardController extends Controller
             'November' => '11','December' => '12'
         ];
         // ddd($awards);
-        return view('pages.awards.index', compact('awards', 'agents', 'months', 'month', 'year'));
+        return view('pages.awards.index', compact('awards', 'agents', 'months', 'month', 'year', 'memberid'));
     }
     public function add(Request $request)
     {

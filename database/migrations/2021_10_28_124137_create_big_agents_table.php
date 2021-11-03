@@ -18,7 +18,7 @@ class CreateBigAgentsTable extends Migration
             $table->string('member_id');
             $table->string('firstname');
             $table->string('lastname');
-            $table->string('period')->nullable();
+            $table->integer('period')->nullable();
             $table->string('level')->nullable();
             $table->boolean('active')->default(1);
             $table->string('sponser_id')->nullable();

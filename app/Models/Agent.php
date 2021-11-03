@@ -62,6 +62,7 @@ class Agent extends Model
     {
         return $this->hasMany(Salary::class, 'member_id', 'member_id');
     }
+
     public function currentsalary($date)
     {
         return $this->salaries->where('period', $date)->first();

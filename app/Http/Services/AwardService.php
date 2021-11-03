@@ -24,42 +24,68 @@ class AwardService
 
     public function ABP()
     {
+        $pd = CheckRunBill::where('type', 'awards')->where('period', $this->combPeriodToday)->first();
+        if(!$pd){
+            $this->start();
+            CheckRunBill::create([
+                'period' => $this->combPeriodToday, 'type' => 'awards'
+            ]);
+        }
+    }
+
+    public function start()
+    {
             $agents = Agent::latest()->get();
             foreach ($agents as $key => $agent) {
                 $sponsers = Agent::where('sponser_id', $agent->member_id)->get();
+
                 //trip award
                 if($sponsers->where('level', 5)->count() === 4) {
-                    if(floatval($agent->stats->acc_gbv) >= floatval(20000)) {
+                    if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(20000)) {
                         $award = 'International Trip Award';
-                        AwardQualifier::create([
-                            'award_id' => '0211', 'member_id' => $agent->member_id
-                        ]);
+                        $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '0211')->first();
+                        if(!$awd) {
+                            AwardQualifier::create([
+                                'award_id' => '0211', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                            ]);
+                        }
                     }
                 }
                 //car award
                 if($sponsers->count() >= 4) {
                     $cnt = 0;
                     foreach ($sponsers as $key => $sponser) {
-                        if(floatval($sponser->acc_gbv) >= floatval(20000)) {
+                        if(floatval($sponser->accgbv($this->combPeriodToday)) >= floatval(20000)) {
                             $cnt++;
                         }
                     }
                     if($cnt >= 4) {
                         $award = 'Small Car Award';
+
+                        $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '5D94B98A')->first();
+                        if(!$awd) {
+                            AwardQualifier::create([
+                                'award_id' => '5D94B98A', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                            ]);
+                        }
+                    }
+                }elseif ($sponsers->where('level', 6)->count() == 3 && floatval($agent->accgbv($this->combPeriodToday)) >= floatval(85000)) {
+                    $award = 'Small Car Award';
+                    $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '5D94B98A')->first();
+                    if(!$awd) {
                         AwardQualifier::create([
-                            'award_id' => '5D94B98A', 'member_id' => $agent->member_id
+                            'award_id' => '5D94B98A', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
                         ]);
                     }
-                }elseif ($sponsers->where('level', 6)->count() == 3 && floatval($agent->stats->acc_gbv) >= floatval(85000)) {
+                }elseif ($sponsers->where('level', 6)->count() == 2 && floatval($agent->accgbv($this->combPeriodToday)) >= floatval(210000)) {
                     $award = 'Small Car Award';
-                    AwardQualifier::create([
-                        'award_id' => '5D94B98A', 'member_id' => $agent->member_id
-                    ]);
-                }elseif ($sponsers->where('level', 6)->count() == 2 && floatval($agent->stats->acc_gbv) >= floatval(210000)) {
-                    $award = 'Small Car Award';
-                    AwardQualifier::create([
-                        'award_id' => '5D94B98A', 'member_id' => $agent->member_id
-                    ]);
+                    $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '5D94B98A')->first();
+                    if(!$awd) {
+                        AwardQualifier::create([
+                            'award_id' => '5D94B98A', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                        ]);
+                    }
+
                 }
                 //cash award
 
@@ -76,22 +102,29 @@ class AwardService
                             'award_id' => 'CF29', 'member_id' => $agent->member_id
                         ]);
                     }
-                }elseif ($sponsers->where('level', 7)->count() == 3 && floatval($agent->stats->acc_gbv) >= floatval(380000)) {
+                }elseif ($sponsers->where('level', 7)->count() == 3 && floatval($agent->accgbv($this->combPeriodToday)) >= floatval(380000)) {
                     $award = 'Cash award';
-                    AwardQualifier::create([
-                        'award_id' => 'CF29', 'member_id' => $agent->member_id
-                    ]);
-                }elseif ($sponsers->where('level', 6)->count() == 2 && floatval($agent->stats->acc_gbv) >= floatval(650000)) {
+
+                    $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', 'CF29')->first();
+                    if(!$awd) {
+                        AwardQualifier::create([
+                            'award_id' => 'CF29', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                        ]);
+                    }
+                }elseif ($sponsers->where('level', 6)->count() == 2 && floatval($agent->accgbv($this->combPeriodToday)) >= floatval(650000)) {
                     $award = 'Cash award';
-                    AwardQualifier::create([
-                        'award_id' => 'CF29', 'member_id' => $agent->member_id
-                    ]);
+                    $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', 'CF29')->first();
+                    if(!$awd) {
+                        AwardQualifier::create([
+                            'award_id' => 'CF29', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                        ]);
+                    }
                 }
 
                 if($agent->level >= 8) {
                     if($sponsers->count() >= 1) {
                         $cnt = 0;
-                        if(floatval($agent->acc_gbv) >= floatval(1000000)) {
+                        if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(1000000)) {
                             foreach ($sponsers as $key => $sponser) {
                                 if($sponser->level === 8) {
                                         $aw = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', 'CF29')->first();
@@ -104,9 +137,12 @@ class AwardService
                         }
                         if($cnt >= 1) {
                             $award = 'Getaway vaction award';
-                            AwardQualifier::create([
-                                'award_id' => '72F4B9A5', 'member_id' => $agent->member_id
-                            ]);
+                            $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '72F4B9A5')->first();
+                            if(!$awd) {
+                                AwardQualifier::create([
+                                    'award_id' => '72F4B9A5', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                                ]);
+                            }
                         }
                     }
                 }
@@ -114,7 +150,7 @@ class AwardService
                 if($agent->level >= 8) {
                     if($sponsers->count() >= 1) {
                         $cnt = 0;
-                        if(floatval($agent->acc_gbv) >= floatval(1300000)) {
+                        if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(1300000)) {
                             foreach ($sponsers as $key => $sponser) {
                                 if($sponser->level === 8) {
                                     $aw = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', 'CF29')->first();
@@ -127,9 +163,12 @@ class AwardService
                         }
                         if($cnt >= 5) {
                             $award = 'Big car award';
-                            AwardQualifier::create([
-                                'award_id' => '9087', 'member_id' => $agent->member_id
-                            ]);
+                            $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '9087')->first();
+                            if(!$awd) {
+                                AwardQualifier::create([
+                                    'award_id' => '9087', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                                ]);
+                            }
                         }
                     }
                 }

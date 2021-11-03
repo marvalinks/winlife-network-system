@@ -34,6 +34,7 @@ Route::prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('bonus/{id?}', [BonusController::class, 'calculateBonus'])->name('admin.calculate.bonus');
     Route::get('pdf', [BonusController::class, 'printPDF'])->name('bonus.pdf');
+    Route::get('pdf-bbn', [BonusController::class, 'printPDF2'])->name('bonus.pdf.bn');
     Route::post('mark-payment', [BonusController::class, 'markPayment'])->name('bonus.mark.payment');
     Route::get('delete-dbs', [AdminController::class, 'deleteDBS'])->name('delete.dbs');
     Route::post('delete-dbs', [AdminController::class, 'postdeleteDBS'])->name('delete.dbs');

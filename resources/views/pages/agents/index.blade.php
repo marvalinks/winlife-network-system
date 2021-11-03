@@ -105,6 +105,9 @@
                                 <li><a href="#">Export to Excel</a></li>
                             </ul>
                             <button type="button" onclick="confirmPrint();"  class="btn green">Print Bonus <i class="icon-plus"></i></button>
+                            @if (auth()->user()->roleid === 1)
+                            <button type="button" onclick="confirmPrint();"  class="btn green">Pay Salary Bonus <i class="icon-plus"></i></button>
+                            @endif
                         </div>
                         @endif
                     </div>
