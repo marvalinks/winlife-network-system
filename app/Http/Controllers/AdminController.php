@@ -106,7 +106,7 @@ class AdminController extends Controller
                 //calculating the groubBV and personalBV
                 // $jobs[] = new CalcStatsJob($ac);
                 // $this->calcStats($ac);
-                // $jobs[] = new AwardServiceJob($ac);
+                $jobs[] = new AwardServiceJob($ac);
             }
         }
         // $jobs[] = new StatisticLogJob('201507');

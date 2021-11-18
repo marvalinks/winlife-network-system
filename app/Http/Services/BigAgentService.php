@@ -39,13 +39,12 @@ class BigAgentService
         $user =  Agent::where('member_id', $memberid)->first();
         $this->user = $user;
         $this->loopCount = 0;
-        // $sponsers =  Agent::where('sponser_id', $memberid)->get();
+        // $sponsers = Agent::where('sponser_id', $memberid)->get();
         BigAgent::create([
             'member_id' => $user->member_id, 'sponser_id' => $user->sponser_id ?? null,
             'parent_id' => null, 'level' => $this->loopCount, 'period' => $user->period,
             'firstname' => $user->firstname, 'lastname' => $user->lastname
         ]);
-
         if($user->sponser) {
             $this->loopCount++;
             BigAgent::create([

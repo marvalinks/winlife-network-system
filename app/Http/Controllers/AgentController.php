@@ -12,6 +12,7 @@ use App\Jobs\LevelServiceJob;
 use App\Models\Achivement;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
+use App\Models\AwardQualifier;
 use App\Models\BigAgent;
 use App\Models\Salary;
 use App\Models\StatisticLog;
@@ -160,8 +161,9 @@ class AgentController extends Controller
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
+        $awards = AwardQualifier::where('member_id', $id)->get();
         // ddd($archievements);
-        return view('pages.agents.edit', compact('yr', 'mth', 'sponser', 'sponsers', 'combPeriod', 'archievements', 'months'));
+        return view('pages.agents.edit', compact('yr', 'mth', 'sponser', 'sponsers', 'combPeriod', 'archievements', 'months', 'awards'));
     }
 
     public function adjustPvb(Request $request, $id)

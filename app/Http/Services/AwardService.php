@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Models\Agent;
 use App\Models\AgentStatistics;
 use App\Models\AwardQualifier;
-use App\Models\BigAgent;
 use App\Models\CheckRunBill;
 
 class AwardService
@@ -26,7 +25,7 @@ class AwardService
     public function ABP()
     {
         $pd = CheckRunBill::where('type', 'awards')->where('period', $this->combPeriodToday)->first();
-        if(true){
+        if(!$pd){
             $this->start();
             CheckRunBill::create([
                 'period' => $this->combPeriodToday, 'type' => 'awards'
@@ -36,32 +35,58 @@ class AwardService
 
     public function start()
     {
-            $agents = Agent::where('member_id', '201266664521')->latest()->get();
-            $combPeriodToday = $this->combPeriodToday;
+            $agents = Agent::latest()->get();
             foreach ($agents as $key => $agent) {
-                // $sponsers = BigAgent::where('sponser_id', $agent->member_id)->get();
-                // $user->statlogs->where('period', $combPeriod)->first()->level
-                $callback = function($query) use ($combPeriodToday) {
-                    $query->where('period', $combPeriodToday);
-                };
-                $sponsers =  BigAgent::where('parent_id', $agent->member_id)->where('period', '<=', $this->combPeriodToday)
-                ->where('level', '>', 0)->whereHas('statlogs', $callback)->with(['statlogs' => $callback])
-                ->orderBy('level', 'asc')->paginate(2);
-                ddd($agent, $sponsers);
+                $sponsers = Agent::where('sponser_id', $agent->member_id)->get();
+                // {{$user->awardlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}
                 //trip award
-                // if($sponsers->where())
-                if($sponsers->where('level', 5)->count() === 4) {
-                    // if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(20000)) {
-                    //     $award = 'International Trip Award';
-                    //     $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '0211')->first();
-                    //     if(!$awd) {
-                    //         AwardQualifier::create([
-                    //             'award_id' => '0211', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
-                    //         ]);
-                    //     }
-                    // }
+                foreach ($sponsers as $key => $sponser) {
+                   $ct = 0;
+                   if($sponser->awardlogs->where('period', $this->combPeriodToday)->first()->level >= 5) {
+                        $ct++;
+                   }
+                   if($ct >= 4) {
+                        if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(20000)) {
+                            $award = 'International Trip Award';
+                            $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '0211')->first();
+                            if(!$awd) {
+                                AwardQualifier::create([
+                                    'award_id' => '0211', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                                ]);
+                            }
+                        }
+                   }
                 }
+                // if($sponsers->where('level', 5)->count() === 4) {
+                //     if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(20000)) {
+                //         $award = 'International Trip Award';
+                //         $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '0211')->first();
+                //         if(!$awd) {
+                //             AwardQualifier::create([
+                //                 'award_id' => '0211', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                //             ]);
+                //         }
+                //     }
+                // }
                 //car award
+                foreach ($sponsers as $key => $sponser) {
+                    $ct = 0;
+                   if($sponser->awardlogs->where('period', $this->combPeriodToday)->first()->level >= 6) {
+                        $ct++;
+                   }
+                   if($ct >= 4) {
+                        if(floatval($agent->accgbv($this->combPeriodToday)) >= floatval(80000)) {
+                            $award = 'Small Car Award';
+
+                            $awd = AwardQualifier::where('member_id', $agent->member_id)->where('award_id', '5D94B98A')->first();
+                            if(!$awd) {
+                                AwardQualifier::create([
+                                    'award_id' => '5D94B98A', 'member_id' => $agent->member_id, 'period' => $this->combPeriodToday
+                                ]);
+                            }
+                        }
+                   }
+                }
                 if($sponsers->count() >= 4) {
                     $cnt = 0;
                     foreach ($sponsers as $key => $sponser) {

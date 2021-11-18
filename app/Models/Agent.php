@@ -18,6 +18,10 @@ class Agent extends Model
     {
         return $this->hasMany(StatisticLog::class, 'member_id', 'member_id');
     }
+    public function awardlogs()
+    {
+        return $this->hasMany(AwardLevel::class, 'member_id', 'member_id');
+    }
     public function logs($period)
     {
         return $this->statlogs->where('period', $period)->first()->level ?? null;
