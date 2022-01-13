@@ -14,6 +14,10 @@ use App\Models\Agent;
 use App\Models\AgentStatistics;
 use App\Models\AwardQualifier;
 use App\Models\BigAgent;
+use App\Models\CheckGsjRun;
+use App\Models\CheckRunBill;
+use App\Models\GroupBv;
+use App\Models\PersonalBv;
 use App\Models\Salary;
 use App\Models\StatisticLog;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
@@ -92,6 +96,23 @@ class AgentController extends Controller
         }
 
         return view('pages.agents.index', compact('months', 'yr', 'mth'));
+    }
+    public function clearAgents(Request $request)
+    {
+        Agent::tuncate();
+        Achivement::truncate();
+        AgentStatistics::truncate();
+        StatisticLog::truncate();
+        CheckGsjRun::truncate();
+        CheckRunBill::truncate();
+        BigAgent::truncate();
+        Bonus::truncate();
+        AwardQualifier::truncate();
+        PersonalBv::truncate();
+        GroupBv::truncate();
+
+        $request->session()->flash('alert-success', 'All agent data successfully reset!');
+        return back();
     }
     public function add(Request $request)
     {

@@ -20,7 +20,7 @@
                     <h4><i class="icon-reorder"></i>Agents Form</h4>
                     <span class="tools">
                         <a href="javascript:;" class="icon-chevron-down"></a>
-                        <a href="javascript:;" class="icon-remove"></a>
+                        <a onclick="return confirm('Are you sure you want to clear all agents ?')" href="{{route('admin.clear')}}" class="">clear agents</a>
                     </span>
                 </div>
                 <div class="widget-body form">

@@ -49,6 +49,7 @@ Route::prefix('admin')->group(function () {
 });
 Route::prefix('admin/agents')->group(function () {
     Route::get('', [AgentController::class, 'index'])->name('admin.agents');
+    Route::get('clear-agents', [AgentController::class, 'clearAgents'])->name('admin.clear');
     Route::get('add', [AgentController::class, 'add'])->name('admin.agent.add');
     Route::post('add', [AgentController::class, 'post'])->name('admin.agent.add');
     Route::get('edit/{id}', [AgentController::class, 'edit'])->name('admin.agent.edit');
