@@ -68,9 +68,12 @@ Route::prefix('admin/users')->group(function () {
     Route::post('add', [UserController::class, 'post'])->name('admin.user.add');
     Route::get('configuration', [UserController::class, 'configuration'])->name('admin.user.configuration');
     Route::post('configuration', [UserController::class, 'postConfiguration'])->name('admin.user.configuration');
+    Route::get('change-password/{id}', [UserController::class, 'changepassword'])->name('admin.user.password');
+    Route::post('change-password/{id}', [UserController::class, 'postpassword'])->name('admin.user.password');
 });
 Route::prefix('admin/awards')->group(function () {
     Route::get('', [AwardController::class, 'index'])->name('admin.awards');
     Route::get('add', [AwardController::class, 'add'])->name('admin.awards.add');
     Route::post('add', [AwardController::class, 'post'])->name('admin.awards.add');
+
 });

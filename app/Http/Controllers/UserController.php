@@ -62,4 +62,17 @@ class UserController extends Controller
         $request->session()->flash('alert-success', 'BV Rate successfully modified!');
         return back();
     }
+    public function changepassword(Request $request, $id)
+    {
+        $user = User::where('id', $id)->first();
+        return view('pages.users.change-password', compact('user'));
+    }
+    public function postpassword(Request $request, $id)
+    {
+        $user = User::where('id', $id)->first();
+        $data = $request->validate(['password' => 'required']);
+        $user->password = Hash::make($request->password);
+        $request->session()->flash('alert-success', 'User password successfully updated!');
+        return back();
+    }
 }

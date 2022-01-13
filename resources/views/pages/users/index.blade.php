@@ -85,6 +85,7 @@
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending" style="width: 125px;">Username</th>
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Email</th>
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Role</th>
+                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                 </tr>
                             </thead>
 
@@ -101,6 +102,7 @@
                                     <td>{{$user->username}}</td>
                                     <td>{{$user->email ?? '-'}}</td>
                                     <td>{{$user->roleid == 1 ? 'Administrator' : 'Manager'}}</td>
+                                    <td><a href="{{route('admin.user.password', [$user->id])}}">change password</a></td>
                                 </tr>
                                 @endforeach
                             </tbody>

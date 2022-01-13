@@ -20,6 +20,7 @@ use App\Models\GroupBv;
 use App\Models\PersonalBv;
 use App\Models\Salary;
 use App\Models\StatisticLog;
+use App\Models\User;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Http\Request;
@@ -119,6 +120,7 @@ class AgentController extends Controller
         $sponsers = Agent::orderBy('firstname', 'asc')->get();
         return view('pages.agents.add', compact('sponsers'));
     }
+
 
     public function post(Request $request)
     {
