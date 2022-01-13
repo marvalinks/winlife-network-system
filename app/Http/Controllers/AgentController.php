@@ -100,7 +100,7 @@ class AgentController extends Controller
     }
     public function clearAgents(Request $request)
     {
-        Agent::tuncate();
+        Agent::truncate();
         Achivement::truncate();
         AgentStatistics::truncate();
         StatisticLog::truncate();
