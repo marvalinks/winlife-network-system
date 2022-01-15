@@ -30,7 +30,7 @@ class BonusController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->combPeriodToday = date('Y').date('m');
+        $this->combPeriodToday = date('Y') . date('m');
         $this->combPeriodPrevious = sprintf("%02d", (date('m') - 1));
         $this->accgbv = floatval(0);
         $this->loopcount = 0;
@@ -38,7 +38,7 @@ class BonusController extends Controller
 
     public function printPDF(Request $request)
     {
-        if(!$request->agents || count($request->agents) < 1) {
+        if (!$request->agents || count($request->agents) < 1) {
             $request->session()->flash('alert-danger', 'No Agent selected!');
             return back();
         }
@@ -48,9 +48,9 @@ class BonusController extends Controller
         $fs = [];
         $ss = [];
         foreach ($arr as $key => $a) {
-            if($key % 2 == 0) {
+            if ($key % 2 == 0) {
                 $fs = array_merge($fs, [$a]);
-            }else{
+            } else {
                 $ss = array_merge($ss, [$a]);
             }
         }
@@ -65,28 +65,28 @@ class BonusController extends Controller
         $orientation = 'portrait';
         $paper = 'A4';
         $pdf->setOrientation($orientation)
-        ->setOption('page-size', $paper)
-        ->setOption('margin-bottom', '0mm')
-        ->setOption('margin-top', '8.7mm')
-        ->setOption('margin-right', '0mm')
-        ->setOption('margin-left', '0mm')
-        ->setOption('enable-javascript', true)
-        ->setOption('no-stop-slow-scripts', true)
-        ->setOption('enable-smart-shrinking', true)
-        ->setOption('javascript-delay', 1000)
-        ->setTimeout(120);
+            ->setOption('page-size', $paper)
+            ->setOption('margin-bottom', '0mm')
+            ->setOption('margin-top', '8.7mm')
+            ->setOption('margin-right', '0mm')
+            ->setOption('margin-left', '0mm')
+            ->setOption('enable-javascript', true)
+            ->setOption('no-stop-slow-scripts', true)
+            ->setOption('enable-smart-shrinking', true)
+            ->setOption('javascript-delay', 1000)
+            ->setTimeout(120);
 
         // return view('pages.pdfs.payment', [
         //     'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
         //     'combPeriod' => $combPeriod
         // ]);
         // return $pdf->inline();
-        $name = $request->period.'-'.$firstPreview[0]->member_id.'.pdf';
+        $name = $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
         return $pdf->download($name);
     }
     public function printPDF2(Request $request)
     {
-        if(!$request->agents || count($request->agents) < 1) {
+        if (!$request->agents || count($request->agents) < 1) {
             $request->session()->flash('alert-danger', 'No Agent selected!');
             return back();
         }
@@ -96,9 +96,9 @@ class BonusController extends Controller
         $fs = [];
         $ss = [];
         foreach ($arr as $key => $a) {
-            if($key % 2 == 0) {
+            if ($key % 2 == 0) {
                 $fs = array_merge($fs, [$a]);
-            }else{
+            } else {
                 $ss = array_merge($ss, [$a]);
             }
         }
@@ -120,29 +120,29 @@ class BonusController extends Controller
         $orientation = 'portrait';
         $paper = 'A4';
         $pdf->setOrientation($orientation)
-        ->setOption('page-size', $paper)
-        ->setOption('margin-bottom', '0mm')
-        ->setOption('margin-top', '8.7mm')
-        ->setOption('margin-right', '0mm')
-        ->setOption('margin-left', '0mm')
-        ->setOption('enable-javascript', true)
-        ->setOption('no-stop-slow-scripts', true)
-        ->setOption('enable-smart-shrinking', true)
-        ->setOption('javascript-delay', 1000)
-        ->setTimeout(120);
+            ->setOption('page-size', $paper)
+            ->setOption('margin-bottom', '0mm')
+            ->setOption('margin-top', '8.7mm')
+            ->setOption('margin-right', '0mm')
+            ->setOption('margin-left', '0mm')
+            ->setOption('enable-javascript', true)
+            ->setOption('no-stop-slow-scripts', true)
+            ->setOption('enable-smart-shrinking', true)
+            ->setOption('javascript-delay', 1000)
+            ->setTimeout(120);
 
         // return view('pages.pdfs.payment', [
         //     'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
         //     'combPeriod' => $combPeriod
         // ]);
         // return $pdf->inline();
-        $name = $request->period.'-'.$firstPreview[0]->member_id.'.pdf';
+        $name = $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
         return $pdf->download($name);
     }
 
     public function markPayment(Request $request)
     {
-        $combPeriod = date('Y').date('m');
+        $combPeriod = date('Y') . date('m');
         $sponser = json_decode($request->sponser);
         $first = collect(json_decode($request->firstPreview))->pluck('member_id')->toArray();
         $second = collect(json_decode($request->secondPreview))->pluck('member_id')->toArray();
@@ -151,14 +151,14 @@ class BonusController extends Controller
 
         foreach ($firstPreview as $key => $user) {
             $bns = Bonus::findOrFail($user->currentbonus($combPeriod)->id);
-            if($bns) {
+            if ($bns) {
                 $bns->paid = 1;
                 $bns->save();
             }
         }
         foreach ($secondPreview as $key => $user) {
             $bns = Bonus::findOrFail($user->currentbonus($combPeriod)->id);
-            if($bns) {
+            if ($bns) {
                 $bns->paid = 1;
                 $bns->save();
             }
@@ -170,18 +170,22 @@ class BonusController extends Controller
     public function calculateBonus(Request $request, $userid = null)
     {
         $this->dispatch(new LevelServiceJob($this->combPeriodToday));
-        StatisticLog::truncate();
-        Salary::truncate();
+        // StatisticLog::truncate();
+        // Salary::truncate();
         $grp = new GroupService();
         $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        Salary::truncate();
-        if(count($acs) > 0) {
+        // Salary::truncate();
+        if (count($acs) > 0) {
             foreach ($acs as $key => $ac) {
-                $this->dispatch(new CalculateBonus($ac));
                 $this->dispatch(new StatisticLogJob($ac));
-                // $bns->calculateBonus($ac);
+                $this->dispatch(new CalculateBonus($ac));
+
+                // $st = new StatisticLogService();
                 // $st->ABP($ac);
+
+                // $bns = new BonusService();
+                // $bns->calculateBonus($ac);
             }
         }
         $request->session()->flash('alert-success', 'Bonuses calculated for agents');
@@ -203,7 +207,7 @@ class BonusController extends Controller
     public $pug;
     public function reloop($user)
     {
-        if($user->sponser) {
+        if ($user->sponser) {
             $usd = Agent::where('member_id', $user->sponser->member_id)->first();
             $this->pug = $usd;
             $this->doBonus($usd, $this->loopcount);
@@ -225,70 +229,70 @@ class BonusController extends Controller
         $second_percent = 0;
         $third_percent = 0;
 
-        if($key > 6 || $key < 11) {
+        if ($key > 6 || $key < 11) {
             $first_percent = 0;
             $second_percent = 0.02;
             $third_percent = 0;
         }
-        if($key === 0) {
+        if ($key === 0) {
             $first_percent = 0;
             $second_percent = 0;
             $third_percent = 0.2;
         }
-        if($key === 1) {
+        if ($key === 1) {
             $first_percent = 0.2;
             $second_percent = 0.25;
             $third_percent = 0.05;
         }
-        if($key === 2) {
+        if ($key === 2) {
             $first_percent = 0.05;
             $second_percent = 0;
             $third_percent = 0.05;
         }
-        if($key === 3) {
+        if ($key === 3) {
             $first_percent = 0.05;
             $second_percent = 0;
             $third_percent = 0.03;
         }
-        if($key === 4) {
+        if ($key === 4) {
             $first_percent = 0.03;
             $second_percent = 0;
             $third_percent = 0.03;
         }
-        if($key === 5) {
+        if ($key === 5) {
             $first_percent = 0.03;
             $second_percent = 0;
             $third_percent = 0.02;
         }
-        if($key === 6) {
+        if ($key === 6) {
             $first_percent = 0.02;
             $second_percent = 0;
             $third_percent = 0;
         }
 
-        if($key === 11) {
+        if ($key === 11) {
             $first_percent = 0;
             $second_percent = 0.05;
             $third_percent = 0;
         }
-        if($key > 11) {
+        if ($key > 11) {
             $first_percent = 0.005;
             $second_percent = 0;
             $third_percent = 0;
         }
 
 
-        if(floatval($accgbv) >= floatval(150)){
+        if (floatval($accgbv) >= floatval(150)) {
             $firstsplit = floatval(150);
             $amount += ($first_percent * 150);
             $rem = floatval($accgbv) - $firstsplit;
-            if(floatval($rem) >= floatval(50)){
+            if (floatval($rem) >= floatval(50)) {
                 $secondsplit = floatval(50);
                 $amount += ($second_percent * $secondsplit);
                 $rem = floatval($accgbv) - $secondsplit;
                 $thirdsplit = floatval($accgbv) - $firstsplit - $secondsplit;
                 $amount += ($third_percent * $thirdsplit);
-            }else{
+            } else {
                 $amount += ($first_percent * (floatval($accgbv) - $firstsplit));
             }
         }
@@ -298,20 +302,20 @@ class BonusController extends Controller
         // }
 
         $bonus = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodToday)->first();
-        if(!$bonus){
+        if (!$bonus) {
             Bonus::create([
                 'member_id' => $user->member_id, 'period' => $this->combPeriodToday,
                 'amount' => $amount
             ]);
-        }else{
+        } else {
             $bonus2 = Bonus::where('member_id', $user->member_id)->where('period', $this->combPeriodPrevious)->first();
-            if($key > 11) {
-                if($user->level > 2) {
+            if ($key > 11) {
+                if ($user->level > 2) {
                     $bonus->period = $this->combPeriodToday;
                     $bonus->amount = $bonus->amount + $amount;
                     $bonus->save();
                 }
-            }else{
+            } else {
                 $bonus->period = $this->combPeriodToday;
                 $bonus->amount = $bonus->amount + $amount;
                 $bonus->save();

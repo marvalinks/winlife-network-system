@@ -2,31 +2,36 @@
 
 @section('links')
 <style>
-    .u90 h2{
+    .u90 h2 {
         text-align: center;
         font-size: 18px;
         margin-bottom: 24px;
         text-transform: uppercase;
     }
-    .u90 span.e4{
+
+    .u90 span.e4 {
         font-weight: 600;
         text-transform: uppercase;
         font-size: 12px;
     }
-    .u90 h6{
+
+    .u90 h6 {
         /* font-size: 15px;
         margin-top: 24px; */
         font-size: 12px;
         margin-top: 2px;
     }
+
     p {
         margin: 0 0 0px;
     }
-    #main-content{
+
+    #main-content {
         width: 85%;
         margin: auto;
     }
-    .p56{
+
+    .p56 {
         /* display: flex;
         display: -webkit-flex; */
         display: -webkit-box;
@@ -35,31 +40,33 @@
         -webkit-flex-direction: row;
         -webkit-justify-content: space-between;
     }
-    .p56 > .row{
+
+    .p56>.row {
         -webkit-box-flex: 1;
         -webkit-flex: 1;
         flex: 1;
         margin-right: 10%;
     }
-    .w50{
+
+    .w50 {
         width: 50%;
     }
-    .table th, .table td {
-        padding: 3px!important;
+
+    .table th,
+    .table td {
+        padding: 3px !important;
         font-size: 11px;
-        border: 1px solid #000!important;
+        border: 1px solid #000 !important;
     }
 </style>
 @endsection
 @section('content')
 @php
-    $sumMoney = 0.0;
-    $sumbv = 0.0;
-    $conf = \App\Models\BvRate::first();
+$sumMoney = 0.0;
+$sumbv = 0.0;
+$conf = \App\Models\BvRate::first();
 @endphp
-    @for ($i=1; $i < 3; $i++)
-    @if ($i == 2)
-        <hr>
+@for ($i=1; $i < 3; $i++) @if ($i==2) <hr>
     @endif
     <div class="row w94 u90">
         <h2><b>{{env('APP_NAME')}} Bonus Payment Receipt</b></h2>
@@ -126,11 +133,10 @@
                             <td>{{$user->firstname.' '.$user->lastname}}</td>
                             <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                             @php
-                                if($i < 2) {
-                                    $sumMoney += $user->currentsalary($combPeriod)->amount ?? 0;
-                                    $sumbv += $user->currentach($combPeriod)->sum('total_pv');
+                            if($i < 2) { $sumMoney +=$user->currentsalary($combPeriod)->amount ?? 0;
+                                $sumbv += $user->currentach($combPeriod)->sum('total_pv');
                                 }
-                            @endphp
+                                @endphp
                         </tr>
                         @endforeach
 
@@ -153,11 +159,10 @@
                             <td>{{$user->firstname.' '.$user->lastname}}</td>
                             <td>{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                             @php
-                                if($i < 2) {
-                                    $sumMoney += $user->currentsalary($combPeriod)->amount ?? 0;
-                                    $sumbv += $user->currentach($combPeriod)->sum('total_pv');
+                            if($i < 2) { $sumMoney +=$user->currentsalary($combPeriod)->amount ?? 0;
+                                $sumbv += $user->currentach($combPeriod)->sum('total_pv');
                                 }
-                            @endphp
+                                @endphp
                         </tr>
                         @endforeach
                     </tbody>
@@ -170,7 +175,7 @@
                 <h6><b>Total BV:</b> <span>{{number_format(floatval($sumMoney), 2)}}</span></h6>
             </div>
             <div class="row">
-                <h6><b>In GHC:</b> <span>{{number_format(floatval($sumMoney * ($conf->rate ?? float(0))), 2)}}</span></h6>
+                <h6><b>In GHC:</b> <span>{{number_format(floatval($sumMoney * ($conf->rate ?? floatval(0))), 2)}}</span></h6>
             </div>
         </div>
         <div class="row" style="margin-top: 20px; margin-bottom: 50px;">
@@ -187,4 +192,4 @@
         </div>
     </div>
     @endfor
-@endsection
+    @endsection
