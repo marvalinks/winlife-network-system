@@ -65,6 +65,7 @@
 $sumMoney = 0.0;
 $sumbv = 0.0;
 $conf = \App\Models\BvRate::first();
+$billno = date('Y').date('m').date('d').mt_rand(10,99);
 @endphp
 @for ($i=1; $i < 3; $i++) @if ($i==2) <hr>
     @endif
@@ -75,7 +76,7 @@ $conf = \App\Models\BvRate::first();
                 <div class="span6">
                     <p>
                         <span class="e4"><b>Bill No:</b></span>
-                        <span>{{date('Y').date('m').date('d').mt_rand(10,99)}}</span>
+                        <span>{{$billno}}</span>
                     </p>
                 </div>
                 <div class="span6">
