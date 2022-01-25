@@ -11,6 +11,7 @@ use App\Jobs\LevelServiceJob;
 use App\Jobs\StatisticLogJob;
 use App\Models\Achivement;
 use App\Models\Agent;
+use App\Models\BigAgent;
 use App\Models\Bonus;
 use App\Models\Payment;
 use App\Models\Salary;
@@ -38,6 +39,7 @@ class BonusController extends Controller
 
     public function printPDF(Request $request)
     {
+        // ddd($request->all());
         if (!$request->agents || count($request->agents) < 1) {
             $request->session()->flash('alert-danger', 'No Agent selected!');
             return back();
@@ -58,31 +60,78 @@ class BonusController extends Controller
         $secondPreview = Agent::whereIn('member_id', $ss)->get();
         $sponser = Agent::where('member_id', $sps)->first();
         $combPeriod = $request->period;
-        $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
-            'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
-            'combPeriod' => $combPeriod
-        ]);
-        $orientation = 'portrait';
-        $paper = 'A4';
-        $pdf->setOrientation($orientation)
-            ->setOption('page-size', $paper)
-            ->setOption('margin-bottom', '0mm')
-            ->setOption('margin-top', '8.7mm')
-            ->setOption('margin-right', '0mm')
-            ->setOption('margin-left', '0mm')
-            ->setOption('enable-javascript', true)
-            ->setOption('no-stop-slow-scripts', true)
-            ->setOption('enable-smart-shrinking', true)
-            ->setOption('javascript-delay', 1000)
-            ->setTimeout(120);
+
+        if ($request->type === "b") {
+            $sponsers = Agent::whereIn('member_id', $arr)->get();
+            $user =  BigAgent::where('member_id', $sps)->where('level', 0)->first();
+            if ($user) {
+                if (intval($user->period) > intval($combPeriod)) {
+                    $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
+                    return redirect()->route('admin.agents');
+                }
+                $sponsers =  BigAgent::where('parent_id', $sps)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(20);
+
+                $user = $user;
+                // return view('pages.pdfs.cpo', [
+                //     'user' => $user, 'sponsers' => $sponsers,
+                //     'combPeriod' => $combPeriod
+                // ]);
+                $pdf = SnappyPdf::loadView('pages.pdfs.cpo', [
+                    'user' => $user, 'sponsers' => $sponsers,
+                    'combPeriod' => $combPeriod
+                ]);
+                $orientation = 'portrait';
+                $paper = 'A4';
+                $pdf->setOrientation($orientation)
+                    ->setOption('page-size', $paper)
+                    ->setOption('margin-bottom', '0mm')
+                    ->setOption('margin-top', '8.7mm')
+                    ->setOption('margin-right', '0mm')
+                    ->setOption('margin-left', '0mm')
+                    ->setOption('enable-javascript', true)
+                    ->setOption('no-stop-slow-scripts', true)
+                    ->setOption('enable-smart-shrinking', true)
+                    ->setOption('javascript-delay', 1000)
+                    ->setTimeout(120);
+
+                $name = $request->period . '-' . $user->member_id . '.pdf';
+                return $pdf->download($name);
+            } else {
+                $request->session()->flash('alert-danger', 'Member ID not found in system!');
+                return redirect()->route('admin.agents');
+            }
+        } else {
+            $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
+                'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
+                'combPeriod' => $combPeriod
+            ]);
+            $orientation = 'portrait';
+            $paper = 'A4';
+            $pdf->setOrientation($orientation)
+                ->setOption('page-size', $paper)
+                ->setOption('margin-bottom', '0mm')
+                ->setOption('margin-top', '8.7mm')
+                ->setOption('margin-right', '0mm')
+                ->setOption('margin-left', '0mm')
+                ->setOption('enable-javascript', true)
+                ->setOption('no-stop-slow-scripts', true)
+                ->setOption('enable-smart-shrinking', true)
+                ->setOption('javascript-delay', 1000)
+                ->setTimeout(120);
+
+            $name = $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
+            return $pdf->download($name);
+        }
+
+
+
 
         // return view('pages.pdfs.payment', [
         //     'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
         //     'combPeriod' => $combPeriod
         // ]);
         // return $pdf->inline();
-        $name = $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
-        return $pdf->download($name);
+
     }
     public function printPDF2(Request $request)
     {

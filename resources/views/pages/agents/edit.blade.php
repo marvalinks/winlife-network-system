@@ -6,44 +6,57 @@
 @section('scripts')
 <script type="text/javascript" src="/backend/assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
 <script>
-    $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
+    $(".chosen-select").chosen({
+        no_results_text: "Oops, nothing found!"
+    });
 </script>
 <script type="text/javascript" src="/backend/assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
 <script type="text/javascript" src="/backend/assets/data-tables/jquery.dataTables.js"></script>
 <script type="text/javascript" src="/backend/assets/data-tables/DT_bootstrap.js"></script>
 <script>
-    $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
+    $(".chosen-select").chosen({
+        no_results_text: "Oops, nothing found!"
+    });
     oTable = $('#dtable').DataTable({
-            "iDisplayLength": -1,
-            ordering: false,
-            bPaginate: false
-        });
-    oTable.fnSort( [[4,'asc'] ] );
+        "iDisplayLength": -1,
+        ordering: false,
+        bPaginate: false
+    });
+    oTable.fnSort([
+        [4, 'asc']
+    ]);
 </script>
 <script>
     function toggle(source) {
         var checkboxes = document.getElementsByClassName('ckbox');
         for (let index = 0; index < checkboxes.length; index++) {
-            if(checkboxes[index] != source) {
+            if (checkboxes[index] != source) {
                 checkboxes[index].checked = source.checked
             }
 
         }
     }
+
     function confirmPrint() {
-        if(confirm("Are You Sure to print this?")) {
+        if (confirm("Are You Sure to print this?")) {
             document.getElementById('po').submit();
+        }
+    }
+
+    function confirmPrintPDF() {
+        if (confirm("Are You Sure to print this?")) {
+            document.getElementById('gm-t').submit();
         }
     }
 </script>
 @endsection
 
 @section('content')
-    @php
-        $lv = 1;
-        $lvi = 1;
-        $lvf = 2;
-    @endphp
+@php
+$lv = 1;
+$lvi = 1;
+$lvf = 2;
+@endphp
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span12">
@@ -94,7 +107,7 @@
                                     <select style="width: auto;" required name="month" id="">
                                         <option value="">-choose-</option>
                                         @foreach ($months as $month)
-                                        <option {{$mth === $month ? 'selected' : ''}}  value="{{$month}}">{{$month}}</option>
+                                        <option {{$mth === $month ? 'selected' : ''}} value="{{$month}}">{{$month}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -128,7 +141,7 @@
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
                                     @if (auth()->user()->roleid == 1)
-                                        <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
+                                    <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
                                     @endif
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                     <th class="hidden-phone sorting" role="columnheader" tabindex="0" aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
@@ -163,9 +176,9 @@
                                         <td>{{$sponser->sponser_id ?? '-'}}</td>
                                         <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                         @if (auth()->user()->roleid == 1)
-                                            <td>
-                                                <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
-                                            </td>
+                                        <td>
+                                            <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                        </td>
                                         @endif
                                         <td></td>
                                         <td></td>
@@ -194,9 +207,9 @@
                                         <td>{{$spp->sponser_id ?? '-'}}</td>
                                         <td class="{{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($spp->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                         @if (auth()->user()->roleid == 1)
-                                            <td>
-                                                <input type="checkbox" disabled {{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
-                                            </td>
+                                        <td>
+                                            <input type="checkbox" disabled {{($spp->currentsalary($combPeriod) && $spp->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                        </td>
                                         @endif
                                         <td>
                                             <a href="{{route('admin.agent.edit', [$spp->member_id])}}">Adjust</a>
@@ -226,7 +239,7 @@
                 <hr>
                 <div class="row-fluid">
                     <div class="btn-group pull-right" style="margin-right: 10px;">
-                        <button type="button" onclick="document.getElementById('gm-t').submit();"  class="btn green">Print Out <i class="icon-plus"></i></button>
+                        <button type="button" onclick="confirmPrintPDF();" class="btn green">Print Out <i class="icon-plus"></i></button>
                     </div>
                 </div>
                 <hr>
@@ -279,9 +292,9 @@
                         </div>
                         <div class="span12 ml0">
                             <div class="form-actions">
-                              <button type="submit" class="btn btn-success">save</button>
-                              <button type="button" class="btn">Cancel</button>
-                           </div>
+                                <button type="submit" class="btn btn-success">save</button>
+                                <button type="button" class="btn">Cancel</button>
+                            </div>
                         </div>
 
                     </form>
@@ -327,8 +340,8 @@
                         </div>
                         <div class="span12 ml0">
                             <div class="form-actions">
-                              <button type="submit" class="btn btn-success">adjust PVB</button>
-                           </div>
+                                <button type="submit" class="btn btn-success">adjust PVB</button>
+                            </div>
                         </div>
                         @endif
 

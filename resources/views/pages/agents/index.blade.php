@@ -3,21 +3,24 @@
 <link rel="stylesheet" type="text/css" href="/backend/assets/chosen-bootstrap/chosen/chosen.css" />
 <link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
 <style>
-    .fm{
+    .fm {
         /* display: flex;
         justify-content: space-evenly; */
         padding-left: 21px;
     }
-    .clearfix{
+
+    .clearfix {
         padding-left: 15px;
         padding-top: 7px;
     }
-    .rt56{
+
+    .rt56 {
         font-size: 13px;
         text-decoration: underline;
     }
+
     .fm .control-group input,
-    .fm .control-group select{
+    .fm .control-group select {
         width: 100%;
     }
 </style>
@@ -27,27 +30,47 @@
 <script type="text/javascript" src="/backend/assets/chosen-bootstrap/chosen/chosen.jquery.min.js"></script>
 <script type="text/javascript" src="/backend/assets/data-tables/jquery.dataTables.js"></script>
 <script type="text/javascript" src="/backend/assets/data-tables/DT_bootstrap.js"></script>
+
 <script>
-    $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
-    oTable = $('#dtable').DataTable({
+    $(".chosen-select").chosen({
+        no_results_text: "Oops, nothing found!"
+    });
+    $(document).ready(function() {
+
+        oTable = $('#dtable').DataTable({
             "iDisplayLength": -1,
             ordering: false,
-            bPaginate: false
+            bPaginate: false,
+            dom: 'Bfrtip',
+            buttons: [
+                'pdfHtml5'
+            ]
         });
-    oTable.fnSort( [[4,'asc'] ] );
+        oTable.fnSort([
+            [4, 'asc']
+        ]);
+    });
 </script>
 <script>
     function toggle(source) {
         var checkboxes = document.getElementsByClassName('ckbox');
         for (let index = 0; index < checkboxes.length; index++) {
-            if(checkboxes[index] != source) {
+            if (checkboxes[index] != source) {
                 checkboxes[index].checked = source.checked
             }
 
         }
     }
-    function confirmPrint() {
-        if(confirm("Are You Sure to print this?")) {
+
+    function confirmPrint(type) {
+        if (confirm("Are You Sure to print this?")) {
+            // document.getElementById('po').submit();
+            if (type == 'a') {
+                $('#po').append('<input type="hidden" name="type" value="a" />');
+            }
+            if (type == 'b') {
+                $('#po').append('<input type="hidden" name="type" value="b" />');
+            }
             document.getElementById('po').submit();
         }
     }
@@ -104,9 +127,9 @@
                                 <li><a href="{{route('delete.dbs')}}">Delete DBS</a></li>
                                 <li><a href="#">Export to Excel</a></li>
                             </ul>
-                            <button type="button" onclick="confirmPrint();"  class="btn green">Print Bonus <i class="icon-plus"></i></button>
+                            <button type="button" onclick="confirmPrint('a');" class="btn green">Print Bonus <i class="icon-plus"></i></button>
                             @if (auth()->user()->roleid === 1)
-                            <button type="button" onclick="confirmPrint();"  class="btn green">Pay Salary Bonus <i class="icon-plus"></i></button>
+                            <button type="button" onclick="confirmPrint('a');" class="btn green">Pay Salary Bonus <i class="icon-plus"></i></button>
                             @endif
                         </div>
                         @endif
@@ -173,17 +196,20 @@
                                     <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 122px;">Sponser.ID</th>
                                     <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Salary</th>
                                     @if (auth()->user()->roleid == 1)
-                                        <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
+                                    <th colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;">Paid</th>
                                     @endif
                                     <th aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                     <th aria-controls="sample_1" rowspan="1" colspan="1" aria-label="Joined: activate to sort column ascending" style="width: 183px;"></th>
                                 </tr>
 
                             </thead>
+                            <thead>
+                                <tr>
+                                    <td colspan="15"><button class="tn green" onclick="confirmPrint('b');">Print Statement</button></td>
+                                </tr>
+                            </thead>
 
                             <tbody role="alert" aria-live="polite" aria-relevant="all">
-
-
                                 @if (isset($user))
                                 <tr class="gradeX even">
                                     <td class="">
@@ -209,9 +235,9 @@
                                     <td>{{$user->sponser_id ?? '-'}}</td>
                                     <td class="{{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($user->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                     @if (auth()->user()->roleid == 1)
-                                        <td>
-                                            <input type="checkbox" disabled {{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
-                                        </td>
+                                    <td>
+                                        <input type="checkbox" disabled {{($user->currentsalary($combPeriod) && $user->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                    </td>
                                     @endif
                                     <td>
                                         <a href="{{route('admin.agent.edit', [$user->member_id])}}">Adjust</a>
@@ -241,9 +267,9 @@
                                     <td>{{$sponser->sponser_id ?? '-'}}</td>
                                     <td class="{{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->active) ? '' : 'tred'}}">{{number_format(($sponser->currentsalary($combPeriod)->amount ?? 0), 2)}}</td>
                                     @if (auth()->user()->roleid == 1)
-                                        <td>
-                                            <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
-                                        </td>
+                                    <td>
+                                        <input type="checkbox" disabled {{($sponser->currentsalary($combPeriod) && $sponser->currentsalary($combPeriod)->paid) ? 'checked' : ''}}>
+                                    </td>
                                     @endif
                                     <td>
                                         <a href="{{route('admin.agent.edit', [$sponser->member_id])}}">Adjust</a>

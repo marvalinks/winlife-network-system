@@ -1,54 +1,56 @@
 body {
     color: #2c2c2c;
     /* background: #32C2CD url(../img/bg-default.jpg) !important; */
-    background: #4e4e4e!important;
+    background: #4e4e4e !important;
 }
 /* #sidebar > ul > li a {
     margin: 0 0 8px 0;
     padding: 14px;
 } */
-.ml0{
-    margin-left: 0px!important;
+.ml0 {
+    margin-left: 0px !important;
 }
 .ml0 input,
-.ml0 select{
+.ml0 select {
     width: 89%;
 }
-.mx-table{
-    display: block!important;
-    overflow-x: auto!important;
-    white-space: nowrap!important;
-    width: 100%!important;
+.mx-table {
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    width: 100% !important;
 }
-input[type=file]{
+input[type="file"] {
     border: 1px solid #ccc;
 }
-.table th, .table td{
-    padding: 3px!important;
+.table th,
+.table td {
+    padding: 3px !important;
     font-size: 11px;
 }
-.w94{
+.w94 {
     width: 94%;
     margin: auto;
 }
-.tred{
-    color: red!important;
+.tred {
+    color: red !important;
 }
-.tyellow{
-    color: #cfae0c!important;
+.tyellow {
+    color: #cfae0c !important;
 }
-.tgreen{
-    color: #2d970d!important;
+.tgreen {
+    color: #2d970d !important;
 }
-.tblue{
-    color: #0d4497!important;
+.tblue {
+    color: #0d4497 !important;
 }
-.tbrown{
-    color: chocolate!important;
+.tbrown {
+    color: chocolate !important;
 }
-.agreen{
-    background: #2dff2d!important;
+.agreen {
+    background: #2dff2d !important;
 }
+
 @media (min-width: 980px) {
     #sidebar ul {
         margin-top: 0px;
