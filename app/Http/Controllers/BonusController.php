@@ -101,6 +101,16 @@ class BonusController extends Controller
                 return redirect()->route('admin.agents');
             }
         } else {
+            foreach ($firstPreview as $key => $agent) {
+                $agent->currentsalary($combPeriod)->paid = 1;
+                $agent->currentsalary($combPeriod)->save();
+            }
+            foreach ($secondPreview as $key => $agent) {
+                $agent->currentsalary($combPeriod)->paid = 1;
+                $agent->currentsalary($combPeriod)->save();
+            }
+            $sponser->currentsalary($combPeriod)->paid = 1;
+            $sponser->currentsalary($combPeriod)->save();
             $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
                 'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
                 'combPeriod' => $combPeriod
