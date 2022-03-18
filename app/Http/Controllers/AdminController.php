@@ -28,6 +28,7 @@ use App\Models\StatisticLog;
 use App\Models\TemporalAchivement;
 use App\Models\TemporalAgent;
 use App\Models\UploadedData;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Maatwebsite\Excel\Facades\Excel;
@@ -40,7 +41,7 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->combPeriodToday = date('Y').date('m');
+        $this->combPeriodToday = date('Y') . date('m');
         // $this->start();
     }
 
@@ -67,7 +68,7 @@ class AdminController extends Controller
         $jobs = [];
         $batchid = '';
 
-        if(count($acs) > 0) {
+        if (count($acs) > 0) {
             foreach ($acs as $key => $ac) {
 
                 //calculating the Statistcis
@@ -84,7 +85,6 @@ class AdminController extends Controller
 
             }
         }
-
     }
 
     public function chainJobs(Request $request)
@@ -98,7 +98,7 @@ class AdminController extends Controller
         $jobs = [];
         // ddd($acs);
         $jobs[] = new GroupServiceJob();
-        if(count($acs) > 0) {
+        if (count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $jobs[] = new StatisticLogJob($ac);
                 // calculating the Salary
@@ -112,7 +112,7 @@ class AdminController extends Controller
         // $jobs[] = new StatisticLogJob('201507');
         $batch = Bus::batch($jobs)->dispatch();
         // return $batch->id;
-        if(count($jobs) > 0) {
+        if (count($jobs) > 0) {
             $request->session()->flash('alert-success', 'Achivement successfully uploaded. Please wait, bonus is calculating...');
             return redirect()->route('batch.progress');
             // return redirect()->route('admin.dashboard', ['batch_id' => $batch->id]);
@@ -126,32 +126,31 @@ class AdminController extends Controller
         // $pd = CheckRunBill::where('type', 'gps')->where('period', $period)->first();
 
         // if(!$pd){
-            $jobs = [];
-            $agents = Agent::latest()->pluck('member_id');
-            // ddd($agents);
-            foreach ($agents as $agent) {
-                $jobs[] = new CalcStatsJob($period, $agent);
-            }
-            // ddd($jobs);
+        $jobs = [];
+        $agents = Agent::latest()->pluck('member_id');
+        // ddd($agents);
+        foreach ($agents as $agent) {
+            $jobs[] = new CalcStatsJob($period, $agent);
+        }
+        // ddd($jobs);
 
-            // CheckRunBill::create([
-            //     'period' => $this->combPeriod, 'type' => 'gps'
-            // ]);
+        // CheckRunBill::create([
+        //     'period' => $this->combPeriod, 'type' => 'gps'
+        // ]);
         // }
-            // $jobs[] = new CalcStatsJob($period, $agent);
-            $batch = Bus::batch($jobs)->dispatch();
-
+        // $jobs[] = new CalcStatsJob($period, $agent);
+        $batch = Bus::batch($jobs)->dispatch();
     }
 
     public function reloadStatistics()
     {
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
-        if(count($acs) > 0) {
+        if (count($acs) > 0) {
             foreach ($acs as $key => $ac) {
                 $pd = CheckRunBill::where('type', 'gps')->where('period', $ac)->first();
-                if(!$pd) {
-                    Agent::latest()->chunk(100, function ($users) use ($ac){
-                        foreach ($users as $user)  {
+                if (!$pd) {
+                    Agent::latest()->chunk(100, function ($users) use ($ac) {
+                        foreach ($users as $user) {
                             if (intval($user->period) <= intval($ac)) {
                                 $this->dispatch(new Gstats($ac, $user->member_id));
                                 $this->dispatch(new Pstats($ac, $user->member_id));
@@ -162,7 +161,6 @@ class AdminController extends Controller
                         'period' => $ac, 'type' => 'gps'
                     ]);
                 }
-
             }
         }
         die('completed');
@@ -172,11 +170,16 @@ class AdminController extends Controller
     {
         // $batch = $this->start();
         $batch = null;
-        if($request->batch_id) {
+        if ($request->batch_id) {
             $batch = Bus::findBatch($request->batch_id);
             ddd($batch);
         }
-        return view('pages.dashboard');
+        $totalAgents = Agent::count();
+        $totalUsers = User::count();
+        $totalAchivements = Achivement::count();
+        $totalData = UploadedData::count();
+        $totalJobs = 0;
+        return view('pages.dashboard', compact('totalAgents', 'totalUsers', 'totalAchivements', 'totalData', 'totalJobs'));
     }
     public function deleteDBS(Request $request)
     {
@@ -188,14 +191,14 @@ class AdminController extends Controller
             'type' => 'required', 'period' => 'required'
         ]);
 
-        if($data['type'] == 'a') {
+        if ($data['type'] == 'a') {
             $acs = Achivement::where('period', $data['period'])->get();
             foreach ($acs as $key => $ac) {
-               $ac->delete();
+                $ac->delete();
             }
         }
         $ups = UploadedData::where('period', $data['period'])->where('data', 'a')->first();
-        if($ups) {
+        if ($ups) {
             $ups->delete();
         }
         $request->session()->flash('alert-success', 'Data successfully deleted!');
@@ -267,8 +270,5 @@ class AdminController extends Controller
         foreach ($ass as $key => $del) {
             $del->delete();
         }
-
     }
-
-
 }
