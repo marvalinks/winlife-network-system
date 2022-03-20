@@ -94,7 +94,7 @@ class BonusController extends Controller
                     ->setOption('javascript-delay', 1000)
                     ->setTimeout(120);
 
-                $name = $request->period . '-' . $user->member_id . '.pdf';
+                $name = 'printout-' . $request->period . '-' . $user->member_id . '.pdf';
                 return $pdf->download($name);
             } else {
                 $request->session()->flash('alert-danger', 'Member ID not found in system!');
@@ -129,7 +129,7 @@ class BonusController extends Controller
                 ->setOption('javascript-delay', 1000)
                 ->setTimeout(120);
 
-            $name = $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
+            $name = 'bonus-' . $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
             return $pdf->download($name);
         }
 
