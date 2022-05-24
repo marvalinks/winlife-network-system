@@ -61,6 +61,8 @@ class BonusController extends Controller
         $sponser = Agent::where('member_id', $sps)->first();
         $combPeriod = $request->period;
 
+        // ddd($request->type);
+
         if ($request->type === "b") {
             $sponsers = Agent::whereIn('member_id', $arr)->get();
             $user =  BigAgent::where('member_id', $sps)->where('level', 0)->first();

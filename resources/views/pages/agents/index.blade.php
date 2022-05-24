@@ -120,16 +120,16 @@
                         </div>
                         @if(auth()->user()->roleid === 1)
                         <div class="btn-group pull-right" style="margin-right: 10px;">
-                            <a href="{{route('admin.calculate.bonus')}}" class="btn green">Calculate Bonus <i class="icon-plus"></i></a>
+                            <a onclick="return confirm('Are you sure ?')" href="{{route('admin.calculate.bonus')}}" class="btn green">Calculate Bonus <i class="icon-plus"></i></a>
                             <button class="btn dropdown-toggle" data-toggle="dropdown">Tools <i class="icon-angle-down"></i></button>
                             <ul class="dropdown-menu pull-right">
                                 <li><a href="" wire:click.prevent="fixSponsers()">Fix Sponsers</a></li>
                                 <li><a href="{{route('delete.dbs')}}">Delete DBS</a></li>
                                 <li><a href="#">Export to Excel</a></li>
                             </ul>
-                            <button type="button" onclick="confirmPrint('a');" class="btn green">Print Bonus <i class="icon-plus"></i></button>
+                            {{-- <button type="button" onclick="confirmPrint('a');" class="btn green">Print Bonus <i class="icon-plus"></i></button> --}}
                             @if (auth()->user()->roleid === 1)
-                            <button type="button" onclick="confirmPrint('a');" class="btn green">Pay Salary Bonus <i class="icon-plus"></i></button>
+                            <button onclick="return confirm('Are you sure ?')" type="button" onclick="confirmPrint('a');" class="btn green">Pay Salary Bonus <i class="icon-plus"></i></button>
                             @endif
                         </div>
                         @endif
@@ -223,7 +223,7 @@
                                     <td>{{$user->period}}</td>
                                     <td>{{$user->member_id}}</td>
                                     <td>0</td>
-                                    <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}</td>
+                                    <td>{{$user->statlogs->where('period', $combPeriod)->first()->level ?? intval($user->statlogs->max('level'))}}</td>
                                     <td>{{number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                     <td>{{number_format($user->currentgbv($combPeriod), 2)}}</td>
                                     @if (intval($combPeriod) >= intval($user->archievements->min('period')))
@@ -255,7 +255,9 @@
                                     <td>{{$sponser->period}}</td>
                                     <td>{{$sponser->member_id}}</td>
                                     <td>{{$sponser->level}}</td>
-                                    <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}</td>
+                                    <td>
+                                        {{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? intval($sponser->statlogs->max('level'))}}
+                                    </td>
                                     <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                     <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
                                     @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))

@@ -66,7 +66,7 @@
     $lvf = 2;
     @endphp
     <div class="row w94 u90">
-        <h2>Bonus Report</h2>
+        <h2>Print out Report</h2>
         <h2><b>{{ $combPeriod }} {{ env('APP_NAME') }} Network = {{ $user->firstname . ' ' . $user->lastname }}</b>
         </h2>
         <div class="row p56">
@@ -95,7 +95,7 @@
                                 <td>{{ $user->period }}</td>
                                 <td>{{ $user->member_id }}</td>
                                 <td>0</td>
-                                <td>{{ $user->statlogs->where('period', $combPeriod)->first()->level ?? 'NA' }}</td>
+                                <td>{{ $user->statlogs->where('period', $combPeriod)->first()->level ?? intval($user->statlogs->max('level')) }}</td>
                                 <td>{{ number_format($user->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2) }}
                                 </td>
                                 <td>{{ number_format($user->currentgbv($combPeriod), 2) }}</td>
@@ -117,7 +117,7 @@
                                     <td>{{ $sponser->period }}</td>
                                     <td>{{ $sponser->member_id }}</td>
                                     <td>{{ $sponser->level }}</td>
-                                    <td>{{ $sponser->statlogs->where('period', $combPeriod)->first()->level ?? 'NA' }}
+                                    <td>{{ $sponser->statlogs->where('period', $combPeriod)->first()->level ?? intval($sponser->statlogs->max('level')) }}
                                     </td>
                                     <td>{{ number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0), 2) }}
                                     </td>

@@ -20,6 +20,7 @@ use App\Models\GroupBv;
 use App\Models\PersonalBv;
 use App\Models\Salary;
 use App\Models\StatisticLog;
+use App\Models\UploadedData;
 use App\Models\User;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf;
@@ -79,7 +80,12 @@ class AgentController extends Controller
             $yr = intval($request->selectedYear);
             $mth = $request->selectedMonth;
             $combPeriodToday = $this->combPeriodToday;
-            // ddd($agents);
+            $upld = UploadedData::where('data', 'a')->where('period', $combPeriod)->first();
+
+            if(!$upld) {
+                $request->session()->flash('alert-danger', 'Achievements not uploaded for this month');
+                return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'combPeriod', 'combPeriodToday'));
+            }
             $user =  BigAgent::where('member_id', $memberid)->where('level', 0)->first();
             if($user) {
                 if(intval($user->period) > intval($combPeriod)) {
@@ -89,6 +95,7 @@ class AgentController extends Controller
                 $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(20);
 
                 $user = $user;
+                $request->session()->flash('alert-success', 'Data results!');
                 return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'user', 'sponsers', 'combPeriod', 'combPeriodToday'));
             }else{
                 $request->session()->flash('alert-danger', 'Member ID not found in system!');
@@ -144,9 +151,15 @@ class AgentController extends Controller
         $agent = Agent::where('member_id', $id)->first();
         $data = $request->validate([
             'firstname' => 'required', 'lastname' => 'required',
-            'telephone' => 'required', 'address' => 'required',
-            'period' => 'required'
+            'telephone' => '', 'address' => ''
         ]);
+        $agents = BigAgent::where('member_id', $id)->get();
+        foreach($agents as $ag) {
+            $ag->update([
+                'firstname' => $data['firstname'],
+                'lastname' => $data['lastname']
+            ]);
+        }
         $data['sponser_id'] = $request->sponser_id ?? null;
         $agent = $agent->update($data);
         $request->session()->flash('alert-success', 'Agent successfully updated!');

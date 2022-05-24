@@ -82,7 +82,7 @@
                             <td>{{$sponser->period}}</td>
                             <td>{{$sponser->member_id}}</td>
                             <td>0</td>
-                            <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? $sponser->stats->level}}</td>
+                            <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? intval($sponser->statlogs->max('level'))}}</td>
                             <td class="tright">{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                             <td class="tright">{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
                             @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
@@ -102,7 +102,7 @@
                             <td>{{$spp->period}}</td>
                             <td>{{$spp->member_id}}</td>
                             <td>{{$lv}}</td>
-                            <td>{{$spp->statlogs->where('period', $combPeriod)->first()->level ?? $spp->stats->level}}</td>
+                            <td>{{$spp->statlogs->where('period', $combPeriod)->first()->level ?? intval($spp->statlogs->max('level'))}}</td>
                             <td class="tright">{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                             <td class="tright">{{number_format($spp->currentgbv($combPeriod), 2)}}</td>
                             @if (intval($combPeriod) >= intval($spp->archievements->min('period')))

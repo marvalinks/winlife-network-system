@@ -164,7 +164,7 @@ $lvf = 2;
                                         <td>{{$sponser->period}}</td>
                                         <td>{{$sponser->member_id}}</td>
                                         <td>0</td>
-                                        <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}</td>
+                                        <td>{{$sponser->statlogs->where('period', $combPeriod)->first()->level ?? intval($sponser->statlogs->max('level'))}}</td>
                                         <td>{{number_format($sponser->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                         <td>{{number_format($sponser->currentgbv($combPeriod), 2)}}</td>
                                         @if (intval($combPeriod) >= intval($sponser->archievements->min('period')))
@@ -195,7 +195,7 @@ $lvf = 2;
                                         <td>{{$spp->period}}</td>
                                         <td>{{$spp->member_id}}</td>
                                         <td>{{$spp->level}}</td>
-                                        <td>{{$spp->statlogs->where('period', $combPeriod)->first()->level ?? 'NA'}}</td>
+                                        <td>{{$spp->statlogs->where('period', $combPeriod)->first()->level ?? intval($spp->statlogs->max('level'))}}</td>
                                         <td>{{number_format($spp->archievements->where('period', $combPeriod)->sum('total_pv') ?? floatval(0),2)}}</td>
                                         <td>{{number_format($spp->currentgbv($combPeriod), 2)}}</td>
                                         @if (intval($combPeriod) >= intval($spp->archievements->min('period')))
@@ -245,7 +245,7 @@ $lvf = 2;
                 <hr>
                 <div class="widget-body form">
                     <!-- BEGIN FORM-->
-                    <form method="POST" class="row-fluid" action="#" class="form-horizontal">
+                    <form method="POST" class="row-fluid" action="{{route('admin.agent.edit', [$sponser->member_id])}}" class="form-horizontal">
                         @csrf
                         <div class="span4 ml0">
                             <div class="form-group">
@@ -268,13 +268,13 @@ $lvf = 2;
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">Telephone</label>
-                                <input name="telephone" value="{{$sponser->telephone}}" required type="text" class="form-control">
+                                <input name="telephone" value="{{$sponser->telephone}}" type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">
                             <div class="form-group">
                                 <label class="control-label">Address</label>
-                                <input name="address" value="{{$sponser->address}}" required type="text" class="form-control">
+                                <input name="address" value="{{$sponser->address}}" type="text" class="form-control">
                             </div>
                         </div>
                         <div class="span4 ml0">
