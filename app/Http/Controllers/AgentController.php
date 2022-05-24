@@ -80,12 +80,12 @@ class AgentController extends Controller
             $yr = intval($request->selectedYear);
             $mth = $request->selectedMonth;
             $combPeriodToday = $this->combPeriodToday;
-            $upld = UploadedData::where('data', 'a')->where('period', $combPeriod)->first();
+            // $upld = UploadedData::where('data', 'a')->where('period', $combPeriod)->first();
 
-            if(!$upld) {
-                $request->session()->flash('alert-danger', 'Achievements not uploaded for this month');
-                return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'combPeriod', 'combPeriodToday'));
-            }
+            // if(!$upld) {
+            //     $request->session()->flash('alert-danger', 'Achievements not uploaded for this month');
+            //     return view('pages.agents.index', compact('memberid','yr', 'mth', 'months', 'combPeriod', 'combPeriodToday'));
+            // }
             $user =  BigAgent::where('member_id', $memberid)->where('level', 0)->first();
             if($user) {
                 if(intval($user->period) > intval($combPeriod)) {
