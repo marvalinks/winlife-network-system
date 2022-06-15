@@ -74,6 +74,7 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
+                            <th style="width: 20px;"></th>
                             <th style="width: 700px;">Name</th>
                             <th style="width: 125px;">Period</th>
                             <th style="width: 122px;">Business.ID</th>
@@ -91,6 +92,7 @@
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                         @if (isset($user))
                             <tr class="gradeX even">
+                                <td>1.</td>
                                 <td>{{ $user->firstname . ' ' . $user->lastname }}</td>
                                 <td>{{ $user->period }}</td>
                                 <td>{{ $user->member_id }}</td>
@@ -113,6 +115,7 @@
                             </tr>
                             @foreach ($sponsers as $key => $sponser)
                                 <tr class="gradeX {{ ($key + 1) % 2 == 0 ? 'even' : 'odd' }}">
+                                    <td>{{$key + 2}}.</td>
                                     <td>{{ $sponser->firstname . ' ' . $sponser->lastname }}</td>
                                     <td>{{ $sponser->period }}</td>
                                     <td>{{ $sponser->member_id }}</td>

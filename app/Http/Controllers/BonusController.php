@@ -71,7 +71,7 @@ class BonusController extends Controller
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
                     return redirect()->route('admin.agents');
                 }
-                $sponsers =  BigAgent::where('parent_id', $sps)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(20);
+                $sponsers =  BigAgent::where('parent_id', $sps)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(500);
 
                 $user = $user;
                 // return view('pages.pdfs.cpo', [
@@ -102,7 +102,9 @@ class BonusController extends Controller
                 $request->session()->flash('alert-danger', 'Member ID not found in system!');
                 return redirect()->route('admin.agents');
             }
-        } else {
+        } 
+
+        if ($request->type === "a") {
             foreach ($firstPreview as $key => $agent) {
                 $agent->currentsalary($combPeriod)->paid = 1;
                 $agent->currentsalary($combPeriod)->save();
@@ -134,6 +136,9 @@ class BonusController extends Controller
             $name = 'bonus-' . $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
             return $pdf->download($name);
         }
+
+        $request->session()->flash('alert-danger', 'Could not initial prinout. Please try again...');
+        return redirect()->route('admin.agents');
 
 
 
