@@ -241,6 +241,7 @@ class BonusController extends Controller
         $grp = new GroupService();
         $grp->GRP();
         $acs = Achivement::distinct('period')->orderBy('period', 'asc')->pluck('period');
+        // dd($acs);
         // Salary::truncate();
         if (count($acs) > 0) {
             foreach ($acs as $key => $ac) {

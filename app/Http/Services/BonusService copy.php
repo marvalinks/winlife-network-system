@@ -38,7 +38,7 @@ class BonusService
         $pd = CheckRunBill::where('type', 'bonus')->where('period', $period)->first();
         if (!$pd) :
 
-            $users = Agent::where('period', '<=', $period)->orderBy('period', 'asc')->get();
+            $users = Agent::where('period', '<=', $period)->latest()->get();
             $bns = Bonus::where('period', $period)->truncate();
             $sls = Salary::where('period', $period)->get();
             foreach ($bns as $key => $trn) {
@@ -73,15 +73,11 @@ class BonusService
                             $user->group->bl = $this->old_bl;
                             $user->group->save();
                             // ddd($ag, $ag->agent, intval($ag->level));
-                            
                             $this->doBonus($ag->agent, intval($ag->level));
                         }
                         $user->group->cl = $this->new_cl ?? $this->old_cl;
                         $user->group->bl = $this->new_bl ?? $this->old_bl;
                         $user->group->save();
-                        // if($user->member_id == '202288880155') {
-                        //     ddd($user->member_id);
-                        // }
                     } else {
                         $this->addSalary($user, floatval(0), intval(0));
                     }
@@ -628,10 +624,6 @@ class BonusService
 
         
 
-        // if($user->member_id == '202288880033' && $key == 0) {
-        //     ddd($user->member_id, $this->user->group->cl, $user->group->bl, $accgbv, $this->old_cl);
-        // }
-        
         
 
         if ($this->user->group->cl == 1) {
@@ -649,12 +641,7 @@ class BonusService
                     $this->new_cl = 2;
                     $this->new_bl = 0;
                     $this->user->group->save();
-
-                    
-
-                    // if($this->user->member_id == '202288880033') {
-                    //     ddd($amount, floatval($accgbv), $amount_to_next);
-                    // }
+                    // ddd($amount);
 
                     $this->addSalary($user, $amount, $key);
 
@@ -664,18 +651,13 @@ class BonusService
                     $bl = floatval(150) - floatval($accgbv);
                     $firstsplit = floatval($accgbv);
                     $amount += ($first_percent * $firstsplit);
-                    $this->user->group->cl = 1;
-                    $this->user->group->bl = $bl;
+                    $user->group->cl = 1;
+                    $user->group->bl = $bl;
                     $this->new_cl = 1;
                     $this->new_bl = $bl;
-                    $this->user->group->save();
-                    
-                    
-                    
+                    $user->group->save();
+
                     $this->addSalary($user, $amount, $key);
-                    // if($user->member_id == '202288880033' && $key == 1) {
-                    //     ddd($user->member_id, $this->user->group->cl, $user->group->bl, $amount, $this->old_cl);
-                    // }
                 }
             }
         }
