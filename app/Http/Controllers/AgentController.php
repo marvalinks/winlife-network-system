@@ -71,8 +71,13 @@ class AgentController extends Controller
             'August' => '08','September' => '09','October' => '10',
             'November' => '11','December' => '12'
         ];
-        $mth = $request->selectedMonth ?? date('m');
-        $mth = $request->selectedMonth ?? date('m');
+        $ud = UploadedData::latest()->first();
+        // dd(substr($ud->period, -2));
+        if($ud) {
+            $mth = $request->selectedMonth ?? substr($ud->period, -2);
+        }else{
+            $mth = $request->selectedMonth ?? date('m');
+        }
         $yr = intval($request->selectedYear ?? date('Y'));
         if($request->memberid) {
             $memberid = $request->memberid;
