@@ -71,6 +71,9 @@
             if (type == 'b') {
                 $('#po').append('<input type="hidden" name="type" value="b" />');
             }
+            if (type == 'c') {
+                $('#po').append('<input type="hidden" name="type" value="c" />');
+            }
             document.getElementById('po').submit();
         }
     }
@@ -127,7 +130,7 @@
                                 <li><a href="{{route('delete.dbs')}}">Delete DBS</a></li>
                                 <li><a href="#">Export to Excel</a></li>
                             </ul>
-                            {{-- <button type="button" onclick="confirmPrint('a');" class="btn green">Print Bonus <i class="icon-plus"></i></button> --}}
+                            {{-- <button type="button" onclick="confirmPrint('c');" class="btn green">Print Bonus <i class="icon-plus"></i></button> --}}
                             @if (auth()->user()->roleid === 1)
                             <button onclick="return confirm('Are you sure ?')" type="button" onclick="confirmPrint('a');" class="btn green">Pay Salary Bonus <i class="icon-plus"></i></button>
                             @endif
@@ -205,7 +208,8 @@
                             </thead>
                             <thead>
                                 <tr>
-                                    <td colspan="15"><button class="tn green" onclick="confirmPrint('b');">Print Statement</button></td>
+                                    <td colspan="14"><button type="button" class="btn tn green" onclick="confirmPrint('b');">Print Statement <i class="icon-plus"></i></button></td>
+                                    <td><button type="button" onclick="confirmPrint('c');" class="btn green">Print Bonus <i class="icon-plus"></i></button></td>
                                 </tr>
                             </thead>
 

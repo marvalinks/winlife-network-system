@@ -136,6 +136,28 @@ class BonusController extends Controller
             $name = 'bonus-' . $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
             return $pdf->download($name);
         }
+        if ($request->type === "c") {
+            $pdf = SnappyPdf::loadView('pages.pdfs.payment', [
+                'sponser' => $sponser, 'firstPreview' => $firstPreview, 'secondPreview' => $secondPreview,
+                'combPeriod' => $combPeriod
+            ]);
+            $orientation = 'portrait';
+            $paper = 'A4';
+            $pdf->setOrientation($orientation)
+                ->setOption('page-size', $paper)
+                ->setOption('margin-bottom', '0mm')
+                ->setOption('margin-top', '8.7mm')
+                ->setOption('margin-right', '0mm')
+                ->setOption('margin-left', '0mm')
+                ->setOption('enable-javascript', true)
+                ->setOption('no-stop-slow-scripts', true)
+                ->setOption('enable-smart-shrinking', true)
+                ->setOption('javascript-delay', 1000)
+                ->setTimeout(120);
+
+            $name = 'bonus-' . $request->period . '-' . $firstPreview[0]->member_id . '.pdf';
+            return $pdf->download($name);
+        }
 
         $request->session()->flash('alert-danger', 'Could not initial prinout. Please try again...');
         return redirect()->route('admin.agents');

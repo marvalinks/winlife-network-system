@@ -92,7 +92,7 @@ class AgentController extends Controller
                     $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
                     return redirect()->route('admin.agents');
                 }
-                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(20);
+                $sponsers =  BigAgent::where('parent_id', $memberid)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(100);
 
                 $user = $user;
                 $request->session()->flash('alert-success', 'Data results!');
@@ -187,7 +187,7 @@ class AgentController extends Controller
             $request->session()->flash('alert-danger', 'Member ID not found in for this period!');
             return redirect()->route('admin.agents');
         }
-        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(10);
+        $sponsers =  BigAgent::where('parent_id', $id)->where('period', '<=', $combPeriod)->orderBy('level', 'asc')->simplePaginate(100);
         $sponser = $user;
         $combPeriodToday = $this->combPeriodToday;
         $archievements = Achivement::where('member_id', $id)->orderBy('period', 'asc')->paginate(50);
