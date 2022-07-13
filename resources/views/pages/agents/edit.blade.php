@@ -45,7 +45,10 @@
 
     function confirmPrintPDF() {
         if (confirm("Are You Sure to print this?")) {
-            document.getElementById('gm-t').submit();
+            var t = document.querySelector('#gm-t');
+            // var t = document.getElementById('gm-t');
+            console.log(t);
+            // .submit();
         }
     }
 </script>
@@ -122,6 +125,7 @@ $lvf = 2;
                 <hr>
                 <div class="widget-body form">
                     <form id="po" action="{{route('bonus.pdf')}}" method="get">
+                        <input type="hidden" name="type" value="b">
                         @csrf
                         <table class="table table-striped table-bordered dataTable mx-table" id="dtable2" aria-describedby="sample_1_info">
                             <thead>
@@ -148,7 +152,7 @@ $lvf = 2;
                                 </tr>
                             </thead>
 
-                            <form id="gm-t" action="{{route('admin.agent.print.report')}}" method="get">
+                            
                                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                                     @csrf
                                     <input type="hidden" name="combPeriod" value="{{$combPeriod}}">
@@ -219,7 +223,7 @@ $lvf = 2;
                                     @endforeach
 
                                 </tbody>
-                            </form>
+                            
                         </table>
                     </form>
 
